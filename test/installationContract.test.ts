@@ -54,6 +54,7 @@ describe("versioned installation authority", () => {
     expect(roots.get("runtime-home")).toMatchObject({ keepData: "retain", deleteAll: "remove" });
     expect(roots.get("shared-materials")).toMatchObject({ keepData: "retain", deleteAll: "remove" });
     expect(roots.get("user-data")?.cleanup).toEqual(["status.json", "control.sock", "bot.lock"]);
+    expect(roots.get("update-socket")).toMatchObject({ scope: "system", path: "/var/run/app.mochi.update.sock", keepData: "remove", deleteAll: "remove" });
 
     const external = new Map(manifest.externalArtifacts.map((entry) => [entry.id, entry]));
     expect(external.get("runtime-account")).toMatchObject({ keepData: "retain", deleteAll: "remove" });

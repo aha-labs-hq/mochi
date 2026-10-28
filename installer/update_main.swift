@@ -7,11 +7,17 @@ do {
     print("mochi-update 1")
   } else {
     try require(geteuid() == 0, .untrusted)
-    try require(CommandLine.arguments.count <= 2)
+    let args = Array(CommandLine.arguments.dropFirst())
+    if args.first == "--repair" {
+      try require(args.count == 2)
+      guard let uid = UInt32(args[1]) else { throw UpdateError.invalid }
+      try prepareRepair(uid: uid)
+      exit(0)
+    }
+    try require(args.count <= 1)
     switch CommandLine.arguments.dropFirst().first {
     case nil: try serve()
     case "--handoff": try handoff()
-    case "--repair": try prepareRepair()
     case "--health": try health()
     case "--stop": try stopProcesses()
     case "--restored": try releaseHold(restored: true)

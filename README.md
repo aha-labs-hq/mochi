@@ -180,13 +180,13 @@ Pi 的公开账号合同能证明 provider、OAuth 和 subscription，但不保�
 
 产品用户只需要 macOS 14+ 和一个 `Mochi.dmg`：打开磁盘映像，把 `Mochi.app` 拖到“应用程序”，再像任何原生 Mac App 一样打开。第一次启动时，Mochi 在自己的界面里请求一次 macOS 管理员授权来准备安全后台；随后用户连接 ChatGPT、飞书与项目，点击“开始值班”。不会出现另一款安装 App、通用 Installer 向导或终端，也不需要仓库、Bun、Swift、Node、全局 Pi CLI、全局 `lark-cli` 或 Codex App/CLI。
 
-`Mochi.app` 内嵌并只执行构建时已验证的精确 `.pkg`；`.pkg` 是不暴露给用户的特权事务载体。首次准备验证 `/Applications/Mochi.app`；更新验证 root 私有 staging 中的同一候选，再把宿主 App 与后台组件作为一个版本提交：
+`Mochi.app` 内嵌并只执行构建时已验证的精确 `.pkg`；`.pkg` 是不暴露给用户的特权事务载体。安装账户取自发起操作的原生 App，授权前固定 UID；安装脚本验证 root 私有安装包旁的身份记录，更新沿用已认证请求中的 UID。切换前台用户不会改变安装、修复或卸载的目标账户。首次准备验证 `/Applications/Mochi.app`；更新验证 root 私有 staging 中的同一候选，再把宿主 App 与后台组件作为一个版本提交：
 
 - `/Applications/Mochi.app`，以及 `/Library/Application Support/Mochi/` 下的 compiled Bridge、官方 Lark 签名且与目标 CPU 匹配的原生 `lark-cli`、只读协议、默认策略和产品版本
-- `/usr/local/libexec/mochi-pi-runtime`、第三方 notices、隐藏 `_mochi` 用户、材料 ACL 和 digest-pinned sudoers
+- `/usr/local/libexec/mochi-pi-runtime`、完整第三方许可证与 NOTICE（含 `LICENSES/` 目录）、隐藏 `_mochi` 用户、材料 ACL 和 digest-pinned sudoers
 - 用户目录下可编辑的 `bot.toml` / `AGENTS.md`、SQLite、Connections、状态、socket、日志和唯一 LaunchAgent；安装不要求或写入客户授权。
 
-[`src/product/installation.ts`](src/product/installation.ts) 生成 schema 6 安装合同；首次 App 由磁盘映像交付，后续 App、后台组件、plist 和 sudoers 共用 `installer/lifecycle.sh` 的同卷 rename journal。更新先下载与验证，等待全部已接工作和最终回帖完成，再由固定签名的 root helper 切换。新 Bridge 在放开消息与安排之前，只读核验原 Session、cwd、ABI 和历史；只有本地复验成功才 finalized 并放开接收。提交前失败恢复同一整套旧版本；finalized 后只能继续收尾，不能回滚已接工作。账号、连接、群参与、项目选择和永久历史不属于代码回滚集合。设置的“关于与更新”与应用菜单共用更新入口；自动检查/下载默认开启，自动安装需明确开启。具体所有权、失败行为和验收边界见 [软件更新合同](docs/design/software-updates.md)。
+[`src/product/installation.ts`](src/product/installation.ts) 生成 schema 6 安装合同；首次 App 由磁盘映像交付，后续 App、后台组件、plist 和 sudoers 共用 `installer/lifecycle.sh` 的同卷 rename journal。更新先下载与验证，等待全部已接工作和最终回帖完成，再由固定签名的 root helper 切换。新 Bridge 在放开消息与安排之前，只读核验原 Session、cwd、ABI 和历史；只有本地复验成功才 finalized 并放开接收。提交前失败恢复同一整套旧版本；finalized 后只能继续收尾，不能回滚已接工作。账号、连接、群参与、项目选择和永久历史不属于代码回滚集合。设置的“关于与更新”与应用菜单共用更新入口；自动检查/下载默认开启，自动安装需明确开启。两种卸载方式都清理更新服务的 socket；发现类型或所有者异常时保留 App 并报告失败。具体所有权、失败行为和验收边界见 [软件更新合同](docs/design/software-updates.md)。
 
 公开发行只提供一个 `Mochi.dmg`。在 App 的“关于与更新”中统一卸载，原生确认默认保留数据，也可明确选择永久删除所有伙伴的连接、设置和工作记忆。卸载与更新共用已授权的 root 服务、空闲 admission 和安装 ownership；先等已接工作交付并关闭 App，再清理。保留数据后重装继续使用原数据；删除全部数据也清除系统运行账户和界面残留。部分失败保留准确剩余清单并重新打开 App。详情见 [`docs/product-architecture.md`](docs/product-architecture.md)。
 

@@ -1,6 +1,7 @@
-import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
+import { dependencyNotices } from "./dependency_notices.ts";
 
 interface BuildMetadata {
   inputs: Record<string, unknown>;
@@ -108,18 +109,12 @@ async function bundledPackages(inputs: readonly string[]): Promise<BundledPackag
 async function renderNotices(packages: readonly BundledPackage[]): Promise<string> {
   const bunLicense = (await readFile(bunLicensePath, "utf8")).trim();
   const sections = await Promise.all(packages.map(async (entry) => {
-    const files = (await readdir(entry.directory, { withFileTypes: true }))
-      .filter((item) => item.isFile() && /^(licen[cs]e|copying|notice)([._-].*)?$/i.test(item.name))
-      .map((item) => join(entry.directory, item.name))
-      .sort();
     // Pi's scoped runtime packages, including the composition runtime added in
     // newer releases, publish the same upstream MIT license but omit a file.
-    if (files.length === 0 && entry.name.startsWith("@earendil-works/")) files.push(piLicensePath);
-    if (files.length === 0 && entry.license === "MIT") files.push(mitLicensePath);
-    if (files.length === 0) throw new Error(`Bundled package has no distributable license text: ${entry.name}@${entry.version}`);
-    const texts = await Promise.all(files.map(async (path) =>
-      `${basename(path)}\n${(await readFile(path, "utf8")).trim()}`));
-    return `${entry.name}@${entry.version} (${entry.license})\n${"-".repeat(72)}\n${texts.join("\n\n")}`;
+    const fallback = entry.name.startsWith("@earendil-works/") ? piLicensePath
+      : entry.license === "MIT" ? mitLicensePath : undefined;
+    const text = await dependencyNotices(entry.directory, fallback);
+    return `${entry.name}@${entry.version} (${entry.license})\n${"-".repeat(72)}\n${text}`;
   }));
   return [
     "Mochi Runtime — Third-Party Notices",

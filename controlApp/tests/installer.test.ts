@@ -81,7 +81,7 @@ test("a release App requires its own Developer ID Team before root sees the pack
   expect(calls).toHaveLength(1);
   expect(scripts).toHaveLength(1);
   expect(scripts[0]).toContain(
-    `" developer-id ${TEAM}" with administrator privileges`,
+    `" developer-id ${TEAM} ${process.getuid!()}" with administrator privileges`,
   );
 });
 
@@ -98,7 +98,9 @@ test("development packages are an explicit trust mode, not a failed release chec
     "--strict",
     env.application,
   ]);
-  expect(scripts[0]).toContain('" development" with administrator privileges');
+  expect(scripts[0]).toContain(
+    `" development '' ${process.getuid!()}" with administrator privileges`,
+  );
   const failing = recorder();
   await expect(
     prepareProduct(
@@ -226,7 +228,12 @@ test.skipIf(process.platform !== "darwin")(
           env: { PATH: "/usr/bin:/bin:/usr/sbin:/sbin" },
         },
       );
-    const mismatch = setup(unsigned, "developer-id", TEAM);
+    const mismatch = setup(
+      unsigned,
+      "developer-id",
+      TEAM,
+      String(process.getuid!()),
+    );
     expect(mismatch.exitCode).toBe(65);
     expect(mismatch.stderr.toString()).toContain(`team ${TEAM}`);
     for (const invalid of [

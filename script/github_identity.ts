@@ -5,11 +5,13 @@ import {
   GITHUB_API_VERSION,
   GITHUB_INTEGRATION,
 } from "../src/github/integration.ts";
+import { loadGovernanceManifest } from "./github_governance.ts";
 
-const BOT_LOGIN = "mochi-companion[bot]";
+const governance = loadGovernanceManifest();
+const BOT_LOGIN = governance.identity.botLogin;
 const BOT_NAME = "Mochi Companion[bot]";
-const BOT_EMAIL = "325632710+mochi-companion[bot]@users.noreply.github.com";
-const REPOSITORY = "aha-labs-hq/mochi";
+const BOT_EMAIL = governance.identity.botCommitEmail;
+const REPOSITORY = governance.repository.slug;
 const KEYCHAIN_SERVICE = "app.mochi.github-authority";
 const KEYCHAIN_ACCOUNT = "maintainer";
 
@@ -159,7 +161,7 @@ function readAuthorityToken(value: unknown): string {
   if (
     data.version !== 1 ||
     actor.login !== BOT_LOGIN ||
-    repository.id !== 1_349_371_832 ||
+    repository.id !== governance.identity.maintainerRepositoryId ||
     repository.fullName !== REPOSITORY ||
     permissions.contents !== "write" ||
     permissions.metadata !== "read" ||

@@ -1,5 +1,6 @@
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { dependencyNotices } from "../../script/dependency_notices.ts";
 
 /** Shipped JS/CSS packages plus the embedded native Bun runtime. No network at build time. */
 export async function writeDesktopNotices(
@@ -31,11 +32,7 @@ export async function writeDesktopNotices(
     const metadata = JSON.parse(
       await readFile(join(directory, "package.json"), "utf8"),
     ) as { version: string };
-    const licenseFile = (await readdir(directory)).find((entry) =>
-      /^licen[sc]e(?:\.(?:txt|md))?$/i.test(entry),
-    );
-    if (!licenseFile) throw new Error(`Missing desktop license: ${name}`);
-    const license = await readFile(join(directory, licenseFile), "utf8");
+    const license = await dependencyNotices(directory);
     if (!metadata.version || !license.trim())
       throw new Error(`Missing desktop attribution: ${name}`);
     sections.push(`${name}@${metadata.version}\n${license}`);

@@ -4,7 +4,7 @@ umask 077
 
 SCRIPT_DIR="$(cd "$(/usr/bin/dirname "$0")" && pwd)"
 INSTALLATION_MANIFEST="$SCRIPT_DIR/installation.json"
-# Every path below is absolute; the console account may not be able to enter
+# Every path below is absolute; the recipient account may not be able to enter
 # the installer's own directory when commands run as that account.
 cd /
 # shellcheck source=installer/lifecycle.sh
@@ -16,23 +16,18 @@ RUNTIME_USER='_mochi'
 RUNTIME_GROUP='_mochi'
 RUNTIME_HOME="/Users/_mochi"
 RUNTIME_CWD="$RUNTIME_HOME/empty-workspace"
-CONSOLE_USER="$(/usr/bin/stat -f '%Su' /dev/console)"
-[[ "$CONSOLE_USER" != loginwindow ]] || { echo 'Mochi requires a signed-in macOS user' >&2; exit 1; }
-# A signed-in account outside the runtime policy is named, not mistaken for none.
-mochi_require_bridge_user "$INSTALLATION_MANIFEST" "$CONSOLE_USER"
-USER_ID="$(/usr/bin/id -u "$CONSOLE_USER")"
-USER_HOME="$(/usr/bin/dscl . -read "/Users/${CONSOLE_USER}" NFSHomeDirectory | /usr/bin/sed 's/^[^:]*: //')"
-[[ "$USER_HOME" == "/Users/${CONSOLE_USER}" ]] || {
-  echo 'Mochi requires the standard local macOS home directory' >&2
-  exit 1
+USER_ID="$(mochi_install_recipient "$INSTALLATION_MANIFEST" "${1:-}")" || {
+  echo 'Mochi installation recipient context is missing or invalid' >&2; exit 1;
 }
+RECIPIENT_USER="$(mochi_recipient_user "$INSTALLATION_MANIFEST" "$USER_ID")"
+USER_HOME="/Users/${RECIPIENT_USER}"
 MOCHI_CONSOLE_USER_HOME="$USER_HOME"
 MOCHI_RUNTIME_HOME="$RUNTIME_HOME"
 # One installation serves one account: the one its sudoers rule names. An
 # update or repair started from another account, including one reached by fast
 # user switching, stops here before anything changes.
 INSTALLED_FOR="$(mochi_installed_bridge_user "$INSTALLATION_MANIFEST")"
-[[ -z "$INSTALLED_FOR" || "$INSTALLED_FOR" == "$CONSOLE_USER" ]] || {
+[[ -z "$INSTALLED_FOR" || "$INSTALLED_FOR" == "$RECIPIENT_USER" ]] || {
   echo "Mochi is set up for the macOS account $INSTALLED_FOR; sign in as that account to update or repair it" >&2
   exit 1
 }
@@ -67,12 +62,12 @@ COMPONENTS_FINALIZED=false
 INSTALL_SUCCEEDED=false
 UPDATE_DAEMON_ADDED=false
 
-# Paths in the console account's home are created and changed as that account,
+# Paths in the recipient account's home are created and changed as that account,
 # so a symbolic link placed there can never redirect a root operation. The one
 # root change there, the journaled LaunchAgent rename, first enters and proves
 # its directory (mochi_enter_parent).
-as_console_user() {
-  /usr/bin/sudo -n -u "$CONSOLE_USER" -- "$@"
+as_recipient_user() {
+  /usr/bin/sudo -n -u "$RECIPIENT_USER" -- "$@"
 }
 
 launchagent_loaded() {
@@ -177,16 +172,16 @@ require_directory() {
 require_user_directory() {
   local path="$1"
   if [[ ! -e "$path" && ! -L "$path" ]]; then
-    as_console_user /bin/mkdir -m 700 "$path" || return 1
+    as_recipient_user /bin/mkdir -m 700 "$path" || return 1
   fi
-  require_directory "$path" "$CONSOLE_USER"
+  require_directory "$path" "$RECIPIENT_USER"
 }
 
 # A directory Mochi owns in the account's home, private to that account.
 prepare_user_directory() {
   local path="$1"
   require_user_directory "$path" || return 1
-  as_console_user /bin/chmod 700 "$path"
+  as_recipient_user /bin/chmod 700 "$path"
 }
 
 compare_semver() {
@@ -247,7 +242,7 @@ if launchagent_loaded; then SERVICE_WAS_LOADED=true; fi
 # removes the sudoers rule, the LaunchAgent and every component. With neither the
 # rule nor a loaded service the record describes data to keep, not an installation
 # to repair or update: there is no service to hand off from, and the update helper
-# checks the console account against that rule before anything else. Reopening
+# checks the recipient account against that rule before anything else. Reopening
 # Mochi then prepares afresh over the retained data.
 previous_installation_is_live() {
   [[ -n "$INSTALLED_FOR" || "$SERVICE_WAS_LOADED" == true ]]
@@ -298,7 +293,7 @@ if mochi_transaction_pending "$TRANSACTION_ROOT" || [[ -f "$UPDATE_HOLD" ]]; the
     exit 0
   fi
   if [[ -f "$UPDATE_HOLD" ]]; then
-    as_console_user /bin/rm -f "$STATUS" "$CONTROL_SOCKET"
+    as_recipient_user /bin/rm -f "$STATUS" "$CONTROL_SOCKET"
     /bin/launchctl bootstrap "gui/$USER_ID" "$PLIST"
     "$UPDATE_HELPER" --restored
     SERVICE_STOPPED=false
@@ -308,8 +303,8 @@ fi
 
 validate_previous_installation
 
-require_directory "$USER_HOME" "$CONSOLE_USER"
-require_directory "$USER_HOME/Library" "$CONSOLE_USER"
+require_directory "$USER_HOME" "$RECIPIENT_USER"
+require_directory "$USER_HOME/Library" "$RECIPIENT_USER"
 require_user_directory "$USER_HOME/Library/Application Support"
 require_user_directory "$USER_HOME/Library/Logs"
 require_user_directory "$USER_HOME/Library/LaunchAgents"
@@ -380,13 +375,13 @@ fi
 
 # Bridge owns the material root's access policy and establishes it at every
 # start. Only root can safely hand it the parent in world-writable `/Users/Shared/`.
-mochi_adopt_shared_directory /Users/Shared/mochi "$CONSOLE_USER"
+mochi_adopt_shared_directory /Users/Shared/mochi "$RECIPIENT_USER"
 
 PREPARED_SUDOERS="$(mochi_component_source_by_id "$INSTALLATION_MANIFEST" runtime-sudoers)"
 PREPARED_PLIST="$(mochi_component_source_by_id "$INSTALLATION_MANIFEST" launch-agent)"
 PREPARED_RECORD="$(mochi_component_source_by_id "$INSTALLATION_MANIFEST" installation-record)"
 /bin/mkdir -p "$(/usr/bin/dirname "$PREPARED_SUDOERS")"
-RUNTIME_SUDOERS="$(mochi_render_runtime_sudoers "$INSTALLATION_MANIFEST" "$CONSOLE_USER" "$STAGED_WORKER")"
+RUNTIME_SUDOERS="$(mochi_render_runtime_sudoers "$INSTALLATION_MANIFEST" "$RECIPIENT_USER" "$STAGED_WORKER")"
 /bin/echo "$RUNTIME_SUDOERS" > "$PREPARED_SUDOERS"
 
 /bin/cat > "$PREPARED_PLIST" <<PLIST
@@ -413,7 +408,7 @@ RUNTIME_SUDOERS="$(mochi_render_runtime_sudoers "$INSTALLATION_MANIFEST" "$CONSO
 PLIST
 /bin/cp "$INSTALLATION_MANIFEST" "$PREPARED_RECORD"
 /usr/sbin/chown root:wheel "$PREPARED_SUDOERS" "$PREPARED_RECORD"
-/usr/sbin/chown "$CONSOLE_USER:staff" "$PREPARED_PLIST"
+/usr/sbin/chown "$RECIPIENT_USER:staff" "$PREPARED_PLIST"
 /bin/chmod 440 "$PREPARED_SUDOERS"
 /bin/chmod 600 "$PREPARED_PLIST" "$PREPARED_RECORD"
 /usr/sbin/visudo -cf "$PREPARED_SUDOERS" >/dev/null
@@ -440,7 +435,7 @@ elif [[ -f "$OLD_INSTALLATION_RECORD" ]] && previous_installation_is_live; then
   # A repair may restore an offline service, but it never cancels accepted
   # work in a running one. Busy/unsupported admission fails before commit.
   SERVICE_STOPPED=true
-  "$UPDATE_HELPER" --repair
+  "$UPDATE_HELPER" --repair "$USER_ID"
 fi
 if [[ "$SERVICE_STOPPED" != true ]]; then
   /bin/launchctl bootout "gui/$USER_ID/app.mochi.bridge" >/dev/null 2>&1 || true
@@ -448,7 +443,7 @@ if [[ "$SERVICE_STOPPED" != true ]]; then
 fi
 
 mochi_commit_transaction "$INSTALLATION_MANIFEST" "$APPLICATION_COMMIT_MODE"
-as_console_user /bin/rm -f "$STATUS" "$CONTROL_SOCKET"
+as_recipient_user /bin/rm -f "$STATUS" "$CONTROL_SOCKET"
 /bin/launchctl bootstrap "gui/$USER_ID" "$PLIST"
 wait_for_status "$PRODUCT_VERSION" "$EXPECTED_BRIDGE_VERSION" \
   "$EXPECTED_STATUS_VERSION" "$EXPECTED_CONTROL_VERSION" || {

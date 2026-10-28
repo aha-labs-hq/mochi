@@ -19,23 +19,13 @@ mochi_load_contract "$INSTALLATION_MANIFEST" || exit 1
 RUNTIME_USER='_mochi'
 RUNTIME_GROUP='_mochi'
 MOCHI_RUNTIME_HOME="/Users/_mochi"
-CONSOLE_USER="$(/usr/bin/stat -f '%Su' /dev/console)"
-USER_ID=''
-if [[ "$CONSOLE_USER" != loginwindow ]] \
-  && mochi_require_bridge_user "$INSTALLATION_MANIFEST" "$CONSOLE_USER" 2>/dev/null; then
-  USER_ID="$(/usr/bin/id -u "$CONSOLE_USER" 2>/dev/null || true)"
-  MOCHI_CONSOLE_USER_HOME="$(/usr/bin/dscl . -read "/Users/${CONSOLE_USER}" NFSHomeDirectory 2>/dev/null \
-    | /usr/bin/sed 's/^[^:]*: //' || true)"
-fi
-if [[ -z "$MOCHI_CONSOLE_USER_HOME" \
-  || "$MOCHI_CONSOLE_USER_HOME" != "/Users/${CONSOLE_USER}" ]]; then
-  echo 'Mochi uninstall could not resolve the signed-in local user' >&2
-  exit 1
-fi
+USER_ID="${2:-}"
+RECIPIENT_USER="$(mochi_recipient_user "$INSTALLATION_MANIFEST" "$USER_ID")" || exit 1
+MOCHI_CONSOLE_USER_HOME="/Users/${RECIPIENT_USER}"
 # The account-scoped paths below are that account's; the installation is
 # removed only by the account its sudoers rule names.
 INSTALLED_FOR="$(mochi_installed_bridge_user "$INSTALLATION_MANIFEST")" || exit 1
-if [[ -n "$INSTALLED_FOR" && "$INSTALLED_FOR" != "$CONSOLE_USER" ]]; then
+if [[ -n "$INSTALLED_FOR" && "$INSTALLED_FOR" != "$RECIPIENT_USER" ]]; then
   echo "Mochi is set up for the macOS account $INSTALLED_FOR; sign in as that account and uninstall from Mochi" >&2
   exit 1
 fi
@@ -169,7 +159,7 @@ root_count="$(mochi_manifest_value "$INSTALLATION_MANIFEST" retainedRootCount)"
 root_index=0
 while [[ "$root_index" -lt "$root_count" ]]; do
   id="$(mochi_manifest_value "$INSTALLATION_MANIFEST" "retainedRoots.$root_index.id")"
-  if [[ "$id" == deployment-data ]]; then
+  if [[ "$id" == deployment-data || "$id" == update-socket ]]; then
     root_index=$((root_index + 1))
     continue
   fi
@@ -239,6 +229,10 @@ if [[ "$FAILURES" -gt 0 ]]; then
 fi
 
 /bin/rm -f "/Library/Application Support/Mochi/Installation/update-pending" || exit 1
+if ! mochi_remove_update_socket "$INSTALLATION_MANIFEST"; then
+  record_remaining update-socket 'launchd listener'
+  exit 1
+fi
 remove_path app "$(mochi_host_application_destination "$INSTALLATION_MANIFEST")"
 [[ "$FAILURES" -eq 0 ]] || exit 1
 /bin/rm -rf "$WORK_ROOT"

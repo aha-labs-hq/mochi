@@ -56,7 +56,7 @@ Bridge 已停止时，更新与同版修复共用离线交接：确认 launchd �
 
 首次 App 内标准管理员授权安装 socket 激活的 `app.mochi.update` LaunchDaemon。它按需工作，空闲后退出；实现复用现有受授权 package 注册路径，没有引入第二种服务注册流程。后续更新在原授权仍有效时复用服务。撤销权限、Login Items、标准用户、设备管理和换用户的行为必须实机验证，不能承诺任何 Mac 都永久免授权。
 
-请求只有 `status / install(candidateSha256) / cancel`。没有任意路径、shell、URL、产品或安装包参数。内核 audit token 绑定对端 PID/eUID；Security.framework 证明 Apple Developer ID、固定 Team、Mochi bundle ID 和 `/Applications/Mochi.app/Contents/MacOS/Mochi`。还要核对当前 console 用户与 sudoers 中原安装用户。
+请求只有 `status / install(candidateSha256) / cancel`。没有任意路径、shell、URL、产品或安装包参数。内核 audit token 绑定对端 PID/eUID；Security.framework 证明 Apple Developer ID、固定 Team、Mochi bundle ID 和 `/Applications/Mochi.app/Contents/MacOS/Mochi`。UID 必须与 sudoers 中原安装用户一致；后续 Bridge 连接、修复、卸载及重新打开 App 始终使用该 UID，切换当前 console 用户不改变目标。首次准备由原生 host 在授权前固定自己的 UID，经已验证的 root 私有 package 旁的身份记录传入，PackageKit 脚本不依赖自定义环境变量。
 
 helper 只从该用户固定私有 cache 拷贝 regular owned files，复制到 root-owned staging 后重新验 Ed25519、完整 SHA-256/size、版本/OS、App deep signature、Gatekeeper 与内嵌 Installer Team。只读挂载和拷贝后再次验 App。取得 idle lease 后、真正停服前再次从固定 HTTPS 源验证同一未撤回候选和不后退的 feed 身份。
 

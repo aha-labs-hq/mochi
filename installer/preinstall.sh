@@ -8,6 +8,9 @@ INSTALLATION_MANIFEST="$SCRIPT_DIR/installation.json"
 source "$SCRIPT_DIR/lifecycle.sh"
 mochi_require_contract "$INSTALLATION_MANIFEST"
 mochi_load_contract "$INSTALLATION_MANIFEST"
+mochi_install_recipient "$INSTALLATION_MANIFEST" "${1:-}" >/dev/null || {
+  echo 'Mochi installation recipient context is missing or invalid' >&2; exit 1;
+}
 PAYLOAD_ROOT="$(mochi_payload_root "$INSTALLATION_MANIFEST")"
 WORK_ROOT="$(mochi_work_root "$INSTALLATION_MANIFEST")"
 # PackageKit must not stage payload beneath replaceable system ancestors.

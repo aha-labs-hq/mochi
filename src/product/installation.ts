@@ -300,6 +300,11 @@ const RETAINED_ROOTS: readonly InstallationRetainedRoot[] = [
     path: "Library/Saved Application State/app.mochi.companion.savedState", cleanup: [],
     keepData: "remove", deleteAll: "remove",
   },
+  {
+    id: "update-socket", classification: "mutable", scope: "system",
+    path: UPDATE_SERVICE_SOCKET, cleanup: [],
+    keepData: "remove", deleteAll: "remove",
+  },
 ];
 
 const RUNTIME_SUDOERS: InstallationSudoers = Object.freeze({

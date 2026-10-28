@@ -433,6 +433,30 @@ mochi_remove_owned_path() (
   /bin/rm -rf "./${path##*/}"
 )
 
+# launchd keeps the listener alive until the helper boots out. Unlink only its
+# declared socket, after other cleanup succeeds, while the App can still recover.
+mochi_remove_update_socket() {
+  local manifest="$1" count index=0 path owner=0
+  count="$(mochi_manifest_value "$manifest" retainedRootCount)" || return 1
+  while [[ "$index" -lt "$count" ]]; do
+    if [[ "$(mochi_manifest_value "$manifest" "retainedRoots.$index.id")" == update-socket ]]; then
+      [[ "$(mochi_manifest_value "$manifest" "retainedRoots.$index.scope")" == system ]] || return 1
+      path="$(mochi_system_path "$(mochi_manifest_value "$manifest" "retainedRoots.$index.path")")" || return 1
+      [[ -e "$path" || -L "$path" ]] || return 0
+      if [[ "$MOCHI_INSTALL_TESTING" == 1 ]]; then owner="$(/usr/bin/id -u)"; fi
+      [[ -S "$path" && ! -L "$path" && "$(/usr/bin/stat -f '%u' "$path")" == "$owner" ]] || {
+        echo "Mochi update socket has an unexpected owner or type: $path" >&2; return 1;
+      }
+      mochi_remove_owned_path "$path" || return 1
+      [[ ! -e "$path" && ! -L "$path" ]]
+      return $?
+    fi
+    index=$((index + 1))
+  done
+  echo 'Mochi installation contract does not declare its update socket' >&2
+  return 1
+}
+
 mochi_boundary() {
   local label="$1"
   MOCHI_INSTALL_BOUNDARY_COUNT=$((MOCHI_INSTALL_BOUNDARY_COUNT + 1))
@@ -612,6 +636,53 @@ mochi_verify_host_application() {
     echo "Mochi host application failed verification: $application" >&2
     return 1
   }
+}
+
+# The App captures its UID before administrator authorization. PackageKit
+# supplies the original package path; no console state or ambient environment
+# is an account authority. Updates already have a root-owned authenticated request.
+mochi_install_recipient() {
+  local manifest="$1" package="$2" parent update recipient
+  # PackageKit reports /private/tmp package paths using macOS's /tmp alias.
+  case "$package" in /tmp/app.mochi.setup.*) package="/private$package" ;; esac
+  parent="$(mochi_parent "$package")" || return 1
+  if [[ "$parent" =~ ^/private/tmp/app[.]mochi[.]setup[.][A-Za-z0-9]{8}$ \
+    && "$package" == "$parent/Mochi-Setup.pkg" ]]; then
+    [[ -d "$parent" && ! -L "$parent" \
+      && "$(/usr/bin/stat -f '%u:%Lp' "$parent")" == 0:700 \
+      && -f "$package" && ! -L "$package" \
+      && "$(/usr/bin/stat -f '%u:%Lp' "$package")" == 0:600 \
+      && -f "$parent/recipient" && ! -L "$parent/recipient" \
+      && "$(/usr/bin/stat -f '%u:%Lp' "$parent/recipient")" == 0:600 ]] || return 1
+    recipient="$(/bin/cat "$parent/recipient")" || return 1
+  else
+    update="$(mochi_work_root "$manifest")/Update" || return 1
+    [[ "$package" == "$update/Mochi.app/Contents/Resources/Mochi-Setup.pkg" \
+      && -d "$update" && ! -L "$update" \
+      && "$(/usr/bin/stat -f '%u:%Lp' "$update")" == 0:700 \
+      && -f "$update/request.json" && ! -L "$update/request.json" \
+      && "$(/usr/bin/stat -f '%u:%Lp' "$update/request.json")" == 0:600 \
+      && "$(mochi_manifest_value "$update/request.json" version)" == "$(mochi_manifest_value "$manifest" productVersion)" \
+      && -z "$(mochi_manifest_value "$update/request.json" mode 2>/dev/null || true)" ]] || return 1
+    recipient="$(mochi_manifest_value "$update/request.json" uid)" || return 1
+  fi
+  mochi_recipient_user "$manifest" "$recipient" >/dev/null || return 1
+  printf '%s\n' "$recipient"
+}
+
+mochi_recipient_user() {
+  local manifest="$1" uid="$2" name home
+  [[ "$uid" =~ ^[1-9][0-9]{2,9}$ ]] && (( uid >= 501 && uid <= 4294967294 )) || {
+    echo 'Mochi requires the requesting App account' >&2; return 1;
+  }
+  name="$(/usr/bin/id -un "$uid")" || return 1
+  mochi_require_bridge_user "$manifest" "$name" || return 1
+  [[ "$(/usr/bin/id -u "$name")" == "$uid" ]] || return 1
+  home="$(/usr/bin/dscl . -read "/Users/${name}" NFSHomeDirectory | /usr/bin/sed 's/^[^:]*: //')" || return 1
+  [[ "$home" == "/Users/${name}" ]] || {
+    echo 'Mochi requires the standard local macOS home directory' >&2; return 1;
+  }
+  printf '%s\n' "$name"
 }
 
 # Only the root-owned update helper can prepare this source. Ordinary first

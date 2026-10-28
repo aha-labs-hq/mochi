@@ -58,6 +58,11 @@ ${INSTALLER_SIGNATURE_CHECK}
 source_package="$1"
 mode="$2"
 team="\${3:-}"
+recipient="\${4:-}"
+if [[ ! "$recipient" =~ ^[1-9][0-9]{2,9}$ ]] || (( recipient < 501 || recipient > 4294967294 )); then
+  echo "Mochi setup received an invalid recipient" >&2
+  exit 64
+fi
 if [[ "$mode" == development && -z "$team" ]]; then
   :
 elif [[ "$mode" == developer-id && "$team" =~ ^[A-Z0-9]{10}$ ]]; then
@@ -77,6 +82,9 @@ if [[ "$mode" == developer-id ]]; then
     exit ${PACKAGE_MISMATCH_STATUS}
   fi
 fi
+# PackageKit drops custom environment variables. Carry the native host's UID
+# beside the verified private package; package scripts prove both root owners.
+/usr/bin/printf '%s\\n' "$recipient" > "$work/recipient"
 /usr/sbin/installer -pkg "$package" -target /`;
 
 /** Authorization executes the same embedded package as before; its transaction owns installation. */
@@ -110,17 +118,23 @@ export async function prepareProduct(
   fail("product_preparation_failed");
 }
 
-export function installerScript(path: string, trust: PackageTrust): string {
+export function installerScript(
+  path: string,
+  trust: PackageTrust,
+  recipient = process.getuid!(),
+): string {
   if (/[\r\n\0]/.test(path)) fail("component_contract_unavailable");
+  if (!Number.isInteger(recipient) || recipient < 501 || recipient > 4294967294)
+    fail("component_contract_unavailable");
   const trustArguments =
     trust.mode === "developer-id"
       ? `developer-id ${validTeam(trust.teamId)}`
-      : "development";
+      : "development ''";
   return [
     "with timeout of 600 seconds",
     `set setupScript to ${appleScriptString(PRIVILEGED_SETUP_SCRIPT)}`,
     `set packagePath to ${appleScriptString(path)}`,
-    `do shell script "/usr/bin/env -i HOME=/var/root USER=root LOGNAME=root PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 /bin/bash -c " & quoted form of setupScript & " mochi-setup " & quoted form of packagePath & " ${trustArguments}" with administrator privileges with prompt "Mochi 需要准备安全的后台组件。"`,
+    `do shell script "/usr/bin/env -i HOME=/var/root USER=root LOGNAME=root PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 /bin/bash -c " & quoted form of setupScript & " mochi-setup " & quoted form of packagePath & " ${trustArguments} ${recipient}" with administrator privileges with prompt "Mochi 需要准备安全的后台组件。"`,
     "end timeout",
   ].join("\n");
 }

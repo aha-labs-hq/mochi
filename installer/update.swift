@@ -130,9 +130,9 @@ func privateDirectory(_ path: String) throws {
 func account(_ uid: uid_t, requireInstallation: Bool = true) throws -> (String, String) {
   accountLock.lock()
   defer { accountLock.unlock() }
-  var console = stat()
-  try require(
-    lstat("/dev/console", &console) == 0 && console.st_uid == uid && uid >= 501, .untrusted)
+  // uid comes from the signed App's audit token, or its root-authorized setup.
+  // A console switch cannot retarget an accepted lifecycle operation.
+  try require(uid >= 501 && uid < UInt32.max, .untrusted)
   guard let user = getpwuid(uid) else { throw UpdateError.untrusted }
   let name = String(cString: user.pointee.pw_name)
   let home = String(cString: user.pointee.pw_dir)
@@ -299,15 +299,13 @@ func readLine(_ fd: Int32) throws -> Data {
   }
   throw UpdateError.invalid
 }
-func bridge(_ home: String, _ extra: [String: Any]) throws -> [String: Any] {
+func bridge(_ home: String, uid: uid_t, _ extra: [String: Any]) throws -> [String: Any] {
   var request: [String: Any] = ["lifecycle": "update", "version": 1]
   extra.forEach { request[$0.key] = $0.value }
   // Installed and development deployments share this user's control endpoint.
   // A development process must never be stopped to install a public update.
-  var console = stat()
-  try require(lstat("/dev/console", &console) == 0, .untrusted)
   let result = try socketRequest(
-    home + "/Library/Application Support/Mochi/control.sock", request, uid: console.st_uid)
+    home + "/Library/Application Support/Mochi/control.sock", request, uid: uid)
   try require(result["version"] as? Int == 1 && result["lifecycle"] as? String == "update")
   return result
 }
@@ -451,14 +449,14 @@ func handoff(repair: Bool = false, uninstall: Bool = false) throws {
   let loaded = !(try run("/bin/launchctl", ["print", job], allowed: [0, 113])).isEmpty
   var stopped = false
   defer {
-    if let lease, !stopped { _ = try? bridge(home, ["command": "release", "lease": lease]) }
+    if let lease, !stopped { _ = try? bridge(home, uid: uid, ["command": "release", "lease": lease]) }
   }
   if loaded {
     let deadline = Date().addingTimeInterval(repair ? 2 : 7200)
     while Date() < deadline {
       if fm.fileExists(atPath: root + "/cancel") { throw UpdateError.cancelled }
       let response = try bridge(
-        home, ["command": "acquire", "targetVersion": version, "sha256": sha])
+        home, uid: uid, ["command": "acquire", "targetVersion": version, "sha256": sha])
       if response["ok"] as? Bool == true {
         lease = response["lease"] as? String
         break
@@ -468,7 +466,7 @@ func handoff(repair: Bool = false, uninstall: Bool = false) throws {
     }
     try require(lease != nil, .busy)
     if !uninstall {
-      let health = try bridge(home, ["command": "health"])
+      let health = try bridge(home, uid: uid, ["command": "health"])
       try require(
         health["ok"] as? Bool == true && health["initialized"] as? Bool == true, .healthFailed)
       r["previousFailures"] = health["failures"] ?? []
@@ -491,7 +489,7 @@ func handoff(repair: Bool = false, uninstall: Bool = false) throws {
   if !repair { try waitForApp(pid) }
   _ = try account(uid, requireInstallation: !uninstall)
   if let lease {
-    let stop = try bridge(home, ["command": "stop", "lease": lease])
+    let stop = try bridge(home, uid: uid, ["command": "stop", "lease": lease])
     try require(stop["ok"] as? Bool == true, .shutdownFailed)
     stopped = true
     _ = try run("/bin/launchctl", ["bootout", job], allowed: [0, 3, 113])
@@ -521,7 +519,7 @@ func health(restoring: Bool = false) throws {
   try phase(restoring ? "restoring" : "verifying")
   let deadline = Date().addingTimeInterval(120)
   while Date() < deadline {
-    if let current = try? bridge(home, ["command": "health"]), current["ok"] as? Bool == true,
+    if let current = try? bridge(home, uid: uid, ["command": "health"]), current["ok"] as? Bool == true,
       current["initialized"] as? Bool == true,
       current["productVersion"] as? String == r[restoring ? "previousVersion" : "version"]
         as? String
@@ -557,7 +555,7 @@ func releaseHold(restored: Bool) throws {
 }
 // Same-version repair uses the existing package and the same idle/health
 // handshake. It does not need a second signing or component lifecycle.
-func prepareRepair() throws {
+func prepareRepair(uid: uid_t) throws {
   let fd = open(
     UpdateConfiguration.workRoot + "/update.lock", O_WRONLY | O_CREAT | O_NOFOLLOW, 0o600)
   try require(fd >= 0)
@@ -567,9 +565,7 @@ func prepareRepair() throws {
   try require(
     !fm.fileExists(atPath: holdPath) && !transactionPending(),
     .recoveryRequired)
-  var console = stat()
-  try require(lstat("/dev/console", &console) == 0)
-  _ = try account(console.st_uid)
+  _ = try account(uid)
   let version = UpdateConfiguration.productVersion
   try verifyApp(application, version: version)
   if fm.fileExists(atPath: root + "/cancel") { try fm.removeItem(atPath: root + "/cancel") }
@@ -577,7 +573,7 @@ func prepareRepair() throws {
     [
       "version": version, "mode": "repair",
       "sha256": try digest(application + "/Contents/Resources/Mochi-Setup.pkg"),
-      "uid": console.st_uid, "pid": 0,
+      "uid": uid, "pid": 0,
     ], requestPath)
   do {
     try handoff(repair: true)
@@ -790,7 +786,7 @@ func uninstall(uid: uid_t, pid: pid_t, policy: String) throws {
     // consent. asuser changes that session, not root credentials; only the
     // already verified, root-staged package script is executed.
     _ = try run("/bin/launchctl", ["asuser", String(uid), "/bin/bash",
-      root + "/Uninstall/Mochi-component.pkg/Scripts/uninstall", policy], timeout: 600)
+      root + "/Uninstall/Mochi-component.pkg/Scripts/uninstall", policy, String(uid)], timeout: 600)
   } catch {
     if fm.fileExists(atPath: holdPath) {
       try? fm.removeItem(atPath: holdPath)

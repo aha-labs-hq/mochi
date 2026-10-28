@@ -48,7 +48,6 @@ function SourceLink({ inMenu = false }: { inMenu?: boolean }) {
     >
       <BrandMark name="github" className="size-[18px] shrink-0" />
       GitHub
-      <span className="text-caption font-normal text-muted">开源</span>
     </a>
   );
 }

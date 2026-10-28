@@ -30,6 +30,7 @@ test("the product adapter owns both native version keys from the product version
       "MacOS/bspatch",
       "MacOS/zig-zstd",
       "Resources/uninstall",
+      "Resources/AppIcon.icns",
       "Resources/main.js",
       "Info.plist",
     ]) {
@@ -49,6 +50,11 @@ test("the product adapter owns both native version keys from the product version
         },
       ),
     ).toEqual({ application, runtimeVersion: "1.4.0" });
+    expect(
+      await Bun.file(
+        join(application, "Contents/Resources/AppIcon.icns"),
+      ).exists(),
+    ).toBe(false);
     for (const key of ["CFBundleShortVersionString", "CFBundleVersion"]) {
       expect(commands.filter((args) => args[2] === key)).toEqual([
         [
@@ -76,6 +82,7 @@ test("SDK layout drift stops assembly before adapting its delivery lifecycle", a
       "MacOS/bspatch",
       "MacOS/zig-zstd",
       "Resources/uninstall",
+      "Resources/AppIcon.icns",
       "Resources/main.js",
       "Info.plist",
     ]) {

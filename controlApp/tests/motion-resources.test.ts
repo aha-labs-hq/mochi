@@ -43,8 +43,8 @@ test("larger stages are losslessly paged within the unchanged two-bitmap budget"
   });
   expect(atlasLayout(768, 768, 40).bytes).toBe(18 * 1024 * 1024);
   expect(() => atlasLayout(4096, 4096, 40)).toThrow();
-  expect(atlasFilename("Actor", 1, 0)).toBe("Actor.atlas.png");
-  expect(atlasFilename("Actor", 5, 3)).toBe("Actor.atlas.3.png");
+  expect(atlasFilename("Actor", 1, 0)).toBe("Actor.atlas.webp");
+  expect(atlasFilename("Actor", 5, 3)).toBe("Actor.atlas.3.webp");
   const pool = new BitmapBudget(92 * 1024 * 1024);
   const bytes = 32 * 1024 * 1024;
   const closed: string[] = [];

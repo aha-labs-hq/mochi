@@ -28,6 +28,8 @@ Start from [`release/notes.example.json`](../release/notes.example.json), review
 
 ## Produce one candidate
 
+The component package uses `pkgbuild --compression latest` with the canonical minimum macOS version (`MINIMUM_MACOS_VERSION`), so Apple selects a compression format supported by every eligible recipient. Payload inventory, bytes, modes and scripts still pass the same expansion checks; compression never changes installer ownership or signatures.
+
 The producer sets its build umask to `022`, independently of the operator's shell. Its temporary and candidate roots remain private, and it explicitly protects final artifacts. Copied resources and the App's embedded package receive mode `0644` (directories `0755`) without changing their private inputs. Packaged directories must be searchable and resources readable by every recipient account; group/world writes and special permission bits are rejected before package signing and again after package expansion. A private build shell or a reused build file must not silently produce root-only runtime resources.
 
 ```bash

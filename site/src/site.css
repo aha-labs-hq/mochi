@@ -23,8 +23,7 @@
   --text-caption: 0.8125rem;
   --text-caption--line-height: 1.6;
   --radius-card: 20px;
-  --shadow-card:
-    0 1px 2px #0000000a, 0 12px 32px -8px #00000014, 0 40px 80px -24px #0000001a;
+  --shadow-card: 0 2px 6px #24242804, 0 18px 50px -18px #24242812;
   --ease-settle: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -157,7 +156,7 @@
 
 /* The hero's still Mochi waits for the scene to settle, with the same
    fallback should the script never arrive. */
-.js [data-hero-stage]:not([data-scene="settled"]) [data-still] {
+.js [data-hero-stage][data-scene="waiting"] [data-still] {
   visibility: hidden;
   animation: transcript-fallback 0s 3s forwards;
 }
@@ -169,58 +168,92 @@
   backdrop-filter: none;
 }
 
-/* A morning's questions pile up one after another; three are named. */
-.js [data-noise] [data-bubble] {
-  opacity: 0;
-  translate: 0 16px;
-  transition:
-    opacity 520ms var(--ease-settle),
-    translate 520ms var(--ease-settle);
-  transition-delay: calc(var(--i) * 110ms);
-}
-.js [data-noise][data-shown] [data-bubble] {
-  opacity: 1;
-  translate: 0 0;
-}
-.js [data-noise] [data-tag] {
-  opacity: 0;
-  scale: 0.8;
-  transition:
-    opacity 360ms var(--ease-settle),
-    scale 360ms var(--ease-settle);
-  transition-delay: 1300ms;
-}
-.js [data-noise][data-shown] [data-tag] {
-  opacity: 1;
-  scale: 1;
-}
-
-/* Waiting takes as long as it looks: the slow bar crawls, the fast one lands. */
-[data-bar] {
-  width: max(6px, calc(var(--share) * 100%));
-}
-.js [data-observe] [data-bar] {
-  transition: width var(--duration) cubic-bezier(0.4, 0, 0.6, 1) 300ms;
-}
-.js [data-observe]:not([data-shown]) [data-bar] {
-  width: 6px;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .js [data-noise] [data-bubble],
-  .js [data-noise] [data-tag],
-  .js [data-observe] [data-bar] {
-    opacity: 1;
-    translate: none;
-    scale: none;
-    transition: none;
-  }
-  .js [data-observe]:not([data-shown]) [data-bar] {
-    width: max(6px, calc(var(--share) * 100%));
-  }
   .js [data-reveal] {
     opacity: 1;
     translate: none;
     transition: none;
   }
+}
+
+/* The site keeps the companion's paper-and-blue palette. Whitespace and
+   surfaces, rather than rules, carry the hierarchy. */
+.section-title {
+  font-size: clamp(1.75rem, 1.25rem + 1.6vw, 2.625rem);
+  line-height: 1.45;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.home-hero {
+  padding-block: 1.5rem 4rem;
+}
+.hero-layout {
+  display: grid;
+  align-items: center;
+  gap: 1rem 3rem;
+}
+.hero-copy {
+  padding-block: 1rem;
+}
+.hero-title {
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 3.25rem);
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.hero-description {
+  max-width: 26em;
+  margin-top: 1.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.9;
+  color: var(--color-muted);
+}
+.hero-example {
+  min-width: 0;
+}
+.context-section {
+  background: color-mix(in srgb, var(--color-note) 55%, var(--color-surface));
+}
+.trust-grid {
+  display: grid;
+  gap: 2.5rem 4rem;
+  margin-top: 3.5rem;
+}
+.closing-section {
+  background: var(--color-note);
+}
+@media (min-width: 768px) {
+  .home-hero {
+    padding-block: 2rem 6rem;
+  }
+  .hero-layout {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  }
+  .hero-title {
+    font-size: clamp(1.75rem, 0.75rem + 2.6vw, 3.125rem);
+  }
+  .trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .hero-copy {
+    padding-bottom: 2rem;
+  }
+  .hero-layout {
+    gap: 4rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-hero-stage] [data-still] {
+    visibility: visible;
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* Anchor arrival accounts for the section's generous top padding. */
+.site-section {
+  scroll-margin-top: -4rem;
 }

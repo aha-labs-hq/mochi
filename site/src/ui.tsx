@@ -130,25 +130,6 @@ export function Phrases({ text }: { text: string }) {
   ));
 }
 
-/** Section wayfinding: a number in the brand face and what the section is. */
-export function Kicker({
-  index,
-  children,
-}: {
-  index: string;
-  children: ReactNode;
-}) {
-  return (
-    <p className="mb-6 flex items-baseline gap-3 text-small text-muted md:mb-8">
-      <span className="font-brand font-medium text-ink tabular-nums">
-        {index}
-      </span>
-      <span className="h-px w-8 translate-y-[-4px] bg-hairline" aria-hidden />
-      <span>{children}</span>
-    </p>
-  );
-}
-
 export function Section({
   id,
   className,
@@ -164,7 +145,7 @@ export function Section({
     <section
       id={id}
       aria-labelledby={labelledBy}
-      className={cn("border-t border-hairline py-24 md:py-36", className)}
+      className={cn("site-section py-20 md:py-28", className)}
     >
       <div className="site-container">{children}</div>
     </section>

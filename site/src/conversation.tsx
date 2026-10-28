@@ -181,7 +181,7 @@ export function useEvidence(onToggle?: (open: boolean) => void) {
   return { inspect, view };
 }
 
-export type Playback = "none" | "in-view" | "on-cue";
+export type Playback = "none" | "in-view";
 
 /**
  * One thread with optional playback. Server and first client render show the
@@ -191,15 +191,12 @@ export type Playback = "none" | "in-view" | "on-cue";
 export function Conversation({
   thread,
   playback,
-  cue = false,
   scroll = false,
   className,
   children,
 }: {
   thread: Thread;
   playback: Playback;
-  /** For `on-cue` playback: the moment the scene hands over to the talk. */
-  cue?: boolean;
   /** A fixed-height panel scrolls its own history. */
   scroll?: boolean;
   className?: string;
@@ -251,25 +248,6 @@ export function Conversation({
       controller.current = null;
     };
   }, [typing, playback, scroll]);
-
-  // A cued thread also waits to be seen: the hero's card sits at the fold.
-  const [seen, setSeen] = useState(false);
-  useEffect(() => {
-    if (playback !== "on-cue") return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        observer.disconnect();
-        setSeen(true);
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(history.current!);
-    return () => observer.disconnect();
-  }, [playback]);
-  useEffect(() => {
-    if (cue && seen && typing) controller.current?.start();
-  }, [cue, seen, typing]);
 
   // Only a panel that scrolls its own history can be taken over by reading;
   // elsewhere the wheel belongs to the page.

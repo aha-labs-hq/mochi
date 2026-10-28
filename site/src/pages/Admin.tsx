@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import governance from "../../../.github/governance.json";
 import { FEISHU_REQUESTABLE_SCOPES } from "../../../src/lark/permissions.ts";
 import { PENDING, supportText, useSite } from "../context.ts";
 import { Shell } from "../layout.tsx";
@@ -25,19 +24,15 @@ for (const scope of FEISHU_REQUESTABLE_SCOPES)
 /* GitHub shows the App's registered permissions on its installation page. */
 const githubWords: Record<string, [string, string]> = {
   metadata: ["读", "仓库名称、所属组织等基本信息"],
-  contents: ["读写", "读取代码、提交和发布记录；只读"],
+  contents: ["读", "读取代码、提交和发布记录；只读"],
   issues: ["读写", "读取 Issue；有人明确交代时创建、修改、指派或评论"],
-  pull_requests: ["读写", "读取 PR 和评审；只读"],
+  pull_requests: ["读", "读取 PR 和评审；只读"],
   checks: ["读", "读取检查结果"],
   statuses: ["读", "读取提交状态"],
   actions: ["读", "读取 Actions 的运行情况"],
 };
-const githubPermissions = Object.entries(
-  governance.identity.requiredRepositoryPermissions,
-);
-for (const [permission] of githubPermissions)
-  if (!githubWords[permission])
-    throw new Error(`No plain words for GitHub permission ${permission}`);
+// The customer App is independent of the private repository-maintenance App.
+const githubPermissions = Object.keys(githubWords);
 
 function Part({
   id,
@@ -49,10 +44,7 @@ function Part({
   children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      className="site-grid gap-y-6 border-t border-hairline py-12 md:py-16"
-    >
+    <section id={id} className="site-grid gap-y-6 py-10 md:py-14">
       <h2 className="col-span-4 text-title font-semibold md:col-span-4">
         {title}
       </h2>
@@ -115,9 +107,7 @@ export function Admin() {
           <p className="mb-5 text-small text-muted">
             写给飞书管理员与 GitHub 组织所有者
           </p>
-          <h1 className="phrase text-[34px] leading-[44px] font-semibold tracking-[-0.02em] md:text-[48px] md:leading-[60px]">
-            给管理员的说明
-          </h1>
+          <h1 className="phrase section-title">给管理员的说明</h1>
           <p className="mt-6 text-lead text-muted">
             团队里有人想把麻薯请进飞书群，需要你批准。这一页说明它会申请哪些权限、数据去哪里、怎么撤销，读完就能判断。
           </p>
@@ -155,8 +145,8 @@ export function Admin() {
             会列出这个 App 注册的全部权限：
           </p>
           <Table
-            head={["权限", "GitHub 显示", "Mochi 产品实际用来做什么"]}
-            rows={githubPermissions.map(([permission]) => [
+            head={["权限", "访问级别", "用途"]}
+            rows={githubPermissions.map((permission) => [
               code(permission),
               githubWords[permission]![0],
               githubWords[permission]![1],
@@ -165,11 +155,9 @@ export function Admin() {
           <ul className="mt-6 list-disc space-y-2 pl-5 marker:text-muted">
             <li>Mochi 产品只读代码和 PR，唯一会写的是 Issue。</li>
             <li>
-              安装页显示代码和 PR 的读写，是因为同一个 App 还用于维护 Mochi
-              自己的代码仓库，那里的维护流程要提交代码、创建 PR。GitHub 只按 App
-              列出权限，不区分用途。代码和 PR 的写入令牌只为 Mochi
-              自己的仓库签发；对你们的组织，Mochi 授权服务只签发 Issue
-              写入令牌。签发令牌用的 App 私钥由授权服务持有，不在成员的 Mac 上。
+              客户使用的 Mochi Companion 与维护 Mochi 自身源码的私有 App
+              完全分开。Mochi Companion 不申请代码和 PR 写入权限。签发 Issue
+              临时令牌的私钥由授权服务持有，不在成员的 Mac 上。
             </li>
             <li>
               安装时可以只选择允许访问的仓库；成员还要在 Mochi

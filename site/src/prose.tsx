@@ -9,15 +9,9 @@ const routes: Record<string, string> = {
 };
 
 const components: Components = {
-  h1: ({ children }) => (
-    <h1 className="phrase text-[32px] leading-[42px] font-semibold tracking-[-0.015em] md:text-[40px] md:leading-[52px]">
-      {children}
-    </h1>
-  ),
+  h1: ({ children }) => <h1 className="phrase section-title">{children}</h1>,
   h2: ({ children }) => (
-    <h2 className="mt-14 mb-4 border-t border-hairline pt-8 text-title font-semibold">
-      {children}
-    </h2>
+    <h2 className="mt-14 mb-4 text-title font-semibold">{children}</h2>
   ),
   h3: ({ children }) => (
     <h3 className="mt-8 mb-3 text-[17px] leading-7 font-semibold">
@@ -64,7 +58,7 @@ const components: Components = {
 /** Long-form reading for the published user documents. */
 export function Prose({ markdown }: { markdown: string }) {
   return (
-    <div className="text-[16px] leading-[30px] [&>h1:first-child]:mb-8">
+    <div className="text-base leading-[1.9] [&>h1:first-child]:mb-8">
       <Markdown remarkPlugins={[remarkGfm]} components={components}>
         {markdown}
       </Markdown>

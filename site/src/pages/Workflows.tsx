@@ -249,7 +249,7 @@ export function Workflow({ slug }: { slug: string }) {
   return (
     <Reading>
       <Prose markdown={workflow.markdown} />
-      <section className="mt-14 border-t border-hairline pt-8">
+      <section className="mt-14 pt-8">
         <h2 className="mb-4 text-title font-semibold">带一件真实的事来试试</h2>
         <p className="mb-6 text-muted">
           从你们最近反复解释的一个问题，或一件讨论后没有接续的工作开始。
@@ -274,10 +274,7 @@ export function Workflows() {
     <Reading>
       <Prose markdown={workflowsIntro} />
       {workflows.map((workflow) => (
-        <section
-          key={workflow.slug}
-          className="mt-10 border-t border-hairline pt-8"
-        >
+        <section key={workflow.slug} className="mt-10 pt-8">
           <h2 className="mb-4 text-title font-semibold">
             <a
               className="text-primary underline underline-offset-4"

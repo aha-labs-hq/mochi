@@ -1,6 +1,6 @@
 {
   "name": "mochi",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -47,9 +47,10 @@
     "governance:audit": "bun run script/github_governance.ts audit",
     "governance:apply": "bun run script/github_governance.ts apply",
     "governance:retire-labels": "bun run script/github_governance.ts retire-labels",
-    "github:identity:types": "wrangler types identity/worker-configuration.d.ts --config identity/wrangler.jsonc",
+    "github:identity:types": "wrangler types identity/worker-configuration.d.ts --config identity/wrangler.jsonc && wrangler types identity/maintainer-configuration.d.ts --env-interface MaintainerEnv --config identity/maintainer.wrangler.jsonc",
     "github:identity:check": "bun run github:identity:types && tsc --noEmit -p identity/tsconfig.json && bun test ./identity/test",
     "github:identity:deploy": "XDG_CONFIG_HOME=\"$HOME/.config/aha-labs\" wrangler deploy --config identity/wrangler.jsonc",
+    "github:maintainer:deploy": "XDG_CONFIG_HOME=\"$HOME/.config/aha-labs\" wrangler deploy --config identity/maintainer.wrangler.jsonc",
     "github:commit": "bun run script/github_identity.ts commit",
     "github:propose": "bun run script/github_identity.ts propose",
     "github:merge": "bun run script/github_merge.ts",
@@ -100,7 +101,8 @@
   "patchedDependencies": {
     "@earendil-works/pi-ai@1.1.0": "patches/@earendil-works%2Fpi-ai@1.1.0.patch",
     "@earendil-works/pi-coding-agent@1.1.0": "patches/@earendil-works%2Fpi-coding-agent@1.1.0.patch",
-    "node-forge@github:digitalbazaar/forge#7232404": "patches/node-forge@github%3Adigitalbazaar%2Fforge#7232404.patch"
+    "node-forge@github:digitalbazaar/forge#7232404": "patches/node-forge@github%3Adigitalbazaar%2Fforge#7232404.patch",
+    "@anthropic-ai/sandbox-runtime@0.0.77": "patches/@anthropic-ai%2Fsandbox-runtime@0.0.77.patch"
   },
   "overrides": {
     "typebox": "1.3.34",

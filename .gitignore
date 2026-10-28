@@ -18,6 +18,7 @@ playwright-report/
 .env.*
 .dev.vars*
 identity/worker-configuration.d.ts
+identity/maintainer-configuration.d.ts
 *.key
 *.p12
 *.pem

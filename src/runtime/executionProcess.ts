@@ -10,10 +10,16 @@ export async function executionProcess(options: {
   timeoutMilliseconds: number;
   detached: boolean;
   onData?: (data: Buffer) => void;
+  combineOutput?: boolean;
+  /** The child cannot execute its command until its owner acknowledges its group. */
+  admit?: (pid: number) => Promise<void>;
 }): Promise<{ exitCode: number | null; stdout: Buffer; stderr: Buffer }> {
   options.signal?.throwIfAborted();
   return new Promise((resolve, reject) => {
-    const child = spawn(options.command[0]!, options.command.slice(1), {
+    const command = options.admit ? ["/bin/bash", "--noprofile", "--norc", "-c",
+      'IFS= read -r permit && [ "$permit" = start ] || exit 125; exec "$@"',
+      "mochi-execution-gate", ...options.command] : options.command;
+    const child = spawn(command[0]!, command.slice(1), {
       cwd: options.cwd, env: options.env, detached: options.detached,
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -41,10 +47,15 @@ export async function executionProcess(options: {
         else target.push(data);
       } catch (error) { stop(error as Error); }
     };
-    child.stdout.on("data", (data: Buffer) => receive(stdout, data));
-    child.stderr.on("data", (data: Buffer) => receive(stderr, data));
-    child.stdin.on("error", (error) => { if ((error as NodeJS.ErrnoException).code !== "EPIPE") stop(error); });
-    child.stdin.end(options.input);
+    child.stdout!.on("data", (data: Buffer) => receive(stdout, data));
+    child.stderr!.on("data", (data: Buffer) => receive(options.combineOutput ? stdout : stderr, data));
+    child.stdin!.on("error", (error) => { if ((error as NodeJS.ErrnoException).code !== "EPIPE") stop(error); });
+    if (options.admit && child.pid) {
+      void options.admit(child.pid).then(() => {
+        if (!failure) child.stdin!.end(`start\n${options.input ?? ""}`);
+        else child.stdin!.end();
+      }, (error: Error) => { child.stdin!.end(); stop(error); });
+    } else child.stdin!.end(options.input);
     child.on("error", (error) => { failure ??= error; });
     // Reap background children as soon as the command exits, before waiting for their pipes.
     child.on("exit", () => { if (options.detached) kill(); });

@@ -16,7 +16,7 @@ Pi 1.1.0 的 SDK 文档声明默认工具是 `read/bash/edit/write`，并提供�
 | --- | --- | --- |
 | 理解委托及来源 | `messageEvidence.ts`、`runtime/instructions.ts` | 当前请求、引用与背景分开；背景不产生授权。每个回合写明群、时间和发言人，见[上下文与出处](#上下文与出处)。 |
 | 发现动作 | Pi 实际注册的工具 schema | 不维护第二份可用/不可用能力目录，不按任务名称分派。 |
-| 通用执行与联网 | `runtime/execution.ts`、`executionRunner.ts`、`webResearch.ts` | 提供 Shell、curl、系统工具与打包的 Bun；`web_search` 定位公开来源，`web_fetch` 读取公开正文，所有请求仍在本次 turn 的沙箱代理内。 |
+| 通用执行与联网 | `runtime/execution.ts`、`executionSupervisor.ts`、`executionRunner.ts`、`webResearch.ts` | 提供 Shell、curl、系统工具与打包的 Bun；`web_search` 定位公开来源，`web_fetch` 读取公开正文，所有请求仍在本次 turn 的沙箱代理内。 |
 | 已授权项目工作 | `connectors/github/`、GitHub connection 与 Issue workflow | 已迁移：GitHub 与飞书注册在同一个 Broker，模型只看到四个连接器工具。已选仓库与当前人类授权的绑定不变，凭据仍不进入执行环境。 |
 | 持续推进 | Pi AgentSession | 同一永久 Session 的工具循环、steer 与原生压缩；宿主不重放任务。 |
 | 交付与可见反馈 | 自然语言结果、`messageFeedback.ts`、Issue workflow | 操作结果与整个请求是否完成分开，不把回合结束当作任务成功。 |
@@ -31,8 +31,11 @@ Pi 1.1.0 的 SDK 文档声明默认工具是 `read/bash/edit/write`，并提供�
 - Clash Verge/mihomo、Surge、sing-box 等代理的 fake-IP（TUN/增强）模式把所有域名解析到 198.18.0.0/15，本机看不到真实目的地；代理之后按自己的规则直连局域网或经远端节点访问其本机。准入阶段一旦看到 fake-IP 应答就拒绝：bash 结果附加说明，`web_search`/`web_fetch` 在本 turn 内直接失败并返回同一说明——本 turn 无法联网研究，需由 Mac 所有者把代理 DNS 改为真实 IP 模式（mihomo `dns.enhanced-mode: redir-host`）或关闭 TUN/增强模式；Mochi 不修改代理设置。worker 日志每 turn 记录一次 `runtime.execution.fake_ip_refused`（含主机名）。用独立 DoH 取得真实地址再按 IP 拨号的方案不采用：它要把每个访问的主机名交给第三方解析服务，大陆与海外可用的端点不同，按 IP 拨号会绕过代理按域名的分流，而开启嗅探并覆盖目的地的代理仍会按域名重新解析。同一嗅探覆盖在真实 IP 的 TUN 模式下也会让最终目的地偏离已核验地址，这是剩余风险。
 - sandbox-runtime 的代理与策略是进程级单例：`reset` 后保留上一 turn 的策略却没有代理，从未初始化时则不限网络与读取。TurnExecution 以进程内租约保证同一时刻只有一个 turn 持有它，第二个 turn 在触碰执行根目录前就失败；每条命令包装前核对单例仍持有本 turn 的配置对象与代理端口，否则失败关闭。
 - 公开网络不是认证浏览器或搜索服务保证。Agent 可以读取公开网页、API 和公开搜索页面，遇到登录墙、限流、机器人校验或需要网页交互时必须如实报告。执行环境不继承浏览器登录态，技术可执行不代替外部写入授权。
+- `executionSupervisor.ts` 独占一次工具调用的进程组与清理。它是同一签名程序的受信入口，只接收最小环境与闭合内部请求，不运行模型代码、不读账号或 Session。命令先等待私有管道；worker 记录精确进程组并通过独立 IPC 确认后才执行。worker 死亡使 IPC 断开，监督进程清理整组；监督进程死亡由仍在的 worker 清理已确认进程组。未确认的命令不可能执行。不存在按 UID 或名称扫描、清理其他 Bot 的路径。
+- sandbox-runtime 的固定补丁拒绝 Darwin 的 `setpgid`、`setsid` 与 `posix_spawn`，后者能绕过前两者的调用入口改变进程组。普通 bash 命令、fork/exec 和管道保留；Bun/Node 的 posix_spawn 子进程 API 明确报 EPERM，工具描述要求通过 bash 启动系统命令，不另加无沙箱兼容执行。初始化用真实非组长进程复验全部三条路径，失效即关闭本次执行。
+- bash 执行与 Pi 结果格式化分别运行在同一策略的沙箱内。输出截断文件不能交给沙箱外写入，因为模型可能已把 scratch 的 tmp 改成指向私有目录的 symlink。
 - 命令最长 120 秒，子进程输出最多 32 MiB；Pi 把长输出截断并保存到同一 scratch，模型可继续读取。整个 turn 仍受 Bot 的 `turn_timeout_seconds` 约束。
-- 正常结束、取消和关闭等待执行进程退出并清理代理与 scratch；崩溃遗留 scratch 由同一 Bot 持有 runtime.lock 后在下次使用时清理。文件不持久交付，最终回复不能把临时路径冒充下载附件。进程组清理覆盖普通后代进程，不宣称提供虚拟机级资源配额。
+- 正常结束、取消和关闭等待执行进程退出并清理代理与 scratch；崩溃遗留 scratch 由同一 Bot 持有 runtime.lock 后在下次使用时清理。文件不持久交付，最终回复不能把临时路径冒充下载附件。所有工具后代都被内核限制在原进程组内；这不是 CPU、内存或磁盘的独立配额。
 
 ### 公开网页研究
 

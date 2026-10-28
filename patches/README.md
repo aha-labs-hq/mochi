@@ -57,3 +57,27 @@ one with extra nested elements.
 Today it changes only the `typebox` version in `package.json`, which the
 `typebox` override already decides, so it has no effect. Remove that hunk when
 this patch next changes, and delete the patch if nothing else remains.
+
+## `@anthropic-ai/sandbox-runtime@0.0.77`
+
+Adds a macOS Seatbelt syscall filter for `setpgid` (82), `setsid` (147), and
+`posix_spawn` (244). Upstream's process permissions allow detached descendants
+to leave the process group that Mochi owns. `posix_spawn` must also be denied:
+it can change groups internally without making either of the first two
+syscalls. Shell fork/exec, pipes and synchronous system commands remain usable;
+Bun/Node child APIs that rely on posix_spawn fail explicitly with EPERM.
+
+Mochi's credential-free execution supervisor starts the group before applying
+the sandbox; the worker acknowledges that exact group before tool code runs.
+The private IPC lease reaps it on either owner's death. Tool output formatting
+stays inside the sandbox, including Pi's temporary truncation files. This is
+process lifetime confinement, not a per-turn CPU, memory or disk quota.
+
+Upstream 0.0.77 has no such filter. Re-evaluate the syscall table and recreate
+this patch on any sandbox-runtime or supported macOS upgrade. The startup
+self-check exercises all three denied paths from a non-group-leader process
+and fails closed if the filter no longer works. Check:
+`test/runtimeExecution.test.ts` on each supported macOS release, including
+normal commands, detachment, successful exit, timeout, cancellation, worker
+death and supervisor death; then validate the signed release executable in the
+isolated native acceptance environment.

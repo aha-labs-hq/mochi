@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { TOKEN_REUSE_MARGIN_MS } from "../src/github.ts";
-import { RATE_LIMIT_PERIOD_SECONDS } from "../src/index.ts";
+import { RATE_LIMIT_PERIOD_SECONDS } from "../src/http.ts";
 import {
   AUTHORITY_ERROR_HEADER,
   allowedIssueWrite,
@@ -354,6 +354,7 @@ describe("Mochi GitHub App authority", () => {
     expect(config.ratelimits.map((limit) => limit.name).sort()).toEqual([
       "ACCOUNT_LIMIT",
       "INSTALLATION_LIMIT",
+      "REQUEST_LIMIT",
     ]);
     for (const limit of config.ratelimits)
       expect(limit.simple.period).toBe(RATE_LIMIT_PERIOD_SECONDS);
@@ -382,11 +383,12 @@ describe("Mochi GitHub App authority", () => {
     expect(mints(f.calls)).toBe(2);
     expect(f.calls.at(-1)?.authorization).toBe("Bearer ghs_app_fixture2");
 
-    // A different permission set is a different token.
-    expect((await f.maintainer("token")).status).toBe(200);
-    expect(mints(f.calls)).toBe(3);
-    expect((await f.maintainer("token")).status).toBe(200);
-    expect(mints(f.calls)).toBe(3);
+    // A separate service/key/cache owns maintainer tokens.
+    const maintainer = await authorityFixture("maintainer");
+    expect((await maintainer.maintainer("token")).status).toBe(200);
+    expect((await maintainer.maintainer("token")).status).toBe(200);
+    expect(mints(maintainer.calls)).toBe(1);
+    expect(mints(f.calls)).toBe(2);
   });
 
   test("a token GitHub refuses is dropped and reported as the authority's failure, never the person's sign-in", async () => {
@@ -474,7 +476,7 @@ describe("Mochi GitHub App authority", () => {
   });
 
   test("maintainer tokens require a separate secret and are pinned to one repository and permission set", async () => {
-    const f = await authorityFixture();
+    const f = await authorityFixture("maintainer");
     expect(
       (await f.maintainer("token", "wrong_wrong_wrong_wrong_wrong_wrong"))
         .status,
@@ -519,7 +521,7 @@ describe("Mochi GitHub App authority", () => {
   });
 
   test("maintainer status is an exact request and proves the live App registration", async () => {
-    const f = await authorityFixture();
+    const f = await authorityFixture("maintainer");
     expect(
       (
         await f.invoke("/v1/maintainer/status", {
@@ -535,11 +537,11 @@ describe("Mochi GitHub App authority", () => {
     const response = await f.maintainer("status");
     expect(response.status).toBe(200);
     expect(((await response.json()) as { issuer: unknown }).issuer).toEqual({
-      appId: 4850106,
-      slug: "mochi-companion",
+      appId: 900001,
+      slug: "mochi-maintainer",
       permissions: {
         contents: "write",
-        issues: "write",
+        metadata: "read",
         pull_requests: "write",
       },
       installationsCount: 1,

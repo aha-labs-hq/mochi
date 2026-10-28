@@ -1,5 +1,6 @@
 import { InstallationTokenCache } from "../src/github.ts";
 import { handleAuthorityRequest } from "../src/index.ts";
+import { handleMaintainerRequest } from "../src/maintainer.ts";
 import { AUTHORITY_PROTOCOL } from "../src/protocol.ts";
 
 export const NOW = 1_800_000_000_000;
@@ -65,7 +66,9 @@ export interface Call {
 }
 
 /** One authority isolate in front of a scripted GitHub. */
-export async function authorityFixture() {
+export async function authorityFixture(
+  role: "customer" | "maintainer" = "customer",
+) {
   const keys = await crypto.subtle.generateKey(
     {
       name: "RSASSA-PKCS1-v1_5",
@@ -84,13 +87,16 @@ export async function authorityFixture() {
     .match(/.{1,64}/g)
     ?.join("\n")}\n${["-----END", "PRIVATE KEY-----"].join(" ")}\n`;
   const limits = {
+    request: new FixtureLimiter(),
     account: new FixtureLimiter(),
     installation: new FixtureLimiter(),
   };
   const env = {
-    GITHUB_APP_ID: "4850106",
-    GITHUB_APP_SLUG: "mochi-companion",
-    GITHUB_APP_BOT_LOGIN: "mochi-companion[bot]",
+    GITHUB_APP_ID: role === "maintainer" ? "900001" : "4850106",
+    GITHUB_APP_SLUG:
+      role === "maintainer" ? "mochi-maintainer" : "mochi-companion",
+    GITHUB_APP_BOT_LOGIN:
+      role === "maintainer" ? "mochi-maintainer[bot]" : "mochi-companion[bot]",
     GITHUB_API_VERSION: "2026-03-10",
     MAINTAINER_ACCOUNT_ID: "1",
     MAINTAINER_REPOSITORY_ID: "20",
@@ -99,6 +105,7 @@ export async function authorityFixture() {
     GITHUB_APP_PRIVATE_KEY: pem,
     MAINTAINER_AUTH_TOKEN: MAINTAINER_TOKEN,
     ACCOUNT_LIMIT: limits.account,
+    REQUEST_LIMIT: limits.request,
     INSTALLATION_LIMIT: limits.installation,
   } as unknown as Env;
   const calls: Call[] = [];
@@ -130,7 +137,7 @@ export async function authorityFixture() {
         installations: [
           {
             id: 30,
-            app_id: 4850106,
+            app_id: Number(env.GITHUB_APP_ID),
             account: { id: 10 },
             suspended_at: null,
             permissions: { metadata: "read", issues: state.appIssues },
@@ -152,7 +159,7 @@ export async function authorityFixture() {
     if (url.pathname === "/repositories/20/installation")
       return Response.json({
         id: 30,
-        app_id: 4850106,
+        app_id: Number(env.GITHUB_APP_ID),
         account: { id: 10 },
         suspended_at: null,
       });
@@ -193,11 +200,11 @@ export async function authorityFixture() {
     }
     if (url.pathname === "/app")
       return Response.json({
-        id: 4850106,
-        slug: "mochi-companion",
+        id: Number(env.GITHUB_APP_ID),
+        slug: env.GITHUB_APP_SLUG,
         permissions: {
           contents: "write",
-          issues: "write",
+          metadata: "read",
           pull_requests: "write",
         },
         installations_count: 1,
@@ -205,12 +212,17 @@ export async function authorityFixture() {
     throw new Error(`unexpected ${method} ${url.pathname}`);
   }) as typeof fetch;
   const tokens = new InstallationTokenCache();
-  const handle = (request: Request) =>
-    handleAuthorityRequest(request, env, {
-      tokens,
-      fetchImplementation,
-      now: () => state.now,
-    });
+  const handle = (request: Request) => {
+    request.headers.set("CF-Connecting-IP", "203.0.113.10");
+    const options = { tokens, fetchImplementation, now: () => state.now };
+    return role === "maintainer"
+      ? handleMaintainerRequest(
+          request,
+          env as unknown as MaintainerEnv,
+          options,
+        )
+      : handleAuthorityRequest(request, env, options);
+  };
   const invoke = (path: string, init: RequestInit) =>
     handle(new Request(`https://authority.mochi.invalid${path}`, init));
   const issue = (

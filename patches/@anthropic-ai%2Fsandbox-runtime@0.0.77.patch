@@ -1,0 +1,17 @@
+diff --git a/dist/sandbox/macos-sandbox-utils.js b/dist/sandbox/macos-sandbox-utils.js
+index d88027848254bef3d1dc4f3d41893ccc6c0b73fb..275046812186ad71fe5e661698c23cc48695ebb1 100644
+--- a/dist/sandbox/macos-sandbox-utils.js
++++ b/dist/sandbox/macos-sandbox-utils.js
+@@ -682,6 +682,12 @@ function generateSandboxProfile({ readConfig, libraryDenyEntries, writeConfig, h
+         '; Process permissions',
+         '(allow process-exec)',
+         '(allow process-fork)',
++        // Mochi: keep every untrusted descendant in its supervised group.
++        // Darwin setpgid=82, setsid=147; posix_spawn=244 can change either
++        // internally without invoking the first two syscall filters.
++        // fork/exec remain available to shell commands and pipelines.
++        '(allow syscall-unix)',
++        '(deny syscall-unix (syscall-number 82) (syscall-number 147) (syscall-number 244))',
+         '(allow process-info* (target same-sandbox))',
+         '(allow signal (target same-sandbox))',
+         '(allow mach-priv-task-port (target same-sandbox))',

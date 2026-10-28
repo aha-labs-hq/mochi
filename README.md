@@ -152,9 +152,9 @@ Runtime Session 默认开启 [Pi 原生自动压缩](https://github.com/earendil
 
 ### 权限
 
-Bridge 持有飞书 profile、客户 GitHub user token、SQLite 和工具实现，不读取 ChatGPT OAuth 或 BYOK 文件。`github/connection.ts` 拥有各 Bot 的授权与令牌刷新，`github/botSelection.ts` 拥有独立项目选择；`GitHubClient` 仅拿到 scope-bound request capability。客户 token 只证明人类授权与换取单仓库只读能力；任何写入都交给固定的 `mochi-github-authority`，由它在服务端签发不外泄的 App installation token。发行包与运行时均不接受发行者 RSA key。专用 `_mochi` 用户持有 `~/.pi/mochi/account/auth.json`、BYOK 的私有无密钥 `byok.json` 和各 Bot 的独立 Session，没有 Bridge 凭据或项目 checkout。BYOK 配置时，Bridge 只经私有控制通道传递原生表单输入，不保存密钥。
+Bridge 持有飞书 profile、客户 GitHub user token、SQLite 和工具实现，不读取 ChatGPT OAuth 或 BYOK 文件。`github/connection.ts` 拥有各 Bot 的授权与令牌刷新，`github/botSelection.ts` 拥有独立项目选择；`GitHubClient` 仅拿到 scope-bound request capability。客户 token 只证明人类授权与换取单仓库只读能力；任何写入都交给固定的 `mochi-github-authority`，由它在服务端签发不外泄的 App installation token。发行包与运行时均不接受发行者 RSA key。工具进程受 macOS 沙箱和独立进程组监督，命令结束、取消或任一监督方崩溃都清理其后代；拒绝进程脱离及 posix_spawn 子进程 API，普通 bash 管道与 fork/exec 保留。专用 `_mochi` 用户持有 `~/.pi/mochi/account/auth.json`、BYOK 的私有无密钥 `byok.json` 和各 Bot 的独立 Session，没有 Bridge 凭据或项目 checkout。BYOK 配置时，Bridge 只经私有控制通道传递原生表单输入，不保存密钥。
 
-项目默认不选。每次工具请求核对当前授权交集，持久审计绑定账号、grant、稳定仓库/owner/installation ID 与 selection generation；取消后重新选择、重新登录、仓库转移或 App 重装不会继承旧授权。工具读取按项目隔离。Issue 的请求者、原话授权和结果保留在本地审计，GitHub 上的创建者统一是 `mochi-companion[bot]`；产品运行时仍不允许代码/PR/工作流写入。未来 C 端 PR 能力只能新增闭合的服务端 change-proposal 事务，不能向客户端发通用 App token，也不能退回客户身份写入。
+项目默认不选。每次工具请求核对当前授权交集，持久审计绑定账号、grant、稳定仓库/owner/installation ID 与 selection generation；取消后重新选择、重新登录、仓库转移或 App 重装不会继承旧授权。工具读取按项目隔离。Issue 的请求者、原话授权和结果保留在本地审计，GitHub 上的创建者统一是 `mochi-companion[bot]`；客户 App 在 GitHub 注册层面只有 Issue 写权限，代码/PR/工作流只读；维护工作由单独的 `mochi-maintainer[bot]` App、密钥与服务承担。未来 C 端 PR 能力只能新增闭合的服务端 change-proposal 事务，不能向客户端发通用 App token，也不能退回客户身份写入。
 
 GitHub OAuth 使用精确 loopback callback、state、PKCE S256、固定 `iss` 签发者校验和有界取消。C 端用户只在 Mochi 引导的官方授权页登录、授权并选择项目，不需要进入 Developer Settings、注册 App、管理私钥或执行终端命令。Bridge 在 owner-only `Connections/github.json` 原子保存 token 与选择；没有 Keychain 管理或终端步骤，但文件权限不等于加密，也不防同用户恶意进程。本机断开不等于 GitHub 远端卸载/撤销，设置中单独提供官方管理入口。native client secret 是可提取的 App 注册材料，不是安全边界；发行者 RSA 私钥只存于远端 secret binding，绝不能打包或返回客户端。真实平台及并发名称解析边界见 [GitHub 验收合同](docs/onboarding.md#github-ownership-and-local-evidence)。
 

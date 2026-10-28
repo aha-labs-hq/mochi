@@ -1,22 +1,19 @@
 import { createBashTool, createEditTool, createReadTool, createWriteTool } from "@earendil-works/pi-coding-agent";
-import { executionProcess } from "./executionProcess.ts";
+type BashResult = { exitCode: number | null; output: string };
 
 /** Pi owns tool schemas, editing, images and truncation. This process has no account or Session. */
-export function executionToolDefinitions(cwd: string) {
+export function executionToolDefinitions(cwd: string, bashResult?: BashResult) {
   return [
     // Original image input matches material_read; no optional on-disk Photon WASM in our binary.
     createReadTool(cwd, { autoResizeImages: false }),
     createBashTool(cwd, {
       exposeSessionEnvironment: false,
       operations: {
-        exec: async (command, directory, { onData, signal, timeout }) => {
-          if (timeout !== undefined && (!Number.isFinite(timeout) || timeout <= 0)) throw new Error("Command timeout must be positive");
-          return executionProcess({
-          command: ["/bin/bash", "--noprofile", "--norc", "-c", command],
-          cwd: directory, env: process.env, signal, onData,
-          timeoutMilliseconds: Math.min(timeout ?? 120, 120) * 1_000,
-          detached: false,
-          });
+        exec: async (_command, _directory, { onData, signal }) => {
+          signal?.throwIfAborted();
+          if (!bashResult) throw new Error("Shell execution requires the supervised sandbox");
+          onData(Buffer.from(bashResult.output, "base64"));
+          return { exitCode: bashResult.exitCode };
         },
       },
     }),
@@ -27,8 +24,8 @@ export function executionToolDefinitions(cwd: string) {
 
 export async function runExecutionTool(): Promise<void> {
   process.umask(0o077);
-  const input = JSON.parse(await Bun.stdin.text()) as { name: string; args: unknown };
-  const tool = executionToolDefinitions(process.cwd()).find(({ name }) => name === input.name);
+  const input = JSON.parse(await Bun.stdin.text()) as { name: string; args: unknown; bashResult?: BashResult };
+  const tool = executionToolDefinitions(process.cwd(), input.bashResult).find(({ name }) => name === input.name);
   if (!tool) throw new Error("Unknown Pi execution tool");
   try {
     // Pi's structuredContent serves codemode only; it may duplicate a whole image.

@@ -35,6 +35,7 @@ import { DEFAULT_REASONING_EFFORT, type ReasoningEffort } from "./policy.ts";
 import { isolatedResourceLoader, isolatedSettings, SESSION_COMPACTION_INSTRUCTIONS } from "./resources.ts";
 import { executionTools, TurnExecution } from "./execution.ts";
 import { runExecutionTool } from "./executionRunner.ts";
+import { runExecutionSupervisor } from "./executionSupervisor.ts";
 import {
   boundedString,
   exactKeys,
@@ -1377,6 +1378,8 @@ if (process.argv.includes("--version")) {
   process.stdout.write(`mochi-pi-runtime ${PI_WORKER_PROTOCOL_VERSION}\n`);
 } else if (process.argv.length === 3 && process.argv[2] === "--execute-tool") {
   await runExecutionTool();
+} else if (process.argv.length === 3 && process.argv[2] === "--supervise-execution") {
+  await runExecutionSupervisor();
 } else {
   process.umask(0o077);
   await auditRuntimeEnvironment();

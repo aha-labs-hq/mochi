@@ -21,9 +21,9 @@ describe("GitHub governance", () => {
     expect(validateGovernanceManifest(manifest)).toEqual([]);
     expect(manifest.schemaVersion).toBe(4);
     expect(manifest.identity).toMatchObject({
-      appId: 4850106,
-      appSlug: "mochi-companion",
-      botLogin: "mochi-companion[bot]",
+      appId: 5509147,
+      appSlug: "mochi-maintainer",
+      botLogin: "mochi-maintainer[bot]",
       writeActor: "app",
       mergeActor: "human",
     });
@@ -76,6 +76,17 @@ describe("GitHub governance", () => {
       type: "Bot",
     };
     expect(liveIdentityDrift(repository, app, bot, manifest)).toEqual([]);
+    expect(
+      liveIdentityDrift(
+        repository,
+        {
+          ...app,
+          permissions: { ...app.permissions, issues: "write" },
+        },
+        bot,
+        manifest,
+      ),
+    ).toContain("GitHub App permission issues: unexpected grant");
     expect(
       liveIdentityDrift(
         repository,
@@ -237,7 +248,7 @@ describe("GitHub governance", () => {
     expect(skill).toContain("bun run governance:audit");
     expect(skill).toContain("bun run github:commit");
     expect(skill).toContain("bun run github:propose");
-    expect(skill).toContain("mochi-companion[bot]");
+    expect(skill).toContain("mochi-maintainer[bot]");
     expect(skill).not.toContain("close one real Issue");
     expect(skill).not.toContain("post-merge CI is green");
 

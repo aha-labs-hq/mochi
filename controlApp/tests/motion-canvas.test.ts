@@ -74,7 +74,7 @@ test("event pages prefetch across seams without dissolving two anatomical poses"
   expect(f.player.ready(f.id, 0)).toBe(true);
   f.player.draw({ type: "sequence", id: f.id, position: 5 });
   expect(f.player.ready(f.id, 5)).toBe(true);
-  expect(f.requests[1]!.path).toEndWith(".atlas.1.png");
+  expect(f.requests[1]!.path).toEndWith(".atlas.1.webp");
   expect(f.player.ready(f.id, 7.5)).toBe(true);
   expect(f.player.ready(f.id, 8)).toBe(false);
   const second = await f.resolve(1);
@@ -113,11 +113,11 @@ test("a native-cadence state prefetches the preceding page before a reverse cros
   const page = atlasGeometry(512, 512, layout.framesPerPage);
   expect(layout.framesPerPage).toBe(8);
   expect(f.player.ready(id, 12)).toBe(false);
-  expect(f.requests[0]!.path).toEndWith(".atlas.1.png");
+  expect(f.requests[0]!.path).toEndWith(".atlas.1.webp");
   await f.resolve(0, page.width, page.height);
   f.player.draw({ type: "sequence", id, position: 12 });
   expect(f.player.ready(id, 10)).toBe(true);
-  expect(f.requests[1]!.path).toEndWith(".atlas.0.png");
+  expect(f.requests[1]!.path).toEndWith(".atlas.0.webp");
   expect(f.player.ready(id, 7.9)).toBe(false);
   await f.resolve(1, page.width, page.height);
   expect(f.player.ready(id, 7.9)).toBe(true);

@@ -30,7 +30,9 @@ export function atlasFilename(
   pageCount: number,
   page: number,
 ): string {
-  return pageCount === 1 ? `${asset}.atlas.png` : `${asset}.atlas.${page}.png`;
+  return pageCount === 1
+    ? `${asset}.atlas.webp`
+    : `${asset}.atlas.${page}.webp`;
 }
 
 export function atlasGeometry(width: number, height: number, frames: number) {

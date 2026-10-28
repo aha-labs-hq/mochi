@@ -656,7 +656,7 @@ describe("lossless approved motion projection", () => {
         const layout = atlasLayout(width, height, frameCount);
         const stride = width * 4;
         for (let page = 0; page < layout.pageCount; page++) {
-          const output = join(directory, `atlas-${page}.png`);
+          const output = join(directory, `atlas-${page}.webp`);
           await decodeAtlas(path, output, frameCount, page);
           const atlas = await sharp(output).raw().toBuffer();
           const start = page * layout.framesPerPage;

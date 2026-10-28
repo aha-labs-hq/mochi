@@ -6,17 +6,18 @@ import { MINIMUM_MACOS_VERSION } from "../../src/product/version.ts";
 import type { desktopIdentity } from "./identity.ts";
 import { pinnedBunRuntime } from "./toolchain.ts";
 
-const SDK_LIFECYCLE_FILES = [
+const SDK_REPLACED_FILES = [
   "MacOS/launcher",
   "MacOS/bspatch",
   "MacOS/zig-zstd",
   "Resources/uninstall",
+  "Resources/AppIcon.icns",
 ];
 
 export function assertElectrobunBundle(application: string): void {
   for (const path of [
     "MacOS/bun",
-    ...SDK_LIFECYCLE_FILES,
+    ...SDK_REPLACED_FILES,
     "Resources/main.js",
     "Info.plist",
   ]) {
@@ -42,8 +43,9 @@ export async function prepareElectrobunBundle(
     command,
     pinnedBunRuntime(resolve(import.meta.dir, "../..")),
   );
-  // These belong to Electrobun's optional installation/update lifecycle, not ours.
-  for (const relative of SDK_LIFECYCLE_FILES)
+  // Mochi owns its lifecycle and Info.plist points at Mochi.icns. Drop the
+  // SDK lifecycle binaries and its duplicate icon before signing the bundle.
+  for (const relative of SDK_REPLACED_FILES)
     await rm(join(staged, "Contents", relative));
   const plist = join(staged, "Contents/Info.plist");
   for (const [key, value] of Object.entries({

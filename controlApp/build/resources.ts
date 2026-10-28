@@ -1,6 +1,13 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
-import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  readFile,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 import sharp from "sharp";
 import { MotionCatalog } from "../src/motion/catalog.ts";
@@ -58,11 +65,21 @@ export async function decodeAtlas(
         4;
       data.copy(atlas, targetOffset, sourceOffset, sourceOffset + rowBytes);
     }
-  await sharp(atlas, {
-    raw: { width: atlasWidth, height: atlasHeight, channels: 4 },
-  })
-    .png()
-    .toFile(output);
+  // Keep all RGBA bytes, including colour under zero alpha. This is a storage
+  // projection only: no resampling, quantization or change to the video clock.
+  // Effort 3 is the measured size/build-time balance for these accepted frames.
+  const temporary = `${output}.${randomUUID()}.tmp`;
+  try {
+    await sharp(atlas, {
+      raw: { width: atlasWidth, height: atlasHeight, channels: 4 },
+    })
+      .webp({ lossless: true, exact: true, effort: 3 })
+      .toFile(temporary);
+    // An interrupted encoder must never leave a reusable partial cache entry.
+    await rename(temporary, output);
+  } finally {
+    await rm(temporary, { force: true });
+  }
 }
 
 export async function prepareResources(
@@ -130,7 +147,10 @@ export async function prepareResources(
       frames,
     );
     for (let page = 0; page < layout.pageCount; page++) {
-      const atlas = join(cache, `${sequence.assetSha256}-rgba-v3-${page}.png`);
+      const atlas = join(
+        cache,
+        `${sequence.assetSha256}-rgba-webp-v4-${page}.webp`,
+      );
       if (!existsSync(atlas)) await decodeAtlas(source, atlas, frames, page);
       await copyFile(
         atlas,

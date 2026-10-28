@@ -240,6 +240,8 @@ async function assemble(args: Arguments, release: ReleaseContext | undefined, wo
     "--version", packageVersion,
     "--install-location", "/",
     "--ownership", "recommended",
+    "--compression", "latest",
+    "--min-os-version", minimumMacOSVersion,
     ...(release ? ["--sign", release.installerIdentity] : []),
     componentPackage,
   ], repositoryRoot);

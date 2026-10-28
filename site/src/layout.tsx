@@ -43,7 +43,7 @@ function Header() {
   return (
     <header
       data-header
-      className="sticky top-0 z-30 border-b border-hairline bg-surface/92 backdrop-blur-xl backdrop-saturate-150 transition-[background-color,border-color] duration-300"
+      className="sticky top-0 z-30 bg-surface/92 backdrop-blur-xl backdrop-saturate-150 transition-[background-color,border-color] duration-300"
     >
       <div className="site-container flex h-16 items-center justify-between gap-4">
         <Wordmark priority />
@@ -136,7 +136,7 @@ function Footer() {
     ],
   ];
   return (
-    <footer className="overflow-hidden border-t border-hairline">
+    <footer className="overflow-hidden bg-card">
       <div className="site-container site-grid gap-y-12 py-16">
         <div className="col-span-4 md:col-span-5">
           <Wordmark />
@@ -171,7 +171,7 @@ function Footer() {
           ))}
         </nav>
       </div>
-      <div className="site-container flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-hairline py-6 text-caption text-muted">
+      <div className="site-container flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-6 text-caption text-muted">
         <p className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <a
             href={maker.url}

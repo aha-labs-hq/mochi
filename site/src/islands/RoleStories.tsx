@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { participants } from "../../../controlApp/src/ui/introductionContent.ts";
 import { Conversation } from "../conversation.tsx";
 import { avatars } from "../media.ts";
@@ -18,6 +18,14 @@ for (const story of stories)
 
 export function RoleStories({ initial }: { initial: string }) {
   const [selected, setSelected] = useState(initial);
+  const [vertical, setVertical] = useState(true);
+  useEffect(() => {
+    const layout = matchMedia("(min-width: 768px)");
+    const update = () => setVertical(layout.matches);
+    update();
+    layout.addEventListener("change", update);
+    return () => layout.removeEventListener("change", update);
+  }, []);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const story = stories.find((item) => item.id === selected) ?? stories[0]!;
   const person = participants[story.perspective!];
@@ -33,8 +41,8 @@ export function RoleStories({ initial }: { initial: string }) {
       <div
         role="tablist"
         aria-label="选择你的职能"
-        aria-orientation="vertical"
-        className="col-span-4 -mx-2 grid grid-cols-5 gap-1 md:col-span-5 md:mx-0 md:flex md:flex-col md:gap-0 md:border-t md:border-hairline"
+        aria-orientation={vertical ? "vertical" : "horizontal"}
+        className="col-span-4 -mx-2 grid grid-cols-5 gap-1 md:col-span-5 md:mx-0 md:flex md:flex-col md:gap-2"
       >
         {stories.map((item, index) => {
           const active = item.id === story.id;
@@ -58,12 +66,16 @@ export function RoleStories({ initial }: { initial: string }) {
                 } else if (["ArrowUp", "ArrowLeft"].includes(event.key)) {
                   event.preventDefault();
                   move(index, -1);
+                } else if (event.key === "Home" || event.key === "End") {
+                  event.preventDefault();
+                  const target = event.key === "Home" ? 0 : stories.length - 1;
+                  setSelected(stories[target]!.id);
+                  tabs.current[target]?.focus();
                 }
               }}
               className={cn(
-                "group relative flex flex-col items-center gap-2 rounded-xl px-1 py-2 text-center transition-colors md:flex-row md:items-center md:gap-4 md:rounded-none md:border-b md:border-hairline md:px-0 md:py-4 md:text-left",
-                "before:absolute before:inset-y-0 before:-left-6 before:hidden before:w-0.5 before:rounded-full before:bg-primary before:opacity-0 before:transition-opacity md:before:block",
-                active && "before:opacity-100",
+                "group relative flex flex-col items-center gap-2 rounded-xl px-1 py-2 text-center transition-colors md:flex-row md:items-center md:gap-4 md:rounded-2xl md:px-4 md:py-5 md:text-left",
+                active ? "bg-note" : "hover:bg-note/50",
               )}
             >
               <span
@@ -113,9 +125,9 @@ export function RoleStories({ initial }: { initial: string }) {
           thread={story}
           playback="in-view"
           scroll
-          className="flex h-[560px] flex-col rounded-card bg-card px-4 pt-6 pb-3 shadow-card md:h-[700px] md:px-7 md:pt-7"
+          className="flex h-[560px] flex-col rounded-card bg-card px-4 pt-6 pb-3 shadow-card md:h-[620px] md:px-7 md:pt-7"
         >
-          <header className="mb-1 flex items-start justify-between gap-4 border-b border-hairline pb-4">
+          <header className="mb-1 flex items-start justify-between gap-4 pb-4">
             <div className="min-w-0">
               <p className="mb-1.5 text-caption text-muted">
                 {person.name} 的视角 · 示例对话

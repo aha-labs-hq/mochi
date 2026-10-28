@@ -22,7 +22,7 @@ export function Download() {
             />
             {release ? releaseName(release) : "内测中"}
           </p>
-          <h1 className="phrase text-[34px] leading-[44px] font-semibold tracking-[-0.02em] md:text-[48px] md:leading-[60px]">
+          <h1 className="phrase section-title">
             {release ? "下载 Mochi" : "申请内测"}
           </h1>
           <p className="mt-6 text-lead text-muted">
@@ -45,7 +45,7 @@ export function Download() {
               </a>
             </p>
           )}
-          <div className="mt-12 rounded-card bg-card p-6 shadow-card md:p-7">
+          <div className="mt-12 rounded-card bg-note p-6 md:p-7">
             <h2 className="text-[17px] leading-7 font-semibold">
               开始之前，准备好
             </h2>

@@ -19,7 +19,7 @@ type Scene = "waiting" | "performing" | "landed" | "still";
 /**
  * The hero: an example conversation on a warm card, and Mochi's approved
  * entrance landing on its edge. The video clock owns the acting and the
- * spatial arc; the conversation starts once the paws touch down. Once
+ * spatial arc; the example stays readable while it arrives. Once
  * landed, Mochi can be petted: it plays the companion's own idle gesture.
  */
 export function HeroStage({ stage }: { stage: EntranceStage }) {
@@ -28,7 +28,6 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
   const pet = useRef<HTMLVideoElement>(null);
   const [scene, setScene] = useState<Scene>("waiting");
   const [motion, setMotion] = useState(false);
-  const [talking, setTalking] = useState(false);
   const [petting, setPetting] = useState(false);
   const [petted, setPetted] = useState(false);
   const edge = stage.bodyBottom;
@@ -36,7 +35,6 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
   useEffect(() => {
     if (prefersStillness()) {
       setScene("still");
-      setTalking(true);
     } else setMotion(true);
   }, []);
 
@@ -52,7 +50,6 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
       cancelAnimationFrame(frame);
       body.style.transform = "";
       setScene("still");
-      setTalking(true);
     };
     // A slow network or a refused autoplay still ends on a landed Mochi.
     const patience = window.setTimeout(still, 4000);
@@ -68,7 +65,6 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
       const y = pose.belowEdge * hidden - lift;
       body.style.transform = `translate3d(0, ${y}px, 0)`;
       body.dataset.front = String(flight >= 0.5);
-      if (pose.landed) setTalking(true);
       if (node.ended) {
         done = true;
         setScene("landed");
@@ -109,8 +105,7 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
   const geometry = {
     "--center": (stage.visualLeft + stage.visualWidth / 2) / stage.size,
     "--edge": edge / stage.size,
-    // Room above the card for Mochi's ears at the stage's size. On a laptop's
-    // short window the stage shrinks, so the card's title shows in the first view.
+    // Reserve exactly the approved body height above the card.
     marginTop: `calc(var(--stage) * ${(edge - stage.visualTop) / stage.size} + 20px)`,
   } as CSSProperties;
   return (
@@ -118,7 +113,7 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
       data-hero-stage
       data-scene={scene}
       style={geometry}
-      className="relative [--perch:50%] [--stage:280px] motion-safe:animate-[rise_1100ms_var(--ease-settle)_both] md:[--stage:clamp(300px,calc(50svh_-_100px),380px)]"
+      className="relative [--perch:60%] [--stage:230px] md:[--stage:260px]"
     >
       <div
         ref={actor}
@@ -182,7 +177,7 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
         <p
           aria-hidden
           className={cn(
-            "absolute whitespace-nowrap font-brand text-caption text-muted transition-opacity duration-500",
+            "absolute hidden whitespace-nowrap font-brand text-caption text-muted transition-opacity duration-500 lg:block",
             scene === "landed" && !petted
               ? "opacity-100 delay-1000"
               : "opacity-0",
@@ -197,14 +192,11 @@ export function HeroStage({ stage }: { stage: EntranceStage }) {
       </div>
       <Conversation
         thread={threads.hero}
-        playback="on-cue"
-        cue={talking}
-        className="relative z-1 rounded-[28px] bg-card px-5 pt-7 pb-7 shadow-card md:px-12 md:pt-8 md:pb-10 [&_[data-chat-bubble]]:max-w-[34em]"
+        playback="none"
+        className="hero-conversation relative z-1 rounded-[24px] bg-card px-4 pt-5 pb-6 shadow-card md:px-6 md:pt-6"
       >
-        <header className="mb-6 border-b border-hairline pb-4 md:flex md:flex-row-reverse md:items-baseline md:justify-between md:gap-6">
-          <p className="mb-1.5 text-caption text-muted md:mb-0 md:shrink-0">
-            示例对话 · 群聊
-          </p>
+        <header className="mb-5">
+          <p className="mb-2 text-caption text-muted">示例对话</p>
           <h2 className="text-[17px] leading-6 font-medium">
             {threads.hero.title}
           </h2>

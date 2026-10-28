@@ -28,14 +28,14 @@ bun run site:deploy                          # 以真实发行信息部署内测
 | 上手指南、隐私说明 | `release/public/`，经 `renderPublicDocument` 填入发行方信息 |
 | 下载版本、设备、最低系统、使用边界、文件大小与校验值 | 已验收的 `Mochi-Release.json`，经 `validateReleasePublication` 复核 |
 | 飞书权限 | `src/lark/permissions.ts` |
-| GitHub App 权限 | `.github/governance.json` |
+| 客户 GitHub App 权限 | `docs/github-governance.md` 的客户 App 合同；`src/pages/Admin.tsx` 用中文说明 |
 | 导航、手机菜单与页脚的 GitHub 仓库入口 | `.github/governance.json` 的 `repository.slug` |
 
 网站自写的对话在 `src/threads.ts`（首屏之外只有“一周”这一条，按滚动分三段追加），只能引用 App 引导已有的示例资料。`src/media/` 的视频由 `site:motion` 从 App 已批准的动效生成，`motion.json` 记录来源与产物摘要；App 动效变更而未重新生成时，测试失败。
 
 ## 发布
 
-网站的公开信息由 `site/publication.json` 拥有，与安装包发行流程使用同一 schema。下载页必须是本站 `/download/`。支持入口（`supportUrl`）可以是 HTTPS 页面或 `mailto:` 地址；支持和隐私请求都写邮件到 `hello@mochi.host`。App 的帮助与运行诊断经 `controlApp/src/shared/support.ts` 读取同一个 `supportUrl`，它必须是 `mailto:` 地址；App 不另存地址。Cloudflare Email Routing 将这个地址转发到维护者的 Gmail，按收件人或发件人 `hello@mochi.host` 自动应用 `Mochi` 标签；这不提供 Gmail 的域名发信身份。目前以申请内测为主入口，申请表只用于内测申请，地址在 `src/facts.ts`；表单归 Aha Labs 的飞书组织、以用户身份创建，公开填写入口不开放申请记录。网页上线与安装包发行分别验收。
+网站的公开信息由 `site/publication.json` 拥有，与安装包发行流程使用同一 schema。下载页必须是本站 `/download/`。支持入口（`supportUrl`）可以是 HTTPS 页面或 `mailto:` 地址；支持和隐私请求都写邮件到 `hello@mochi.host`。App 的帮助与运行诊断经 `controlApp/src/shared/support.ts` 读取同一个 `supportUrl`，它必须是 `mailto:` 地址；App 不另存地址。Cloudflare Email Routing 将这个地址转发到维护者的 Gmail，按收件人或发件人 `hello@mochi.host` 自动应用 `Mochi` 标签；这不提供 Gmail 的域名发信身份。已验收的公开测试版以下载为入口；没有发行候选的预览保留申请入口，申请表只用于内测申请，地址在 `src/facts.ts`；表单归 Aha Labs 的飞书组织、以用户身份创建，公开填写入口不开放申请记录。网页上线与安装包发行分别验收。
 
 安装包完成签名、公证和 clean-Mac 验收后，在包含该候选源码版本的干净 checkout（候选版本本身或之后的提交）构建下载页；网站因此可以独立于安装包更新，发布文件和随附文档始终来自候选版本：
 
@@ -158,3 +158,11 @@ bun site/build/growth-overlay.ts <已批准产物> site/dist <新产物目录>
 旁保存逐文件 SHA-256 清单。部署前检查清单、全部内部链接、CSP、
 桌面/窄屏与当前申请表；保留原产物供网站回滚。后续经过独立授权的
 完整网站发行可恢复正常构建路径，不借此发布未验收安装包。
+
+## 页面设计与验收
+
+页面沿用 App 的中性纸面、蓝色、系统中文字体与已审核角色素材。内容层级由留白、字号和少量底色建立，不用装饰性分割线；权限表格保留必要行结构。首页从可直接阅读的群聊示例进入职能场景，再讲持续协作、安全边界与上手。删除了模拟提速对比和重复的痛点铺陈，旧章节锚点仍可定位。
+
+首屏对话随 HTML 直接可读，不等待角色动画或客户端加载。角色仍使用原 motion manifest 的几何与动作；减少动态效果时直接显示静态形象。职能页保留 App 同源的五个故事，方向键和 Home/End 可切换，来源用原生模态框查看。所有页面都要检查 320 px 窄屏、桌面、文字放大、键盘、减少动态效果与禁用 JavaScript；不把源码检查当成视觉验收。
+
+管理员页描述客户 Mochi Companion 的七项仓库权限，不能引用私有 Mochi Maintainer 的治理清单。客户代码与 PR 只读，Issue 读写；两种 App 的身份与权限拆分见 `docs/github-governance.md`。

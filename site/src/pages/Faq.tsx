@@ -16,7 +16,7 @@ export function Faq() {
       <article className="site-container py-16 md:py-24">
         <div className="mx-auto max-w-[680px]">
           <Prose markdown={markdown} />
-          <section className="mt-14 border-t border-hairline pt-8">
+          <section className="mt-14 pt-8">
             <h2 className="mb-4 text-title font-semibold">
               还想先看看它怎么工作
             </h2>

@@ -42,14 +42,14 @@ export function ReleaseDownload({ release }: { release: SiteRelease }) {
 
 export function ReleaseFiles({ release }: { release: SiteRelease }) {
   return (
-    <div className="mt-10 border-t border-hairline pt-8">
+    <div className="mt-10 pt-8">
       <h2 className="text-[20px] leading-8 font-semibold">这一版的使用边界</h2>
       <ul className="mt-4 list-disc space-y-3 pl-5 text-small text-muted">
         {release.limitations.map((limitation) => (
           <li key={limitation}>{limitation}</li>
         ))}
       </ul>
-      <details className="group mt-8 border-t border-hairline pt-6">
+      <details className="group mt-8 pt-6">
         <summary className="cursor-pointer text-[15px] font-medium">
           卸载与文件校验
         </summary>

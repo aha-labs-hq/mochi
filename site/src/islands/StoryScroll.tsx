@@ -90,7 +90,7 @@ export function StoryScroll() {
               blocks.current[index] = node;
             }}
             data-step={index}
-            className="flex flex-col justify-center py-10 lg:min-h-[78vh] lg:py-0"
+            className="flex flex-col justify-center py-10 lg:min-h-[58svh] lg:py-0"
           >
             <div>
               <p
@@ -99,8 +99,7 @@ export function StoryScroll() {
                   index === step && "text-primary",
                 )}
               >
-                {String(index + 1).padStart(2, "0")} /{" "}
-                {String(steps.length).padStart(2, "0")}
+                {["把决定留下", "把进展查清", "把后续交代好"][index]}
               </p>
               <h3 className="text-[24px] leading-[34px] font-semibold tracking-[-0.01em] md:text-[30px] md:leading-[42px]">
                 {item.title}
@@ -121,17 +120,20 @@ export function StoryScroll() {
         ))}
       </ol>
       <div className="hidden lg:col-span-7 lg:block">
-        <div className="sticky top-24 flex h-[min(720px,calc(100vh-128px))] flex-col rounded-card bg-card px-7 pt-7 pb-3 shadow-card">
-          <header className="mb-1 border-b border-hairline pb-4">
+        <div className="sticky top-24 flex h-[min(720px,calc(100dvh-128px))] flex-col rounded-card bg-card px-7 pt-7 pb-3 shadow-card">
+          <header className="mb-1 pb-4">
             <p className="mb-1.5 text-caption text-muted">
-              示例对话 · 群聊 · 同一件事的一周
+              示例对话：同一件事的一周
             </p>
             <h3 className="text-[17px] leading-6 font-medium">
               {threads.week.title}
             </h3>
           </header>
+          {/* The scrollable transcript needs a keyboard entry point. */}
           <div
             ref={history}
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: keyboard users scroll this bounded transcript.
+            tabIndex={0}
             role="log"
             aria-label={`对话示例：${threads.week.title}`}
             className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain py-4 [scrollbar-width:none] [mask-image:linear-gradient(to_bottom,transparent,#000_16px,#000_calc(100%-24px),transparent)]"

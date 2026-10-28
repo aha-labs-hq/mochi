@@ -32,7 +32,7 @@ bun run site:deploy                          # 以真实发行信息部署内测
 | 导航、手机菜单与页脚的 GitHub 仓库入口 | `.github/governance.json` 的 `repository.slug` |
 | Apple 与 GitHub 品牌图标 | `src/brand/` 中的 Simple Icons SVG，版本与许可见该目录的 `README.md` |
 
-主导航只保留功能、使用指南、常见问题；GitHub 开源入口与 macOS 下载组成独立的操作区。手机上保留下载，其他入口收进菜单；管理员与隐私资料仍在页脚。所有下载按钮共享 Apple 标识，导航和页面中的下载入口均由 `DownloadAction` 按实际发行阶段显示，不把内测申请伪装成文件下载。
+主导航只保留功能、使用指南、常见问题；GitHub 入口与 macOS 下载组成独立的操作区。手机上保留下载，其他入口收进菜单；管理员与隐私资料仍在页脚。所有下载按钮共享 Apple 标识，导航和页面中的下载入口均由 `DownloadAction` 按实际发行阶段显示，不把内测申请伪装成文件下载。
 
 网站自写的对话在 `src/threads.ts`（首屏之外只有“一周”这一条，按滚动分三段追加），只能引用 App 引导已有的示例资料。`src/media/` 的视频由 `site:motion` 从 App 已批准的动效生成，`motion.json` 记录来源与产物摘要；App 动效变更而未重新生成时，测试失败。
 

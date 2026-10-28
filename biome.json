@@ -1,0 +1,53 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "includes": [
+      "controlApp/src/**",
+      "controlApp/build/**",
+      "controlApp/tests/**",
+      "script/*desktop*.ts",
+      "script/verify.ts",
+      "script/github_governance.ts",
+      "script/github_identity.ts",
+      "script/github_merge.ts",
+      "script/motion_matte.ts",
+      "script/audit_motion_key.ts",
+      "script/audit_motion_frames.ts",
+      "test/motionMatte.test.ts",
+      "test/verification.test.ts",
+      "test/githubGovernance.test.ts",
+      "test/githubMerge.test.ts",
+      "test/dependencyPatches.test.ts",
+      "src/connectors/**",
+      "src/schedules/**",
+      "test/connectors.test.ts",
+      "test/schedule*.test.ts",
+      "identity/src/**",
+      "identity/test/**",
+      "identity/*.jsonc",
+      "identity/*.json",
+      "src/github/writeAuthority.ts",
+      "site/**",
+      "!site/src/brand",
+      "electrobun.config.ts",
+      "hutch.config.ts",
+      "biome.json",
+      "package.json"
+    ]
+  },
+  "formatter": { "indentStyle": "space", "indentWidth": 2 },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "style": { "noNonNullAssertion": "off" },
+      "correctness": {
+        "useExhaustiveDependencies": "error",
+        "useHookAtTopLevel": "error"
+      }
+    }
+  },
+  "javascript": { "formatter": { "quoteStyle": "double" } },
+  "css": { "parser": { "tailwindDirectives": true } }
+}

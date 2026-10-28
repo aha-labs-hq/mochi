@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "developerIdTeamId": "9P89G9N875",
+  "cloudflareAccountId": "fd173abce13d9bacf4be26c4c475462b",
+  "downloads": {
+    "bucket": "mochi-releases",
+    "baseUrl": "https://downloads.mochi.host/"
+  }
+}

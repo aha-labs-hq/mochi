@@ -1,0 +1,12 @@
+node_modules/
+out/
+vendor/
+public/
+src/palette.gen.ts
+*.view.jpg
+src/clips.gen.ts
+# Kept outside Git, as folders or as links to the film archive.
+/clips
+/refs
+/frames/inputs
+/frames/candidates

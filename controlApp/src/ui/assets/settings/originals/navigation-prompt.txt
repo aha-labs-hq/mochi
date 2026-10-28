@@ -1,0 +1,18 @@
+Use case: stylized-concept
+Asset type: coherent six-icon family for Mochi, a refined native macOS application's Settings navigation.
+
+Create exactly SIX original, exquisite miniature object icons, presented as a perfectly aligned 3-column by 2-row contact sheet. Each cell is square, the same size, with one centered icon. Pure uniform white #ffffff background across the entire sheet, with generous empty gutters. No labels or lines. Every object has the SAME optical size, SAME very shallow depth, SAME front-facing orthographic camera and SAME upper-left studio light.
+
+Subjects in strict reading order:
+1. GENERAL: one simple rounded application window, an ivory body, one muted indigo vertical sidebar and one graphite horizontal title bar. No tiny buttons, no text.
+2. OVERVIEW: one small solid house, an ivory body and a muted indigo pitched roof, just one dark doorway. A strong simple silhouette.
+3. INSTRUCTIONS: one ivory note sheet with a single muted indigo pencil resting diagonally across its lower right. Just two short broad graphite marks on the sheet.
+4. MODEL: two broad horizontal ivory slider rails, each with one large muted indigo circular control, placed at different horizontal positions. This is an elegantly tactile object, no technical circuitry or brain.
+5. GROUPS: two overlapping speech bubbles, muted indigo in front, warm ivory behind, with two simple broad ivory dots on the front bubble.
+6. PROJECTS: one muted indigo tabbed folder, slightly open, with a single warm ivory sheet peeking out. Simple familiar outline, no badges, no logos.
+
+Art direction: quiet, intelligent, genuinely usable small app icons; the restraint of an excellent Japanese industrial design object. Dense pressed wool felt over solid precise forms, extremely subtle fine nap visible ONLY at large scale. Crisp rounded contours, broad intentional planes, low relief. No long fuzzy fibers. Not plush toys. Not children's stickers. Their material should relate to a handmade felt character without competing with that character. Soft upper-left highlights, restrained natural occlusion only within each object. No cast shadow outside the silhouette, no floor, no horizon, no scene.
+
+Palette: warm ivory #eee9df, subdued indigo #435bb6, very small graphite #474847 details. White background must remain distinct from the ivory objects. No green, no cyan, no purple gradients, no metallic or plastic gloss. Indigo should look calm, not electric cobalt.
+
+Small-size legibility is essential: each icon will be used at 24px. Therefore use only 2–4 large shapes per icon, stout components, no thin lines or intricate detail. Match shape weight and visual density across all six. The icon itself occupies approximately 64 percent of its square cell, leaving consistent whitespace. Objects are free-standing silhouettes, never inside a rounded-square app tile. Do not add extra objects, any text, numbers, typography, watermarks, borders, a UI screenshot, or checkerboard transparency.

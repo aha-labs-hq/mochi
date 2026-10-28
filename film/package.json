@@ -1,0 +1,28 @@
+{
+  "name": "mochi-launch-film",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "assets": "bun tools/palette.ts && zsh tools/assets.sh && bun tools/score.ts && bun tools/foley.ts",
+    "render:wide": "remotion render src/index.ts Film out/mochi-film-16x9.mp4 --codec h264 --crf 16",
+    "render:tall": "remotion render src/index.ts FilmTall out/mochi-film-9x16.mp4 --codec h264 --crf 16",
+    "master": "zsh tools/master.sh",
+    "languages": "zsh tools/languages.sh"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.529",
+    "@remotion/cli": "4.0.529",
+    "@remotion/renderer": "4.0.529",
+    "js-synthesizer": "1.13.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.3",
+    "@types/react": "19.3.0",
+    "typescript": "7.0.2"
+  }
+}

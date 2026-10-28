@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 4,
+  "identity": {
+    "appId": 4850106,
+    "appOwnerId": 330909798,
+    "appSlug": "mochi-companion",
+    "botLogin": "mochi-companion[bot]",
+    "botUserId": 325632710,
+    "botCommitEmail": "325632710+mochi-companion[bot]@users.noreply.github.com",
+    "authorityUrl": "https://github-auth.mochi.host",
+    "maintainerRepositoryId": 1436737307,
+    "writeActor": "app",
+    "mergeActor": "human",
+    "requiredRepositoryPermissions": {
+      "actions": "read",
+      "checks": "read",
+      "contents": "write",
+      "issues": "write",
+      "metadata": "read",
+      "pull_requests": "write",
+      "statuses": "read"
+    }
+  },
+  "repository": {
+    "slug": "aha-labs-hq/mochi",
+    "defaultBranch": "main",
+    "branchPrefix": "codex/",
+    "settings": {
+      "has_issues": true,
+      "has_projects": true,
+      "allow_merge_commit": false,
+      "allow_rebase_merge": false,
+      "allow_squash_merge": true,
+      "allow_update_branch": true,
+      "delete_branch_on_merge": true,
+      "squash_merge_commit_title": "PR_TITLE",
+      "squash_merge_commit_message": "PR_BODY"
+    }
+  },
+  "labels": [
+    {
+      "name": "kind:bug",
+      "color": "d73a4a",
+      "description": "A defect or regression in expected behavior"
+    },
+    {
+      "name": "kind:change",
+      "color": "1d76db",
+      "description": "A product, architecture, or behavior change"
+    },
+    {
+      "name": "kind:maintenance",
+      "color": "6f42c1",
+      "description": "Repository, dependency, documentation, or operational upkeep"
+    },
+    {
+      "name": "area:bridge",
+      "color": "0e8a16",
+      "description": "Feishu, Pi runtime, GitHub, state, or Bridge behavior"
+    },
+    {
+      "name": "area:companion",
+      "color": "0052cc",
+      "description": "Native macOS companion behavior or presentation"
+    },
+    {
+      "name": "area:motion",
+      "color": "b60205",
+      "description": "Character motion protocol, production pipeline, or assets"
+    },
+    {
+      "name": "area:operations",
+      "color": "5319e7",
+      "description": "Provisioning, LaunchAgent, credentials, or runtime operations"
+    },
+    {
+      "name": "area:repository",
+      "color": "c2e0c6",
+      "description": "Build, CI, documentation, or repository governance"
+    },
+    {
+      "name": "area:cross-cutting",
+      "color": "006b75",
+      "description": "One change whose primary ownership spans multiple runtime boundaries"
+    },
+    {
+      "name": "priority:p0",
+      "color": "b60205",
+      "description": "Immediate: unsafe, unavailable, or actively corrupting"
+    },
+    {
+      "name": "priority:p1",
+      "color": "d93f0b",
+      "description": "Next: materially blocks the intended product or architecture"
+    },
+    {
+      "name": "priority:p2",
+      "color": "fbca04",
+      "description": "Normal: valuable, bounded work without an urgent blocker"
+    },
+    {
+      "name": "priority:p3",
+      "color": "c5def5",
+      "description": "Later: optional refinement or exploration"
+    },
+    {
+      "name": "state:needs-decision",
+      "color": "d4c5f9",
+      "description": "Cannot proceed until a named product or architecture choice is made"
+    },
+    {
+      "name": "state:blocked",
+      "color": "000000",
+      "description": "Cannot proceed until a concrete external condition changes"
+    },
+    {
+      "name": "risk:high",
+      "color": "e99695",
+      "description": "Touches credentials, session identity, external writes, data, or release safety"
+    }
+  ],
+  "pullRequestTemplate": {
+    "sections": [
+      "Outcome",
+      "Evidence"
+    ]
+  },
+  "retiredLabels": [
+    "accessibility",
+    "bug",
+    "documentation",
+    "duplicate",
+    "enhancement",
+    "good first issue",
+    "help wanted",
+    "invalid",
+    "question",
+    "state:needs-triage",
+    "wontfix"
+  ]
+}

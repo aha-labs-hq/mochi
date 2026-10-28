@@ -1,0 +1,238 @@
+@import "tailwindcss" source(none);
+@import "./palette.css";
+@source "./";
+
+/* One desktop theme, not a second component stylesheet. */
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  /* Keep the original rounded wordmark independent of reading typography. */
+  --font-brand:
+    ui-rounded, -apple-system, BlinkMacSystemFont, "SF Pro Rounded", sans-serif;
+  --spacing: 4px;
+  /* The one type scale. Components pick a step; they never invent a size. */
+  /* Fine print: identifiers and badges beside 12-point text. */
+  --text-2xs: 11px;
+  --text-2xs--line-height: 1.45;
+  --text-xs: 12px;
+  --text-xs--line-height: 1.5;
+  --text-sm: 13px;
+  --text-sm--line-height: 1.5;
+  --text-base: 14px;
+  --text-base--line-height: 1.6;
+  --text-lead: 16px;
+  --text-lead--line-height: 1.6;
+  --text-subheading: 18px;
+  --text-subheading--line-height: 1.45;
+  --text-heading: 20px;
+  --text-heading--line-height: 1.4;
+  --text-title: 24px;
+  --text-title--line-height: 1.3;
+  /* Settings page titles: one confident size above every section rule. */
+  --text-display: 28px;
+  --text-display--line-height: 36px;
+  /* The welcome and first-run headings. */
+  --text-hero: 32px;
+  --text-hero--line-height: 1.3;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --shadow-surface: 0 18px 48px #00000018, 0 1px 3px #0000000d;
+  --shadow-control: 0 1px 2px #0000000a;
+}
+
+/* Semantic roles are shared across setup, Settings and the companion. */
+@theme inline {
+  --color-action: var(--color-primary);
+  --color-settings-page: var(--color-surface);
+  --color-settings-chrome: var(--color-chrome);
+  --color-settings-selection: color-mix(
+    in srgb,
+    var(--color-ink) 7%,
+    transparent
+  );
+  --color-settings-selected: var(--color-ink);
+  /* Keyboard focus: a neutral ring, clearly unlike selection or hover. */
+  --color-focus: color-mix(in srgb, var(--color-ink) 78%, transparent);
+  /* Non-text boundaries that identify a control reach about 3:1 on paper. */
+  --color-control-boundary: color-mix(
+    in srgb,
+    var(--color-ink) 50%,
+    transparent
+  );
+  --color-field-border: color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+
+@custom-variant compact (@media (max-width: 400px));
+@custom-variant reduced-transparency (
+  @media (prefers-reduced-transparency: reduce)
+);
+
+/* One focus language for every control: a 2-point neutral ring outside the
+   control. It never borrows selection's wash or action blue, and it does not
+   move or resize anything. */
+@utility focus-ring {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  @media (forced-colors: active) {
+    outline-color: Highlight;
+  }
+}
+
+@utility field-focus {
+  @apply outline-none;
+  &:focus-visible {
+    @apply focus-ring;
+  }
+}
+
+@utility control-focus {
+  @apply outline-none;
+  &:focus-visible {
+    @apply focus-ring;
+  }
+}
+
+/* Content padding belongs inside the scrollport, so a scrollbar at either
+   system width stays at the panel edge instead of crossing controls. */
+@utility settings-content {
+  @apply mx-auto w-full max-w-[680px] px-9 max-[899px]:px-6 max-[579px]:px-5;
+}
+
+/* Every settings form and object uses the same six tracks and rhythm.
+   A named content container owns responsive spans, independent of the sidebar. */
+@utility settings-grid {
+  @apply grid grid-cols-6 gap-x-4;
+}
+
+@utility settings-label {
+  @apply col-span-1 min-w-0 text-sm leading-6 font-medium;
+  @container settings (width < 560px) {
+    grid-column: span 2 / span 2;
+  }
+}
+
+@utility settings-value {
+  @apply col-span-5 min-w-0;
+  @container settings (width < 560px) {
+    grid-column: span 4 / span 4;
+  }
+}
+
+@utility settings-section-title {
+  @apply text-sm leading-6 font-semibold;
+}
+
+@utility settings-note {
+  @apply text-xs leading-5 text-muted;
+}
+
+@utility settings-card {
+  @apply rounded-md border border-hairline bg-card p-4;
+}
+
+@layer components {
+  /* The connection flow has one owner; Settings supplies only its surface. */
+  .settings-theme .feishu-connection {
+    @apply settings-card;
+  }
+  .settings-theme .feishu-connection-heading {
+    @apply gap-4;
+  }
+  .settings-theme .feishu-connection-heading h3 {
+    @apply settings-section-title;
+  }
+  .settings-theme .feishu-connection-heading p {
+    @apply settings-note mt-2;
+  }
+}
+
+@utility settings-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+/* Every Settings page enters the same short edge below the window chrome.
+   The matching inset keeps the first line fully opaque before scrolling. */
+@utility settings-scroll {
+  @apply settings-scrollbar overflow-y-auto overscroll-contain;
+  padding-top: 16px;
+  scroll-padding-top: 16px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16px);
+  mask-image: linear-gradient(to bottom, transparent, #000 16px);
+}
+
+@layer base {
+  :root {
+    @apply font-sans text-base antialiased;
+    /* The reading surface stays light in both macOS appearances. */
+    color-scheme: light;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    line-height: normal;
+  }
+  html,
+  body,
+  #root {
+    @apply m-0 size-full overflow-hidden;
+  }
+  body {
+    @apply select-none;
+  }
+  /* Avoid a lone character on the last line of Chinese prose, and let a
+     customer's long Latin name break instead of widening the page. */
+  p,
+  li,
+  dd,
+  label,
+  h1,
+  h2,
+  h3 {
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+  }
+  h1 {
+    @apply text-title font-semibold tracking-[-.025em];
+  }
+  h2 {
+    @apply text-heading font-semibold tracking-[-.025em];
+  }
+  h3 {
+    @apply text-base font-semibold;
+  }
+  small {
+    @apply text-xs;
+  }
+  hr {
+    @apply my-1.5 h-px w-full border-0 bg-hairline;
+  }
+  .product-theme,
+  .settings-theme,
+  .setup-theme {
+    color-scheme: light;
+    color: var(--color-ink);
+  }
+
+  /* The native material owns the desktop blur. Keep renderer alpha clear so
+     the window aperture stays genuinely transparent. */
+  .companion-surface {
+    background: transparent;
+  }
+  .settings-theme {
+    letter-spacing: 0;
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    :root,
+    .settings-theme {
+      --color-glass: var(--color-surface);
+      --color-chrome: var(--color-surface);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      @apply scroll-auto;
+    }
+  }
+}

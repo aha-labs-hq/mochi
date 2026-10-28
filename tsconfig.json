@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    // Type-check Mochi strictly while treating Pi's third-party declaration graph as an external ABI.
+    "skipLibCheck": true,
+    "types": ["bun"]
+  },
+  "include": ["src/**/*.ts", "script/**/*.ts", "test/**/*.ts"]
+}

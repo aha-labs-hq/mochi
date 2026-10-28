@@ -1,0 +1,226 @@
+@import "tailwindcss" source(none);
+@import "../../controlApp/src/ui/palette.css";
+@source "./";
+@source "../../controlApp/src/ui/Glyph.tsx";
+@source "../../controlApp/src/ui/IntroductionMarkdown.tsx";
+
+/* The website's type and rhythm. Colour comes from the shared palette. */
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-brand:
+    ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.45;
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.75;
+  --text-body: 1rem;
+  --text-body--line-height: 1.8;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.7;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.6;
+  --radius-card: 20px;
+  --shadow-card:
+    0 1px 2px #0000000a, 0 12px 32px -8px #00000014, 0 40px 80px -24px #0000001a;
+  --ease-settle: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@theme inline {
+  --color-action: var(--color-primary);
+  /* The action blue, lifted to read on the ink stage. */
+  --color-glow: color-mix(in srgb, var(--color-primary) 52%, white);
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 48px;
+  }
+}
+
+/* One page grid: 12 tracks inside a 1200-point measure. */
+@utility site-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: 20px;
+  @media (width >= 768px) {
+    padding-inline: 40px;
+  }
+}
+
+@utility site-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 16px;
+  @media (width >= 768px) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+}
+
+/* Headings break at phrases where the browser can find them. */
+@utility phrase {
+  word-break: auto-phrase;
+  text-wrap: balance;
+}
+
+@layer base {
+  html,
+  body {
+    /* Nothing scrolls sideways; clip keeps sticky elements working. */
+    overflow-x: clip;
+  }
+  :root {
+    color-scheme: light;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 96px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+  p,
+  li,
+  dd,
+  blockquote {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  dialog::backdrop {
+    background: color-mix(in srgb, var(--color-scrim) 32%, transparent);
+  }
+}
+
+/* Evidence is readable as a link even when colour cannot distinguish it. */
+[data-chat-bubble] a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+/* Content arrives once as it enters the reader's view; without script, or
+   with reduced motion, it is simply there. */
+.js [data-reveal] {
+  opacity: 0;
+  translate: 0 12px;
+  transition:
+    opacity 640ms var(--ease-settle),
+    translate 640ms var(--ease-settle);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.js [data-reveal][data-shown] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* A conversation waits for its playback. If the script never arrives, the
+   transcript reveals itself rather than staying hidden. */
+.js [data-playback]:not([data-playback-ready]) [data-message] {
+  visibility: hidden;
+  animation: transcript-fallback 0s 3s forwards;
+}
+@keyframes transcript-fallback {
+  to {
+    visibility: visible;
+  }
+}
+
+/* The hero's still Mochi waits for the scene to settle, with the same
+   fallback should the script never arrive. */
+.js [data-hero-stage]:not([data-scene="settled"]) [data-still] {
+  visibility: hidden;
+  animation: transcript-fallback 0s 3s forwards;
+}
+
+/* The page header is clear over the first view and settles once scrolled. */
+.js:not([data-scrolled]) [data-header] {
+  border-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* A morning's questions pile up one after another; three are named. */
+.js [data-noise] [data-bubble] {
+  opacity: 0;
+  translate: 0 16px;
+  transition:
+    opacity 520ms var(--ease-settle),
+    translate 520ms var(--ease-settle);
+  transition-delay: calc(var(--i) * 110ms);
+}
+.js [data-noise][data-shown] [data-bubble] {
+  opacity: 1;
+  translate: 0 0;
+}
+.js [data-noise] [data-tag] {
+  opacity: 0;
+  scale: 0.8;
+  transition:
+    opacity 360ms var(--ease-settle),
+    scale 360ms var(--ease-settle);
+  transition-delay: 1300ms;
+}
+.js [data-noise][data-shown] [data-tag] {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Waiting takes as long as it looks: the slow bar crawls, the fast one lands. */
+[data-bar] {
+  width: max(6px, calc(var(--share) * 100%));
+}
+.js [data-observe] [data-bar] {
+  transition: width var(--duration) cubic-bezier(0.4, 0, 0.6, 1) 300ms;
+}
+.js [data-observe]:not([data-shown]) [data-bar] {
+  width: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-noise] [data-bubble],
+  .js [data-noise] [data-tag],
+  .js [data-observe] [data-bar] {
+    opacity: 1;
+    translate: none;
+    scale: none;
+    transition: none;
+  }
+  .js [data-observe]:not([data-shown]) [data-bar] {
+    width: max(6px, calc(var(--share) * 100%));
+  }
+  .js [data-reveal] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}

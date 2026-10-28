@@ -1,0 +1,49 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "mochi-github-authority",
+  // The issuer's personal account owns the authority; deploys never fall back
+  // to whichever account a login happens to default to.
+  "account_id": "fd173abce13d9bacf4be26c4c475462b",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [{ "pattern": "github-auth.mochi.host", "custom_domain": true }],
+  "preview_urls": false,
+  // Counted per Cloudflare location under keys `account:<GitHub account ID>`,
+  // `installation:<installation ID>` and `maintainer`. Namespace IDs are unique
+  // in the account (the Aha Labs account service holds 41xx); every period is
+  // RATE_LIMIT_PERIOD_SECONDS in src/index.ts, sent back as Retry-After.
+  "ratelimits": [
+    {
+      "name": "ACCOUNT_LIMIT",
+      "namespace_id": "4201",
+      "simple": { "limit": 30, "period": 60 }
+    },
+    {
+      "name": "INSTALLATION_LIMIT",
+      "namespace_id": "4202",
+      "simple": { "limit": 60, "period": 60 }
+    }
+  ],
+  "secrets": {
+    "required": ["GITHUB_APP_PRIVATE_KEY", "MAINTAINER_AUTH_TOKEN"]
+  },
+  "vars": {
+    "GITHUB_APP_ID": "4850106",
+    "GITHUB_APP_SLUG": "mochi-companion",
+    "GITHUB_APP_BOT_LOGIN": "mochi-companion[bot]",
+    "GITHUB_API_VERSION": "2026-03-10",
+    "MAINTAINER_ACCOUNT_ID": "48590169",
+    "MAINTAINER_REPOSITORY_ID": "1436737307",
+    "MAINTAINER_REPOSITORY_OWNER_ID": "330909798",
+    "MAINTAINER_REPOSITORY_FULL_NAME": "aha-labs-hq/mochi"
+  },
+  "observability": {
+    "enabled": true,
+    // Only the authority's own entries are kept: invocation logs and traces
+    // would also store request metadata, which the privacy notice excludes.
+    "logs": { "head_sampling_rate": 1, "invocation_logs": false },
+    "traces": { "enabled": false }
+  }
+}

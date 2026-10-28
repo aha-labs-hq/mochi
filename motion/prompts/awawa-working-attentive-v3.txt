@@ -1,0 +1,11 @@
+Animate the supplied Awawa felt rock-hyrax portrait in one four-second locked shot. First and last frames are exactly the supplied image. Preserve its two equal solid-black eyes with no whites, little teeth, whiskers, small paws, short matte wool and warm colours. The face can turn as a coherent three-dimensional felt sculpture; the body and camera remain planted. Perfectly uniform saturated RGB #0878CA background throughout.
+
+The important action is WHERE IT LOOKS. It visibly looks down at its tool before touching it, then looks up at the viewer to share the result. Do not animate hands beneath an unchanged frontal stare.
+
+0.0-0.6 seconds: a very small charcoal pad with one ochre felt button rises between the paws. Awawa tips its head forward and down twenty degrees, nose pointing AT that button, and visibly inspects it. Both paws rest beside the button.
+
+0.6-2.9: perform ONE complete closed activity cycle. From this still downward-looking pose, one paw presses and releases the button. Keep looking at the button for a beat to check it. Then slowly lift the face to look straight into the viewer's eyes, lift the cream brows slightly, and hold this dry knowing eye contact for half a second. Finally look back down at the button and settle into EXACTLY the same downward head angle, paw positions and released button as at 0.6 seconds. The prop stays present. Both boundaries of this middle cycle are completely still and visually identical.
+
+2.9-3.5: the pad lowers away while Awawa turns back to the viewer and resumes the supplied pose. 3.5-4.0: hold the exact supplied image.
+
+Gaze direction comes from visible head pitch, nose orientation and timing. Black eyes stay attached to the face, never gain whites or separate pupils. Quiet adult deadpan personality, no grin, babyish bouncing, detached facial features, deformed hands, additional limbs, glossy CGI, camera motion, cut, dissolve, morph, lighting change, breathing, text or watermark.

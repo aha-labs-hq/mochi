@@ -1,0 +1,31 @@
+name: Product or architecture change
+description: Preserve an outcome or decision that benefits from durable tracking.
+title: ""
+labels:
+  - kind:change
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use an Issue when it reduces uncertainty across turns or parallel work. Do not create one only to satisfy a delivery ritual.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What becomes observably true.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Optional evidence, decisions, constraints, or related work worth preserving.
+    validations:
+      required: false
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Optional acceptance notes when the outcome is not already self-evident.
+    validations:
+      required: false

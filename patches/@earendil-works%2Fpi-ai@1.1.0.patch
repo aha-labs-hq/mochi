@@ -1,0 +1,172 @@
+diff --git a/dist/auth/oauth/callback-server.d.ts b/dist/auth/oauth/callback-server.d.ts
+index b11f5f6d2e5452ed1782be3742fd27c3c2a5a4a1..b80359f214348266580fb2176bc8c6c03c80ff78 100644
+--- a/dist/auth/oauth/callback-server.d.ts
++++ b/dist/auth/oauth/callback-server.d.ts
+@@ -24,6 +24,11 @@ export interface OAuthCallbackServerOptions<T> {
+     complete: (code: string) => Promise<T>;
+     signal?: AbortSignal;
+     timeoutMs?: number;
++    /** Fixed pages replacing every built-in page: `received` for status 200, `rejected` otherwise. */
++    pages?: {
++        received: string;
++        rejected: string;
++    };
+ }
+ export interface OAuthCallbackServer<T> {
+     redirectUri: string;
+diff --git a/dist/auth/oauth/callback-server.js b/dist/auth/oauth/callback-server.js
+index ebab32e955b79fcbf14373fc43993afb063554b8..6a3de6a7e98fe4ade3295de4d8326e3d226b12a0 100644
+--- a/dist/auth/oauth/callback-server.js
++++ b/dist/auth/oauth/callback-server.js
+@@ -6,9 +6,14 @@
+  */
+ import { createServer } from "node:http";
+ import { oauthErrorHtml, oauthSuccessHtml } from "../../utils/oauth-page.js";
+-function sendPage(response, status, html) {
+-    response.writeHead(status, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
+-    response.end(html);
++function sendPage(response, status, html, pages) {
++    response.writeHead(status, {
++        "content-type": "text/html; charset=utf-8",
++        "cache-control": "no-store",
++        "referrer-policy": "no-referrer",
++        "x-content-type-options": "nosniff",
++    });
++    response.end(pages ? (status === 200 ? pages.received : pages.rejected) : html);
+ }
+ export async function startOAuthCallbackServer(options) {
+     const { providerName, signal } = options;
+@@ -42,38 +47,38 @@ export async function startOAuthCallbackServer(options) {
+         void (async () => {
+             const url = new URL(request.url ?? "/", "http://localhost");
+             if (request.method !== "GET" || url.pathname !== options.path) {
+-                sendPage(response, 404, oauthErrorHtml("Callback route not found."));
++                sendPage(response, 404, oauthErrorHtml("Callback route not found."), options.pages);
+                 return;
+             }
+             if (options.state !== undefined && url.searchParams.get("state") !== options.state) {
+-                sendPage(response, 400, oauthErrorHtml("State mismatch."));
++                sendPage(response, 400, oauthErrorHtml("State mismatch."), options.pages);
+                 return;
+             }
+             if (claimed || settled) {
+-                sendPage(response, 409, oauthErrorHtml("This sign-in has already been handled."));
++                sendPage(response, 409, oauthErrorHtml("This sign-in has already been handled."), options.pages);
+                 return;
+             }
+             const error = url.searchParams.get("error");
+             if (error) {
+                 const description = url.searchParams.get("error_description") ?? error;
+-                sendPage(response, 400, oauthErrorHtml(`${providerName} authorization failed.`, description));
++                sendPage(response, 400, oauthErrorHtml(`${providerName} authorization failed.`, description), options.pages);
+                 finish({ error: new Error(`${providerName} authorization failed: ${description}`) });
+                 return;
+             }
+             const code = url.searchParams.get("code");
+             if (!code) {
+-                sendPage(response, 400, oauthErrorHtml("Missing authorization code."));
++                sendPage(response, 400, oauthErrorHtml("Missing authorization code."), options.pages);
+                 return;
+             }
+             claimed = true;
+             try {
+                 const value = await options.complete(code);
+-                sendPage(response, 200, oauthSuccessHtml(`Signed in to ${providerName}. You may now close this page.`));
++                sendPage(response, 200, oauthSuccessHtml(`Signed in to ${providerName}. You may now close this page.`), options.pages);
+                 finish({ value });
+             }
+             catch (error) {
+                 const failure = error instanceof Error ? error : new Error(String(error));
+-                sendPage(response, 502, oauthErrorHtml(`${providerName} sign-in failed.`, failure.message));
++                sendPage(response, 502, oauthErrorHtml(`${providerName} sign-in failed.`, failure.message), options.pages);
+                 finish({ error: failure });
+             }
+         })();
+diff --git a/dist/auth/oauth/openai-codex.d.ts b/dist/auth/oauth/openai-codex.d.ts
+index 02cefdfa36a8a497eede052c2fc5668d2d81fed7..e1bf5c8eb0a593a74deeaf0143a0314128f4a78d 100644
+--- a/dist/auth/oauth/openai-codex.d.ts
++++ b/dist/auth/oauth/openai-codex.d.ts
+@@ -6,4 +6,8 @@
+  */
+ import type { OAuthAuth } from "../types.ts";
+ export declare const openaiCodexOAuth: OAuthAuth;
++export declare function setOpenAICodexCallbackPages(pages: {
++    received: string;
++    rejected: string;
++}): void;
+ //# sourceMappingURL=openai-codex.d.ts.map
+\ No newline at end of file
+diff --git a/dist/auth/oauth/openai-codex.js b/dist/auth/oauth/openai-codex.js
+index b543b9381352951833aeeaa1fc27ebdddda570bf..d98678b78b6029d52ff1b8576bfc2e40031ca928 100644
+--- a/dist/auth/oauth/openai-codex.js
++++ b/dist/auth/oauth/openai-codex.js
+@@ -28,6 +28,10 @@ const DEVICE_CODE_TIMEOUT_SECONDS = 15 * 60;
+ const OPENAI_CODEX_BROWSER_LOGIN_METHOD = "browser";
+ const OPENAI_CODEX_DEVICE_CODE_LOGIN_METHOD = "device_code";
+ const SCOPE = "openid profile email offline_access";
++let callbackPages;
++export function setOpenAICodexCallbackPages(pages) {
++    callbackPages = { received: pages.received, rejected: pages.rejected };
++}
+ const JWT_CLAIM_PATH = "https://api.openai.com/auth";
+ function getCallbackHost() {
+     return getProviderEnvValue("PI_OAUTH_CALLBACK_HOST") || "127.0.0.1";
+@@ -274,7 +278,7 @@ async function loginOpenAICodexDeviceCode(interaction) {
+ }
+ async function loginOpenAICodex(interaction, options) {
+     const { verifier, state, url } = await createAuthorizationFlow(options?.agentName);
+-    // Port 1455 is shared with the Codex CLI; when it is taken, fall back to the pasted redirect URL.
++    // Port 1455 is shared with the Codex CLI; when it is taken, fail before publishing the URL.
+     const callback = await startOAuthCallbackServer({
+         providerName: "OpenAI",
+         host: getCallbackHost(),
+@@ -283,7 +287,12 @@ async function loginOpenAICodex(interaction, options) {
+         state,
+         complete: async (code) => code,
+         signal: interaction.signal,
+-    }).catch(() => undefined);
++        pages: callbackPages,
++    }).catch((error) => {
++        if (interaction.signal.aborted)
++            throw error;
++        throw new Error(`ChatGPT browser callback is unavailable: ${error?.code ?? "listen_failed"}`, { cause: error });
++    });
+     interaction.notify({
+         type: "auth_url",
+         url,
+diff --git a/dist/bun-oauth.d.ts b/dist/bun-oauth.d.ts
+index 849d407a1c0ee9de548af790df85c3fbec8e27d1..6b6461b53775a09dd57cc14c8d4fe0e7f9b13b2a 100644
+--- a/dist/bun-oauth.d.ts
++++ b/dist/bun-oauth.d.ts
+@@ -1,3 +1,8 @@
+ /** Register OAuth flows statically embedded in the standalone Bun binary. */
+-export declare function registerBunOAuthFlows(): void;
++export declare function registerBunOAuthFlows(options?: {
++    openaiCodexCallbackPages?: {
++        received: string;
++        rejected: string;
++    };
++}): void;
+ //# sourceMappingURL=bun-oauth.d.ts.map
+\ No newline at end of file
+diff --git a/dist/bun-oauth.js b/dist/bun-oauth.js
+index fe0b130130af605730e35fd6bf151af9f8ae8568..72fa045156c7912d0d1890d57dbd3b36761acde9 100644
+--- a/dist/bun-oauth.js
++++ b/dist/bun-oauth.js
+@@ -4,12 +4,14 @@ import { kimiCodingOAuth } from "./auth/oauth/kimi-coding.js";
+ import { registerBundledOAuthFlowLoaders } from "./auth/oauth/load.js";
+ import { metaOAuth } from "./auth/oauth/meta.js";
+ import { openaiChatGPTOAuth } from "./auth/oauth/openai-chatgpt.js";
+-import { openaiCodexOAuth } from "./auth/oauth/openai-codex.js";
++import { openaiCodexOAuth, setOpenAICodexCallbackPages } from "./auth/oauth/openai-codex.js";
+ import { openRouterOAuth } from "./auth/oauth/openrouter.js";
+ import { createRadiusOAuth } from "./auth/oauth/radius.js";
+ import { xaiOAuth } from "./auth/oauth/xai.js";
+ /** Register OAuth flows statically embedded in the standalone Bun binary. */
+-export function registerBunOAuthFlows() {
++export function registerBunOAuthFlows(options) {
++    if (options?.openaiCodexCallbackPages)
++        setOpenAICodexCallbackPages(options.openaiCodexCallbackPages);
+     registerBundledOAuthFlowLoaders({
+         anthropic: () => anthropicOAuth,
+         openaiCodex: () => openaiCodexOAuth,

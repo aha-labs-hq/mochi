@@ -1,0 +1,7 @@
+Generated with built-in image_gen, image-to-image, 2026-10-10. These images guide active poses only; they are not approved root artwork or video endpoints.
+
+Working: input controlApp/Resources/AwawaCompanion.png. Preserve exact identity, short pressed felt, equal fully black open eyes, brows, whiskers, small teeth and paws. Bow the whole head about 35 degrees toward a tiny ochre button on a charcoal cushion between the paws. Show more crown and point the nose at the button; do not simulate gaze with sleepy half-closed eyes. Keep body scale, camera, baseline and diffuse lighting, on transparent background.
+Original output: exec-95c7af66-24c7-4002-91d5-a8e8ecec110c.png.
+
+Organizing: inputs approved root and the working guide. Preserve the same open-eyed, bowed-head posture and all identity/material constraints. Replace only the button/cushion with a tiny cream dish holding three charcoal felt pebbles in a row, naturally held by the small paws. Keep the nose pointing into the dish, fixed camera and body framing, transparent background.
+Original output: exec-da8f315c-067a-4c77-a228-f68383ec1708.png.

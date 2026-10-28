@@ -1,0 +1,7 @@
+[agent]
+instructions_file = "AGENTS.md"
+
+[runtime]
+model = "gpt-5.6-terra"
+reasoning_effort = "high"
+turn_timeout_seconds = 1800

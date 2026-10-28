@@ -1,0 +1,38 @@
+name: Bug
+description: Preserve a defect and the evidence needed to recognize its fix.
+title: ""
+labels:
+  - kind:bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use an Issue when the defect benefits from durable evidence or work across turns. A direct, bounded fix does not need synthetic intake.
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened and why it matters.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What contract should hold instead.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Add the smallest useful reproduction, screenshot, log, or source location. Never paste secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Optional observable acceptance notes when they add clarity.
+    validations:
+      required: false

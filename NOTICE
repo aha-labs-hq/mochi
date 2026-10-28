@@ -1,0 +1,17 @@
+Mochi
+Copyright 2026 Aha Labs
+
+This product includes software developed by Aha Labs (https://ahalabs.site/).
+
+The Apache License 2.0 in LICENSE covers the source code in this repository.
+It does not cover the Mochi and 麻薯 names, the characters and other artwork
+listed in TRADEMARKS.md, or the Aha Labs marks.
+
+This repository includes modifications of third-party software:
+- patches/ changes @earendil-works/pi-ai and @earendil-works/pi-coding-agent
+  (MIT License, Copyright (c) 2025 Mario Zechner) and node-forge (used under
+  the BSD-3-Clause License).
+- third_party/ holds the license texts of components redistributed in Mochi
+  builds.
+
+Release builds include THIRD_PARTY_NOTICES.txt for the dependencies they bundle.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Govern Mochi GitHub"
+  short_description: "Integrate Mochi worktrees without ceremony"
+  default_prompt: "Use $govern-mochi-github to choose the lightest safe GitHub path for this Mochi work."

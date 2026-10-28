@@ -1,0 +1,9 @@
+# Read-only checks; never rewrite or auto-stage a partial commit.
+# Full verification is `bun run verify` before integration, not every commit.
+# Run this worktree's own lefthook. Without it a commit fails, instead of the
+# generated hook falling back to other tools (`swift package` leaves `.build/`).
+lefthook: bunx --no-install lefthook
+pre-commit:
+  jobs:
+    - name: quality
+      run: bunx --no-install biome check --staged --no-errors-on-unmatched

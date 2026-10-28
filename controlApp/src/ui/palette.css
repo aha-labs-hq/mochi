@@ -1,0 +1,25 @@
+/* Mochi's colour palette: one owner for the companion and the website.
+   Type, spacing and radii stay with each surface; colour roles do not. */
+@theme {
+  --color-ink: #292929;
+  --color-muted: #636363;
+  --color-hairline: #29292924;
+  --color-surface: #f7f5f0;
+  --color-card: #fffdf8;
+  --color-control: #eeeeec;
+  --color-field: #f4f4f1;
+  --color-field-active: #e7e7e4;
+  --color-primary: #435bb6;
+  --color-on-primary: #ffffff;
+  --color-note: #eeede8;
+  --color-action-soft: #e8eefb;
+  --color-error: #a24e55;
+  --color-status-idle: #888888;
+  --color-status-good: #586d53;
+  --color-status-attention: #8a632c;
+  --color-glass: #fffdf866;
+  /* A thin warm tint over AppKit's fully composed desktop material. */
+  --color-chrome: #fffdf820;
+  --color-inverse: #fffdf8;
+  --color-scrim: #000000;
+}

@@ -1,0 +1,11 @@
+Use case: identity-preserve and style-transfer. Asset type: transparent square character root for the Mochi macOS companion main surface.
+
+Create one new image-to-image Awawa root from the current Awawa base and the approved Mochi root. Keep Awawa's own identity and anatomy; use Mochi only for its restrained handcrafted felt language, broad clean shapes, matte short wool nap, quiet diffuse light, and compact companion framing.
+
+Awawa is a rock hyrax (dassie), not a cat, bear, rabbit, mouse, or generic teddy bear. Preserve the broad low head, small rounded ears set wide and low, short blunt muzzle, broad pale muzzle patch, matte charcoal nose, two tiny upper incisors, two sparse whisker stitches on each cheek, two small cream brow tufts, warm cinnamon-taupe felt, and two small paws at the lower edge. No visible tail or full body.
+
+The character looks directly at the user. Both eyes are matching, identical-size, solid near-black felt beads sewn directly onto the taupe face: no white sclera, pale eye ring, colored iris, or glossy cartoon eye. Create personality through the eye spacing, brow directions, slight head tilt, tiny crooked mouth, and a subtly uneven paw height while keeping the gaze forward. The expression is alert, wry, clever, and self-possessed, as if the character is listening and has its own opinion. It is not babyish, sentimental, or a children's picture-book mascot.
+
+Use Mochi's material discipline: a few large felt planes, a compact graphic silhouette, short pressed wool with a quiet tactile nap, matte front lighting, and restrained modeling. Keep the material handmade but visually simple. Do not use dense looping fibers, realistic wildlife fur, photorealism, glossy plastic, smooth CGI volume, cinematic rim light, Disney/Pixar feature-animation rendering, huge shiny eyes, or exaggerated symmetry.
+
+Composition: one centered square 1254 x 1254 transparent PNG with generous transparent padding, a close head-and-shoulders crop, and only the upper body and two paws visible. Keep the character legible at a small app-avatar size. No floor, ledge, cast shadow, scenery, props, text, logo, watermark, colored fringe, halo, duplicate anatomy, or extra limbs.

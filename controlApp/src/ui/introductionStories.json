@@ -1,0 +1,267 @@
+{
+  "heading": ["跑得快的团队，", "都共享同一份项目全貌"],
+  "who": "麻薯是住在你们飞书群里的 AI 同事：@它提问，它会先查 GitHub 里的需求、代码和进展再回答。",
+  "intro": "把麻薯带入飞书与 GitHub，",
+  "context": "让讨论、决策、代码和项目状态串成清晰脉络，",
+  "caption": "每个判断都有迹可循。",
+  "explore": "看看麻薯怎么协作",
+  "question": "你平时在团队里做什么？",
+  "choiceHint": "选一个最接近的，看看麻薯怎么和你一起工作。",
+  "stories": [
+    {
+      "id": "product",
+      "role": "产品",
+      "perspective": "jules",
+      "title": "想去掉注册这一步，上次的顾虑还在吗",
+      "messages": [
+        {
+          "speaker": "jules",
+          "text": "这次想让客户点开就能看，别再卡在注册了。"
+        },
+        {
+          "speaker": "theo",
+          "text": "公开链接可以，私密的别动。@麻薯，上次没做成的那个问题，现在还在吗？"
+        },
+        {
+          "speaker": "mochi",
+          "text": "那块已经改好了。[公开和私密的校验拆开了](#permissions)，不用一起放开。\n\n接着 Nora 的[原需求 #86](#share-before)做就行。这次只做**公开内容免登录查看**，留言和私密内容照旧。要我把范围改进去吗？"
+        },
+        {
+          "speaker": "jules",
+          "text": "行，就这么改。派给 Evan，这次先把查看做好。"
+        },
+        {
+          "speaker": "mochi",
+          "text": "[#86](#share-scoped) 更新好了，已派给 **Evan**。"
+        },
+        {
+          "speaker": "evan",
+          "text": "收到，我来。"
+        }
+      ],
+      "evidenceIds": ["share-before", "permissions", "share-scoped"]
+    },
+    {
+      "id": "operations",
+      "role": "运营",
+      "perspective": "nora",
+      "title": "周五的客户邀请，这句话能写了吗",
+      "messages": [
+        {
+          "speaker": "nora",
+          "text": "周五的五家客户约好了。@麻薯，邀请能写「不用注册，点开就能看」了吗？"
+        },
+        {
+          "speaker": "mochi",
+          "text": "能，[已经上线](#preview-release)了。写「**公开链接，不用注册就能看**」吧。私密内容和留言还是要登录，跟[之前定的](#share-released)一样。"
+        },
+        {
+          "speaker": "nora",
+          "text": "好，那我发了。私密链接这块也会提醒他们。"
+        },
+        {
+          "speaker": "jules",
+          "text": "给我也发一份，我跟着走一遍。"
+        }
+      ],
+      "evidenceIds": ["preview-release", "share-released"]
+    },
+    {
+      "id": "design",
+      "role": "设计",
+      "perspective": "theo",
+      "title": "访问范围放在哪，复制时才不会漏看",
+      "messages": [
+        {
+          "speaker": "theo",
+          "text": "我想把「谁能看」放到复制按钮旁边。多占一行，但发出去之前就能看清。"
+        },
+        {
+          "speaker": "jules",
+          "text": "会不会有点挤？@麻薯，上次那几条反馈怎么说的？"
+        },
+        {
+          "speaker": "mochi",
+          "text": "那三个人都是[复制完就发出去了](#share-feedback)，没再看权限。等复制后才提示，可能还是会漏。\n\n我倾向留这一行。[现在已经能分别选公开和私密](#permissions)，放在复制前更合适。"
+        },
+        {
+          "speaker": "theo",
+          "text": "那这行留着，别的我再收一收。默认还是私密。"
+        }
+      ],
+      "evidenceIds": ["share-feedback", "permissions"]
+    },
+    {
+      "id": "engineering",
+      "role": "研发",
+      "perspective": "evan",
+      "title": "接手查看页，不用再找大家问一遍",
+      "messages": [
+        {
+          "speaker": "evan",
+          "text": "查看页我来接。@麻薯，把定好的范围和之前能用的代码找给我，别漏了 Theo 的图。"
+        },
+        {
+          "speaker": "jules",
+          "text": "图刚换过一版，别拿旧的。"
+        },
+        {
+          "speaker": "mochi",
+          "text": "都在 [#86](#share-designed) 里，图是 Theo 后补的那版。\n\n[公开、私密的校验](#permissions)可以直接复用。剩下是**公开链接的免登录查看页**，旧链接的权限不动，留言还是要登录。"
+        },
+        {
+          "speaker": "evan",
+          "text": "好，有这部分就省事了。我先接起来。"
+        }
+      ],
+      "evidenceIds": ["share-designed", "permissions"]
+    },
+    {
+      "id": "lead",
+      "role": "负责人",
+      "perspective": "riley",
+      "title": "今天大家做到哪了，还有哪里需要接一下",
+      "messages": [
+        {
+          "speaker": "riley",
+          "text": "@麻薯，今天大家都到哪儿了？我刚忙完，想过一下。"
+        },
+        {
+          "speaker": "mochi",
+          "text": "今天项目里更新了这些：\n- **Evan** 的[查看页](#preview-progress)已经提 PR，等 Jules 试用确认。\n- **Theo** 补齐了[分享面板的稿](#design-today)。\n- **Nora** [约好了五家客户](#pilot-ready)，周五试。\n\n现在等的是**查看页验收**，还没上线。"
+        },
+        {
+          "speaker": "jules",
+          "text": "我还没看，刚开完会。现在去试。"
+        },
+        {
+          "speaker": "riley",
+          "text": "好，重点看看第一次点进来顺不顺。Nora，邀请等上线再发。"
+        },
+        {
+          "speaker": "nora",
+          "text": "还在草稿里，等你们消息。"
+        },
+        {
+          "speaker": "evan",
+          "text": "预览地址在 PR 里，哪里不对直接叫我。"
+        }
+      ],
+      "evidenceIds": ["preview-progress", "design-today", "pilot-ready"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "share-before",
+      "title": "Issue #86 · 公开链接免登录查看",
+      "moment": "产品讨论前",
+      "state": "待办 · 尚未指派",
+      "facts": [
+        "Nora 记录了客户在注册步骤放弃查看分享内容的反馈。",
+        "此前公开、私密链接共用访问校验，团队决定先拆开权限，再做免登录查看。",
+        "原事项已关联权限 PR #94，本轮查看页范围尚未确认。"
+      ]
+    },
+    {
+      "id": "permissions",
+      "title": "PR #94 · 拆开公开与私密链接的访问校验",
+      "moment": "产品讨论前已合并",
+      "state": "已合并 · 当前代码已核对",
+      "facts": [
+        "发布人可选择「仅限指定成员」或「任何人可查看」。",
+        "公开链接读取与私密链接校验已经分开，旧链接保留原权限。",
+        "本次改动只完成权限拆分，免登录查看页仍需单独实现。"
+      ],
+      "note": "这次改动完成了权限拆分，免登录查看页是否可用，要看它后续的发布记录。"
+    },
+    {
+      "id": "share-scoped",
+      "title": "Issue #86 · 查看范围与负责人已更新",
+      "moment": "Jules 确认之后",
+      "state": "进行中 · Evan",
+      "facts": [
+        "本轮只开放公开链接免登录查看。私密内容和留言仍需登录，旧链接不改权限。",
+        "负责人已设为 Evan，继续关联权限 PR #94。",
+        "原有客户反馈和暂缓原因均保留。"
+      ]
+    },
+    {
+      "id": "share-feedback",
+      "title": "Issue #86 · 三条分享失败的反馈",
+      "moment": "最初提需求时的记录",
+      "state": "客户反馈 · 保留原文",
+      "facts": [
+        "三位发布人都在复制链接后直接外发，没有再检查访问范围。",
+        "发出的实际是私密链接，客户打开后被要求登录。",
+        "当时的分享面板没有在复制位置明确呈现访问范围。"
+      ]
+    },
+    {
+      "id": "share-designed",
+      "title": "Issue #86 · 范围、设计和已有实现",
+      "moment": "设计讨论后，Theo 补图；Evan 接手前",
+      "state": "进行中 · Evan",
+      "facts": [
+        "Jules 已确认公开链接只读范围，私密内容和留言仍需登录。",
+        "Theo 在 Issue 更新了设计稿，新版在复制前展示「谁能看」，默认私密；旧稿仍在历史中。",
+        "事项关联已合并的权限 PR #94，剩余实现是公开链接免登录查看页。"
+      ],
+      "note": "产品决定、Theo 的设计方案和权限改动都留在同一条事项下。"
+    },
+    {
+      "id": "preview-progress",
+      "title": "Issue #86 / PR #101 · 查看页等待验收",
+      "moment": "今天 15:10 · 群里询问前",
+      "state": "等待产品验收 · Evan",
+      "facts": [
+        "Evan 今天提交了 PR #101，关联 #86。自动检查和技术评审已通过，PR 尚未合并。",
+        "Evan 在 PR 评论里请 Jules 试用确认，并附上预览地址；截至本次读取，尚无验收完成的回复。",
+        "当前没有查看页已发布的记录。客户试用事项 #109 等待它上线。"
+      ]
+    },
+    {
+      "id": "design-today",
+      "title": "Issue #104 · 分享面板设计稿已补齐",
+      "moment": "今天 11:20 · Theo 更新",
+      "state": "设计已交付 · Theo",
+      "facts": [
+        "Theo 今天更新评论，确认公开、私密、无权访问三种状态的设计稿已补齐。",
+        "事项中保留最新设计稿链接，并关联查看页需求 #86。",
+        "已确认的交互不变：复制前展示访问范围，默认私密。"
+      ]
+    },
+    {
+      "id": "pilot-ready",
+      "title": "Issue #109 · 首批五家客户试用",
+      "moment": "今天 14:00 · Nora 更新",
+      "state": "客户已约好 · 等待查看页上线 · Nora",
+      "facts": [
+        "Nora 今天在事项中确认：五家客户已约好，计划周五试用公开分享链接。",
+        "试用对象是 #86 的免登录查看页，发正式邀请前要确认产品验收和上线。",
+        "本次项目记录没有说明邀请稿是否已写好。"
+      ]
+    },
+    {
+      "id": "preview-release",
+      "title": "PR #101 · 查看页已随 v1.8.0 发布",
+      "moment": "之后，运营准备发试用邀请时",
+      "state": "已合并 · 已发布",
+      "facts": [
+        "公开链接可以免登录查看，私密链接仍沿用原来的登录和权限校验。",
+        "PR #101 已合并，v1.8.0 的提交记录包含该合并提交。",
+        "生产发布记录成功，对应同一版本和提交。留言仍要求登录。"
+      ]
+    },
+    {
+      "id": "share-released",
+      "title": "Issue #86 · 已交付，准备客户试用",
+      "moment": "运营准备邀请时",
+      "state": "等待试用反馈 · Evan",
+      "facts": [
+        "本轮交付公开链接免登录查看，私密内容和留言仍需登录。",
+        "原需求关联 PR #101 和 v1.8.0 发布记录。",
+        "此前的产品范围、Theo 的方案和 Nora 的试用安排都保留在这条事项中。"
+      ]
+    }
+  ]
+}

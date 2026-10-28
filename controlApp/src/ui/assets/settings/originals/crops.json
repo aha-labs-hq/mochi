@@ -1,0 +1,13 @@
+[
+  ["general", "navigation", 280, 250, 560, 540],
+  ["profile", "navigation", 1675, 250, 625, 570],
+  ["groups", "navigation", 960, 915, 610, 535],
+  ["projects", "navigation", 1660, 910, 650, 585],
+  ["model", "model", 350, 460, 1350, 1130],
+  ["account", "connections-and-methods", 210, 200, 650, 620],
+  ["diagnostics", "connections-and-methods", 925, 200, 650, 620],
+  ["help", "connections-and-methods", 1640, 200, 650, 620],
+  ["investigation", "connections-and-methods", 210, 900, 650, 620],
+  ["issue", "connections-and-methods", 925, 900, 650, 620],
+  ["materials", "connections-and-methods", 1640, 900, 650, 620]
+]

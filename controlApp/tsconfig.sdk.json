@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2024", "DOM"],
+    "types": ["bun"],
+    "skipLibCheck": true,
+    "noCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "../.hutch/devkit/api",
+    "outDir": ".build/sdk"
+  },
+  "files": [
+    "../.hutch/devkit/api/config/ElectrobunConfig.ts",
+    "../.hutch/devkit/api/browser/index.ts",
+    "../.hutch/devkit/api/sdks/main/entries/browser-window.ts",
+    "../.hutch/devkit/api/sdks/main/entries/browser-view.ts",
+    "../.hutch/devkit/api/sdks/main/entries/app-menu.ts",
+    "../.hutch/devkit/api/sdks/main/entries/tray.ts",
+    "../.hutch/devkit/api/sdks/main/entries/utils.ts",
+    "../.hutch/devkit/api/sdks/main/entries/events.ts"
+  ]
+}

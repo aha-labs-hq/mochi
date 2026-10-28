@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "minimumUpdateVersion": "0.3.0",
+  "feedPath": "updates/stable.json",
+  "publicKey": "ccPcvrjm68NubHrEgLk22c4Tm+6MbMhDDegof9cchRM=",
+  "keychainAccount": "aha-labs"
+}

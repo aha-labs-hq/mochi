@@ -1,0 +1,11 @@
+Animate the supplied Awawa felt rock-hyrax portrait in one continuous four-second locked shot. The first and last frames are exactly the supplied image. Keep the equal solid-black eyes without whites, little teeth, whiskers, two small paws, cream brow stitches, short matte felt and warm colours. The head may turn as one coherent three-dimensional sculpture. Body baseline, camera, crop and lighting stay fixed. The background is completely uniform saturated RGB #0878CA with no floor or shadow.
+
+The important action is FOLLOWING AN OBJECT WITH ATTENTION. Awawa looks into a small cream felt dish before touching it, follows three charcoal felt pebbles as they move, checks that they have stopped, and then looks back at the viewer.
+
+0.0-0.6 seconds: the small shallow dish rises between the paws, below the muzzle, containing exactly three pebbles. Awawa tips its face down twenty degrees, nose aimed INTO the dish, and pauses to inspect it.
+
+0.6-2.9: one complete closed activity cycle. From a still downward-looking pose, the left paw nudges the dish a short distance right. The face smoothly turns a few degrees right, FOLLOWING the moving pebbles before they settle. Keep watching for a beat after the hand stops. Gently return the dish to its original centered position, pebbles in their original close row. Raise the face to meet the viewer's eyes; a slight release of the brows and half a second of still eye contact convey quiet satisfaction. Finally look back down and settle in EXACTLY the starting active pose: same head angle, paws, centered dish, three pebbles and stillness. The prop remains present throughout this repeatable cycle.
+
+2.9-3.5: the dish lowers away as the head returns to the supplied portrait. 3.5-4.0: completely still supplied root.
+
+Keep gaze, head and hands causally connected, with readable observing pauses. No face frozen toward the viewer during object movement. Black eyes stay attached to the turning face, without separate pupils or sclera. Quiet, dry adult personality; no grin, random nodding, childish bouncing, deformed anatomy, changed pebble count, floating magic, long fur, glossy CGI, zoom, cut, dissolve, morph, lighting change, breathing, blue holes, text or watermark.

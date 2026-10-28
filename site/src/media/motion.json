@@ -1,0 +1,30 @@
+{
+  "entrance": {
+    "sequence": "encounter",
+    "reverse": false,
+    "sourceAssetSha256": "ada35872365ee7d9f4feac718440dde0256f0a7bb084809514b20424feb5063e",
+    "webmSha256": "73afe005ab1b8955321b590d6f09aa51838e352271a5748ca5c9e92c8d126910",
+    "movSha256": "d30f38c8590f903938ca2f78f7bbfa01be3cfdfab32b19866e855b2d9303284c"
+  },
+  "pet": {
+    "sequence": "idle-curious",
+    "reverse": false,
+    "sourceAssetSha256": "5de07d0cc3574f8ea552e57143712fb67dd91cf5aa9fe677ef97a1852113d7fd",
+    "webmSha256": "9e08ec847840a1d112fd28a34459db44669ce3d00dc8662acfc0bd24348b5006",
+    "movSha256": "4df26cd4f23a06a2974103b55ed83c43f6eea5774df2424e41bc24a20f28b734"
+  },
+  "awawa": {
+    "sequence": "awawa-idle",
+    "reverse": false,
+    "sourceAssetSha256": "d2b168c2f4822fb6f61cc5e6a1371e6dbe14590232c80c340d952fbd8c8b2c44",
+    "webmSha256": "48b4b1a6ceefbb3fe3421475dce38f944ae0bfdcad61df7052c6ef10a8696a42",
+    "movSha256": "c6e2e30fac98224b5d8e7d570046cae4a0899f74436ffe38caf8698e5a2db8eb"
+  },
+  "wake": {
+    "sequence": "sleep",
+    "reverse": true,
+    "sourceAssetSha256": "efe7ade3a4c5f3043decdd8640df848c72e0fe85f1f1411f149de260ae017fb0",
+    "webmSha256": "9f48b204c261b289063f74c1bdcc6daa9d5b396c8ff5b71f6878c8f232383e5e",
+    "movSha256": "3df58c46d98803dd4f76fcea44d94e5f38dab232738f4896d99f2085bf21acac"
+  }
+}

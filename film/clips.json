@@ -1,0 +1,72 @@
+{
+  "arrival": {
+    "take": "arrival-a",
+    "task": "cgt-20261013005930-tch7z",
+    "sha256": "832153801121610473c8fc2f724f630c6c9aaddb9d1ebca385374ea262bcad8c"
+  },
+  "night": {
+    "take": "night-b",
+    "task": "cgt-20261013005930-ffkfq",
+    "sha256": "016be5a5b4310638f752cb1eb63fdce62da72d80f9e9f053b22b5d8d843d6b58"
+  },
+  "arrival-tall": {
+    "take": "arrival-tall-a",
+    "task": "cgt-20261013011052-fbjvv",
+    "sha256": "79d1719a992a168acc892d6779bc437be3f4ca3580b3b70a6fc607b918b3791c"
+  },
+  "night-tall": {
+    "take": "night-tall-b",
+    "task": "cgt-20261013011052-24llp",
+    "sha256": "c678219a4863f0104574aaa1e4d26dbdeb40e49b9adf5648755033b4ee79b0f1"
+  },
+  "city": {
+    "take": "city-a",
+    "task": "cgt-20261014184511-fq5d5",
+    "sha256": "ca2e1a5e76126a3324529022e8ea68d8f1200d2b59e3a15991b8bf40ad543df9"
+  },
+  "nora-type": {
+    "take": "nora-type-b",
+    "task": "cgt-20261014184525-bvv66",
+    "sha256": "f2bbe6b18395092129f8c59bfca25eb99d4146b1c8fcd0146f9f692b4af79040"
+  },
+  "nora-wait": {
+    "take": "nora-wait-b",
+    "task": "cgt-20261014184525-75dt8",
+    "sha256": "27b2f6733954e6ccbb887051b8da38246f15747eeda4bc8e261343a1c3eae706"
+  },
+  "evan-tap": {
+    "take": "evan-tap-b",
+    "task": "cgt-20261014184511-kh9px",
+    "sha256": "3030c0b449304ba5366a79901b1b88e5a54bec9576cc9a37afdd1997e7180fbc"
+  },
+  "dusk": {
+    "take": "dusk-d",
+    "task": "cgt-20261014185259-jjfk2",
+    "sha256": "64d0699e52895771d2328050b3cd482e3ceac219275618229b156d1386a0f19a"
+  },
+  "city-tall": {
+    "take": "city-tall-a",
+    "task": "cgt-20261014192155-qfbsq",
+    "sha256": "2062194a2fad0c69a64fb0d943e87aaec1924eb052b160dd2cabfc44448c03b4"
+  },
+  "nora-type-tall": {
+    "take": "nora-type-tall-b",
+    "task": "cgt-20261014192156-drkmm",
+    "sha256": "4dfaf0140de6c42e51e6e0468165cc623f2d4f9c62e2a4481f1a087bc4ca8618"
+  },
+  "rejected": {
+    "arrival-b": "the bezel cuts the eyes in half through a long peek, and the cat rises late",
+    "night-a": "the eyes settle through a heavy-lidded, grumpy in-between and a second closing",
+    "arrival-tall-b": "the cat sinks back behind the bezel mid-peek, hiding its eyes",
+    "night-tall-a": "the screen lights within a second, so the sleeping office has no beat",
+    "city-b": "the night holds one exposure, so the city never sinks into sleep around her window",
+    "nora-type-a": "she lifts her chin inside the dissolve from the city, losing the tired beat before she types",
+    "nora-wait-a": "her eyes roll up to the whites, which reads as exasperation, not waiting",
+    "evan-tap-a": "the bubbles barely gather, so the interruptions never crowd him",
+    "dusk-a": "Theo becomes a cat on all fours and runs across the floor",
+    "dusk-b": "Theo climbs over his desk and leaves as a cat, with a tail",
+    "dusk-c": "the room darkens while they are still walking out, so the empty room never gets its own beat",
+    "city-tall-b": "the cloud swells across the sky and pulls the eye from the one lit window",
+    "nora-type-tall-a": "her open-mouthed sigh reads as a yawn"
+  }
+}

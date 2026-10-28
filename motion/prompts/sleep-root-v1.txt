@@ -1,0 +1,7 @@
+Use the supplied image as the exact first frame and preserve the same Mochi identity, camera, crop, scale, baseline, body silhouette, loose white needle-felt fibers, pink nose, mouth, green eyes and planted paws throughout.
+
+Create one continuous four-second square shot on a perfectly uniform saturated cobalt blue background matching RGB #0878CA. Mochi slowly falls asleep by one restrained, symmetrical upper-eyelid closure: the eyes remain the same matte green until covered, the head and body stay pixel-stationary, and the final half second is completely still with the eyes peacefully closed.
+
+Lock exposure, white balance, contrast, saturation, light direction and material response to the supplied first frame for the entire shot. The white felt must keep the same neutral-warm RGB appearance from frame 0 through the final sleeping hold; do not darken, yellow, cool, brighten or otherwise recolor the fur over time. The pink nose and mouth must keep their exact color and shape. No lighting animation, shadow, breathing, camera movement, reframing, zoom, focus change, texture replacement, morph, redraw, extra object, text, floor, horizon, pale plate, gray edge, cyan rim or background variation.
+
+The outer boundary must remain irregular individual white fibers against the blue plate, with no continuous halo. Preserve both paws and the full original anatomy. End in a settled sleeping expression that is visually the same character and palette as the supplied first frame except for the closed eyelids.

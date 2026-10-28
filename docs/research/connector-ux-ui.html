@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mochi · Connector UX Study</title>
+  <style>
+    :root {
+      --paper:#f5f1e9; --paper-2:#fbfaf6; --ink:#252525; --muted:#77756e;
+      --line:#2626261b; --blue:#435bb6; --blue-soft:#e8edfb; --blue-deep:#30468e;
+      --green:#56705a; --green-soft:#e6eee4; --amber:#966b2d; --amber-soft:#f2e8d5;
+      --red:#a55558; --red-soft:#f4e2e1; --shadow:0 24px 70px #362e2419,0 2px 8px #362e2410;
+      --r:18px; --r-sm:11px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:#dbd6cb;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif}
+    body{padding:32px 24px 56px;background:
+      radial-gradient(900px 520px at 8% -4%,#fffdf7 0,#ede9e0 58%,transparent 70%),
+      linear-gradient(135deg,#ded9cf,#cec9c0 52%,#e2ddd4)}
+    button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+    .shell{max-width:1260px;margin:auto;border:1px solid #fff8;border-radius:28px;overflow:hidden;background:var(--paper-2);box-shadow:var(--shadow)}
+    .topbar{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:#fcfbf8e6;backdrop-filter:blur(20px)}
+    .brand{display:flex;align-items:center;gap:12px}.brand img{width:36px;height:36px;border-radius:12px;object-fit:cover;box-shadow:0 2px 7px #0002}.brand strong{font-size:15px;letter-spacing:.01em}.brand span{color:var(--muted);font-size:12px;margin-left:6px}
+    .top-actions{display:flex;gap:8px}.pill{padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;background:#fff9}.pill b{color:var(--green);font-weight:600}
+    .layout{display:grid;grid-template-columns:210px 1fr;min-height:746px}.rail{padding:26px 14px;border-right:1px solid var(--line);background:#f5f1e9aa}.rail-label{padding:0 12px 10px;text-transform:uppercase;letter-spacing:.13em;color:#9b988f;font-size:10px}.nav{display:flex;flex-direction:column;gap:4px}.nav button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;text-align:left;border-radius:12px;color:#6f6d67;font-size:13px;transition:.18s}.nav button:hover{background:#fff9;color:var(--ink)}.nav button.active{background:#e6e2da;color:var(--ink);font-weight:620}.nav svg{width:17px;height:17px;stroke-width:1.7}.rail-note{margin:26px 10px 0;padding-top:18px;border-top:1px solid var(--line);font-size:11px;line-height:1.65;color:var(--muted)}
+    .content{position:relative;padding:34px 38px 42px;overflow:hidden}.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);font-weight:650}.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:7px 0 28px}.title-row h1{font-family:Georgia,"Times New Roman",serif;font-size:35px;line-height:1.1;font-weight:500;letter-spacing:-.035em;margin:0}.title-row p{max-width:360px;color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 2px}.view{display:none;animation:rise .35s ease both}.view.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:14px}.hero-card{border:1px solid var(--line);border-radius:var(--r);padding:24px;background:linear-gradient(145deg,#fffdf9,#f7f2e9);min-height:182px;position:relative;overflow:hidden}.hero-card:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;right:-100px;top:-110px;background:#435bb612}.hero-card h2{font-family:Georgia,serif;font-weight:500;letter-spacing:-.025em;font-size:25px;line-height:1.15;margin:9px 0 12px;max-width:440px}.hero-card p{font-size:13px;line-height:1.65;color:var(--muted);max-width:510px;margin:0}.hero-card .caption{position:absolute;left:24px;bottom:18px;color:#9b978d;font-size:11px}.signal{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--green);font-weight:600}.dot{width:7px;height:7px;border-radius:50%;background:#688267;box-shadow:0 0 0 4px #68826718}.bot-card{display:flex;flex-direction:column;justify-content:space-between;background:#252525;color:#fff;padding:22px;border-color:#252525}.bot-card .eyebrow{color:#b9c7ff}.bot-top{display:flex;align-items:center;justify-content:space-between}.bot-id{display:flex;align-items:center;gap:10px}.bot-avatar{width:38px;height:38px;border-radius:13px;object-fit:cover;border:1px solid #fff3}.bot-name{font-size:14px;font-weight:650}.bot-role{font-size:11px;color:#b7b7b7;margin-top:3px}.bot-status{font-size:11px;color:#b9d1b7}.bot-card h3{font-family:Georgia,serif;font-size:21px;font-weight:500;line-height:1.2;margin:26px 0 4px;max-width:250px}.bot-card small{color:#a8a8a8;font-size:11px}.bot-card:after{background:#91a3ef12}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{border:1px solid var(--line);border-radius:var(--r);background:#fffdfa;padding:20px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:16px}.panel h3{font-size:16px;line-height:1.25;margin:0;font-weight:650;letter-spacing:-.015em}.panel-sub{font-size:12px;line-height:1.5;color:var(--muted);margin-top:5px}.tag{font-size:10px;letter-spacing:.04em;padding:5px 8px;border-radius:999px;background:var(--blue-soft);color:var(--blue-deep);white-space:nowrap}.tag.good{background:var(--green-soft);color:var(--green)}.tag.warn{background:var(--amber-soft);color:var(--amber)}.tag.dark{background:#ecebe8;color:#595752}
+    .connection{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--line)}.connection:first-of-type{border-top:0}.service{display:flex;align-items:center;gap:11px;min-width:0}.service-mark{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:15px;font-weight:750;background:#eef1fb;color:var(--blue);flex:none}.service-mark.feishu{background:#f8e9e5;color:#bd6357}.service-name{font-size:13px;font-weight:620}.service-meta{font-size:11px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-tag{font-size:9px;letter-spacing:.02em;padding:3px 5px;border-radius:5px;background:#e8edfb;color:var(--blue-deep);vertical-align:1px;white-space:nowrap}.mini-tag.channel{background:#f6e9e4;color:#a95e52}.mini-tag.connector{background:#eeeae2;color:#716a5e}.btn{padding:8px 11px;border-radius:9px;font-size:11px;font-weight:620;background:var(--blue);color:#fff;white-space:nowrap;transition:.18s}.btn:hover{background:var(--blue-deep);transform:translateY(-1px)}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.ghost:hover{background:#f1f0ec;transform:none}.btn.warn{background:var(--amber-soft);color:var(--amber)}
+    .connector-catalog{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:11px;padding:12px 0 0;border-top:1px dashed var(--line)}.connector-catalog strong{display:block;font-size:12px}.connector-catalog span{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.4}.runtime-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:#f4f1eb}.runtime-strip>div{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}.runtime-strip strong{font-size:12px}.runtime-strip>div>span:last-child{color:var(--muted);font-size:11px}.runtime-label{text-transform:uppercase;letter-spacing:.1em;color:#9b968b;font-size:9px;font-weight:700}
+    .resource{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:14px 0;gap:12px}.resource:first-of-type{border-top:0}.resource-main{min-width:0}.resource-name{font-size:13px;font-weight:620}.resource-desc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}.check{width:22px;height:22px;border-radius:7px;background:var(--blue);display:grid;place-items:center;color:#fff;font-size:13px;flex:none}.check.off{background:#eeece7;color:#aaa}.repo{display:flex;align-items:center;gap:8px}.repo-dot{width:8px;height:8px;border-radius:50%;background:#8069af}.repo-dot.gold{background:#c68943}.repo-dot.cyan{background:#3a97a1}
+    .scope{background:#f3f1ed;border-radius:13px;padding:13px;margin-top:14px}.scope-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px}.scope-row strong{font-size:12px}.scope-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.scope-list span{background:#fffdfa;border:1px solid var(--line);border-radius:7px;padding:5px 7px;color:#62605a;font-size:10px}.scope-list span.active{color:var(--blue-deep);border-color:#435bb655;background:#e9edfb}
+    .task-box{border:1px solid #435bb633;background:linear-gradient(135deg,#f5f7ff,#fffdfa);border-radius:14px;padding:15px;margin-bottom:14px}.task-line{display:flex;gap:10px;align-items:flex-start}.task-icon{width:26px;height:26px;border-radius:9px;background:#435bb6;color:#fff;display:grid;place-items:center;font-size:12px;flex:none}.task-text{font-size:13px;line-height:1.5}.task-text b{font-weight:650}.task-meta{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 0 36px}.task-meta span{font-size:10px;color:#5f6ea6;background:#e8edfb;border-radius:999px;padding:5px 8px}.timeline{margin-top:16px}.event{display:grid;grid-template-columns:20px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}.event:first-child{border-top:0;padding-top:0}.event-icon{width:18px;height:18px;border:1px solid #435bb655;border-radius:6px;color:var(--blue);font-size:10px;display:grid;place-items:center}.event-text{font-size:12px;line-height:1.45}.event-text small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.event-time{font-size:10px;color:#9a978f;white-space:nowrap}.activity-link{display:inline-flex;align-items:center;gap:5px;color:var(--blue);font-size:11px;font-weight:620;margin-top:8px}.activity-link:hover{text-decoration:underline}
+    .insight{display:flex;gap:12px;align-items:flex-start;padding:14px 15px;background:#f5f0e6;border-radius:13px;margin-top:14px}.insight-mark{font-size:18px;line-height:1}.insight p{font-size:12px;line-height:1.55;color:#5f5a51;margin:0}.insight p b{color:var(--ink)}
+    .grok .hero-card:first-child{background:linear-gradient(145deg,#f6f7ff,#fffdfa)}.grok .hero-card h2,.muse .hero-card h2{max-width:550px}.muse .hero-card:first-child{background:linear-gradient(145deg,#fff5ee,#fffdfa)}.muse .signal{color:#a15f45}.muse .dot{background:#b36b4e;box-shadow:0 0 0 4px #b36b4e18}.muse .task-icon{background:#a2604a}.muse .task-box{border-color:#c27a5c33;background:linear-gradient(135deg,#fff7f1,#fffdfa)}
+    .footer{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:17px 0 0;color:#9b978e;font-size:10px}.footer a{color:var(--blue);text-decoration:none}.footer a:hover{text-decoration:underline}
+    .modal-backdrop{display:none;position:fixed;inset:0;background:#211e1a55;backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px;z-index:10}.modal-backdrop.open{display:flex}.modal{width:min(530px,100%);border:1px solid #fff9;border-radius:22px;background:#fffdfa;box-shadow:0 30px 90px #0003;padding:24px;animation:rise .25s ease both}.modal-head{display:flex;justify-content:space-between;align-items:start}.modal h2{font:500 25px Georgia,serif;margin:0}.close{width:30px;height:30px;border-radius:9px;background:#f0eee9;font-size:18px;line-height:1}.modal p{color:var(--muted);font-size:12px;line-height:1.6;margin:12px 0 18px}.permission-card{border:1px solid var(--line);border-radius:13px;background:#f7f5f0;padding:14px}.permission-card .small-label{text-transform:uppercase;color:#99958c;letter-spacing:.12em;font-size:9px}.permission-card strong{display:block;font-size:13px;margin-top:7px}.permission-card ul{margin:11px 0 0;padding:0;list-style:none;display:grid;gap:8px}.permission-card li{font-size:11px;color:#66635c;display:flex;gap:8px}.permission-card li:before{content:"✓";color:var(--green);font-weight:700}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+    @media (max-width:900px){body{padding:14px}.layout{grid-template-columns:1fr}.rail{border-right:0;border-bottom:1px solid var(--line);padding:14px 16px}.rail-label,.rail-note{display:none}.nav{flex-direction:row;overflow:auto}.nav button{width:auto;white-space:nowrap}.content{padding:28px 20px}.hero,.grid{grid-template-columns:1fr}.title-row{display:block}.title-row p{margin-top:12px}.topbar{padding:0 16px}.top-actions .pill:nth-child(2){display:none}}
+    @media (max-width:520px){.topbar{height:64px}.brand span{display:none}.content{padding:24px 15px}.title-row h1{font-size:29px}.hero-card{padding:18px}.panel{padding:16px}.task-meta{margin-left:0}.footer{display:block;line-height:1.6}.footer span{display:block;margin-bottom:4px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><img src="../../controlApp/src/ui/assets/introduction/mochi.png" alt="Mochi"><div><strong>Mochi</strong><span>连接器体验研究原型</span></div></div>
+      <div class="top-actions"><div class="pill">研究状态 <b>已整理</b></div><div class="pill">演示数据 · 只读</div></div>
+    </header>
+    <div class="layout">
+      <aside class="rail">
+        <div class="rail-label">三种产品视角</div>
+        <nav class="nav" aria-label="研究视图">
+          <button class="active" data-view="mochi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 8a5 5 0 0 1 10 0v8a5 5 0 0 1-10 0V8Z"/><path d="M9 5 7 3M15 5l2-2M9 12h.01M15 12h.01M10 16c1.3 1 2.7 1 4 0"/></svg>Mochi · 适配方案</button>
+          <button data-view="grok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h6M8 16h4"/></svg>Grok Bot · 挂载能力</button>
+          <button data-view="muse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3a8 8 0 0 0-4 14.9V21h8v-3.1A8 8 0 0 0 12 3Z"/><path d="M9 21h6M9 9h.01M15 9h.01"/></svg>Muse · 持续监督</button>
+        </nav>
+        <div class="rail-note">这不是竞品截图，而是把官方体验原则重排成 Mochi 可以落地的桌面界面。</div>
+      </aside>
+      <section class="content">
+        <section class="view active" id="mochi">
+          <div class="eyebrow">Mochi / open connector system</div>
+          <div class="title-row"><h1>连接器可以扩展，团队上下文有优先级。</h1><p>GitHub 是我们首先推荐的团队共享上下文，但只是万千连接器之一；飞书群属于独立的消息入口，飞书服务沿用首次授权并按连接器能力状态展示。</p></div>
+          <div class="hero">
+            <article class="hero-card"><div class="signal"><i class="dot"></i>麻薯正在值班</div><h2>从「装了什么」回到「这件事需要哪些上下文」。</h2><p>Mochi 不把某一个服务写成产品边界：每个连接器都有自己的账号、资源、读写能力和撤销路径；GitHub 只是当前最重要的团队上下文。</p><div class="caption">当前视图：Bot 级设置 · 连接器</div></article>
+            <article class="hero-card bot-card"><div class="bot-top"><div class="bot-id"><img class="bot-avatar" src="../../controlApp/src/ui/assets/introduction/mochi.png" alt="麻薯头像"><div><div class="bot-name">麻薯</div><div class="bot-role">团队协作场景</div></div></div><span class="bot-status">● 在线</span></div><div><h3>同一个 Bot，持续理解同一件事。</h3><small>模型连接共用 · 连接器按 Bot 管理 · 群聊在独立设置中</small></div></article>
+          </div>
+          <div class="grid">
+            <article class="panel"><div class="panel-head"><div><h3>这个 Bot 的连接器</h3><div class="panel-sub">资源、授权与能力状态分别显示</div></div><span class="tag good">已授权</span></div>
+              <div class="connection"><div class="service"><div class="service-mark">GH</div><div><div class="service-name">GitHub · octo-team <span class="mini-tag">推荐上下文</span></div><div class="service-meta">团队共享上下文连接器 · 2 个项目已选择</div></div></div><button class="btn ghost" data-modal="github">查看范围</button></div>
+              <div class="connection"><div class="service"><div class="service-mark feishu">文</div><div><div class="service-name">飞书服务连接 <span class="mini-tag connector">已授权</span></div><div class="service-meta">已随首次飞书连接授权 · 文档 · 多维表 · Wiki 等能力按状态开放</div></div></div><button class="btn ghost" data-modal="feishu-crud">查看能力</button></div>
+              <div class="connector-catalog"><div><strong>连接器目录</strong><span>Linear · Notion · Google Drive · Slack · 更多</span></div><button class="btn" data-modal="connector-catalog">添加连接器</button></div>
+            </article>
+            <article class="panel"><div class="panel-head"><div><h3>当前任务的能力范围</h3><div class="panel-sub">不是常驻面板，只在任务需要时打开</div></div><span class="tag">可追溯</span></div>
+              <div class="task-box"><div class="task-line"><div class="task-icon">↗</div><div class="task-text"><b>核对增长活动的落地情况</b><br><span style="color:var(--muted)">来自飞书话题 · Riley · 2 条消息</span></div></div><div class="task-meta"><span>麻薯</span><span>web-app</span><span>只读调查</span></div></div>
+              <div class="event"><div class="event-icon">⌕</div><div class="event-text">读取 Issue #2012 与关联 PR<small>GitHub · 已选择项目 · 只读</small></div><div class="event-time">刚刚</div></div>
+              <div class="event"><div class="event-icon">↗</div><div class="event-text">准备给出分工建议<small>模型判断 · 尚未产生外部写入</small></div><div class="event-time">现在</div></div>
+              <button class="activity-link" data-modal="activity">查看这次任务的完整来源与活动 →</button>
+            </article>
+          </div>
+          <div class="runtime-strip"><div><span class="runtime-label">宿主运行能力</span><strong>模型连接 · ChatGPT</strong><span>共享账号 · 当前 Bot 策略：默认</span></div><button class="btn ghost" data-modal="model">查看模型</button></div>
+          <div class="insight"><div class="insight-mark">✦</div><p><b>适配判断：</b>自然语言可以触发“需要某个连接器”，但服务、账号、资源和读写授权仍由各自连接器页面与代码拥有。GitHub 是战略推荐，不是唯一入口；飞书群是运行时通道，飞书其他 CRUD 属于普通连接器。</p></div>
+        </section>
+
+        <section class="view grok" id="grok">
+          <div class="eyebrow">Grok Bot / explicit task scope</div>
+          <div class="title-row"><h1>把能力挂到这一件事上。</h1><p>Grok 的强项是显式的 Marketplace 与 <b>@</b> 任务挂载：工具在哪里、是否参与当前任务，一眼能分清。</p></div>
+          <div class="hero"><article class="hero-card"><div class="signal"><i class="dot"></i>连接器已安装 · 当前任务未挂载</div><h2>安装成功，不等于这次工作会用到它。</h2><p>这是一个概念重排：左侧是插件入口，右侧是任务作用域。Mochi 借用这个清晰度，但把“@”换成普通成员也能理解的任务详情。</p></article><article class="hero-card bot-card"><div class="bot-top"><div class="bot-id"><div class="bot-avatar" style="display:grid;place-items:center;background:#fff;color:#252525;font-weight:800">G</div><div><div class="bot-name">Grok Bot</div><div class="bot-role">Cloud computer · shared account</div></div></div><span class="bot-status">● ready</span></div><div><h3>工具先就位，任务再决定是否调用。</h3><small>注意：连接器对同一账号的 Bots 共享</small></div></article></div>
+          <div class="grid"><article class="panel"><div class="panel-head"><div><h3>Marketplace / Plugins</h3><div class="panel-sub">发现、安装、认证</div></div><span class="tag dark">账号范围</span></div>
+            <div class="connection"><div class="service"><div class="service-mark">GH</div><div><div class="service-name">GitHub</div><div class="service-meta">已安装 · OAuth session active</div></div></div><button class="btn" data-modal="grok-github">添加到任务</button></div>
+            <div class="connection"><div class="service"><div class="service-mark" style="background:#eee9fa;color:#69569d">▦</div><div><div class="service-name">Linear</div><div class="service-meta">需要重新认证</div></div></div><button class="btn warn" data-modal="reauth">重新连接</button></div>
+            <div class="scope"><div class="scope-row"><strong>当前任务</strong><span class="tag">2 个能力</span></div><div class="scope-list"><span class="active">@ GitHub</span><span>浏览器</span><span>文件</span><span>终端</span></div></div>
+          </article><article class="panel"><div class="panel-head"><div><h3>Approval / Auto Review</h3><div class="panel-sub">让程序判断风险，让人确认不可逆动作</div></div><span class="tag warn">需要注意</span></div>
+            <div class="event"><div class="event-icon">!</div><div class="event-text">发送外部消息<small>Ask first · 规则优先于自动允许</small></div><div class="event-time">待处理</div></div>
+            <div class="event"><div class="event-icon">✓</div><div class="event-text">读取项目列表<small>Allow automatically · 只读范围</small></div><div class="event-time">已放行</div></div>
+            <div class="event"><div class="event-icon">⌕</div><div class="event-text">用户接管密码 / 2FA<small>不进入普通聊天，不交给模型</small></div><div class="event-time">安全步骤</div></div>
+            <button class="activity-link" data-modal="grok-approval">打开审批卡片 →</button>
+          </article></div>
+          <div class="insight"><div class="insight-mark">⌘</div><p><b>借给 Mochi：</b>把“当前任务使用哪些能力”做成一块可见的任务上下文；<b>不借：</b>同账号所有 Bot 共享浏览器、文件和登录态，这和 Mochi 的 Bot 独立授权合同冲突。</p></div>
+        </section>
+
+        <section class="view muse" id="muse">
+          <div class="eyebrow">Muse / progressive oversight</div>
+          <div class="title-row"><h1>连接之后，仍然看得见。</h1><p>Muse 的强项是把连接、权限、活动、目标和审批组合成持续监督，而不是一次性 OAuth 完成页。</p></div>
+          <div class="hero"><article class="hero-card"><div class="signal"><i class="dot"></i>自然语言连接 · 权限持续可调</div><h2>“连接我的 Gmail”是入口，权限卡才是边界。</h2><p>这里保留 Muse 的渐进授权思想：先读，再写；一次、当前任务、当前站点或以后都允许，分别成为用户能理解的选择。</p></article><article class="hero-card bot-card"><div class="bot-top"><div class="bot-id"><div class="bot-avatar" style="display:grid;place-items:center;background:#f0c4af;color:#7e4d3e;font-weight:800">V</div><div><div class="bot-name">Veda / Muse</div><div class="bot-role">Personal agent · background work</div></div></div><span class="bot-status">● working</span></div><div><h3>后台继续做，关键动作停下来问你。</h3><small>Activity log · Goals · Secure credentials</small></div></article></div>
+          <div class="grid"><article class="panel"><div class="panel-head"><div><h3>Connected services</h3><div class="panel-sub">连接器访问可以按服务调整</div></div><span class="tag good">2 connected</span></div>
+            <div class="connection"><div class="service"><div class="service-mark" style="background:#f5e7dd;color:#a2604a">G</div><div><div class="service-name">Gmail</div><div class="service-meta">Read enabled · Send asks first</div></div></div><button class="btn ghost" data-modal="muse-gmail">Permissions</button></div>
+            <div class="connection"><div class="service"><div class="service-mark" style="background:#e8f0e8;color:#54765c">▣</div><div><div class="service-name">Google Calendar</div><div class="service-meta">Read only · proactive updates on</div></div></div><button class="btn ghost" data-modal="muse-calendar">Manage</button></div>
+            <div class="scope"><div class="scope-row"><strong>Web access defaults</strong><span style="color:var(--green);font-size:11px">Ask for some actions</span></div><div class="scope-list"><span class="active">read</span><span>draft</span><span>send</span><span>purchase</span></div></div>
+          </article><article class="panel"><div class="panel-head"><div><h3>Activity / approvals</h3><div class="panel-sub">聊天之外的第二条可见状态线</div></div><span class="tag">Live</span></div>
+            <div class="event"><div class="event-icon">↻</div><div class="event-text">整理本周活动邮件<small>Gmail · read · 12 封相关邮件</small></div><div class="event-time">2m</div></div>
+            <div class="event"><div class="event-icon">◷</div><div class="event-text">准备创建家庭日历提醒<small>Calendar · write · waiting for approval</small></div><div class="event-time">现在</div></div>
+            <div class="event"><div class="event-icon">⌂</div><div class="event-text">用户已接管浏览器<small>登录信息进入 secure credentials store</small></div><div class="event-time">完成</div></div>
+            <button class="activity-link" data-modal="muse-approval">查看权限详情 →</button>
+          </article></div>
+          <div class="insight"><div class="insight-mark">◌</div><p><b>借给 Mochi：</b>把来源、活动与授权结果连成一条可读轨迹；<b>不借：</b>个人长期主动任务和无边界的后台自动连接，当前示意以已选项目与飞书群为例，连接器集合可以继续扩展。</p></div>
+        </section>
+        <div class="footer"><span>原型 · 不会连接真实账号，不会发送消息，不会改变 Mochi 状态</span><span>研究依据见 <a href="connector-ux-grok-muse.md">connector-ux-grok-muse.md</a></span></div>
+      </section>
+    </div>
+  </main>
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true"><div class="modal"><div class="modal-head"><h2 id="modalTitle">范围与授权</h2><button class="close" id="closeModal" aria-label="关闭">×</button></div><p id="modalBody">这里展示连接的真实边界。</p><div class="permission-card"><div class="small-label">本次可用能力</div><strong id="modalStrong">当前任务 · 只读调查</strong><ul id="modalList"><li>来源项目由 Bot 明确选择</li><li>不会改变外部状态</li><li>结果带来源与回读证明</li></ul></div><div class="modal-actions"><button class="btn ghost" id="cancelModal">关闭</button><button class="btn" id="confirmModal">理解范围</button></div></div></div>
+  <script>
+    const nav=[...document.querySelectorAll('[data-view]')], views=[...document.querySelectorAll('.view')];
+    nav.forEach(btn=>btn.addEventListener('click',()=>{nav.forEach(x=>x.classList.toggle('active',x===btn));views.forEach(v=>v.classList.toggle('active',v.id===btn.dataset.view));}));
+    const data={
+      github:['GitHub 项目范围','GitHub 是当前推荐的团队共享上下文连接器，但不是 Mochi 的固定边界。这个 Bot 当前只能读取 web-app 与 mochi；项目选择属于 Bot 自己。','连接器 · 团队上下文','来源项目由 Bot 明确选择','读取工具按 repository_id 隔离','Issue 写入必须经过模型判断与代码门禁'],
+      'feishu-crud':['飞书服务连接器','飞书文档、多维表、Wiki 等能力已经随首次飞书连接取得授权；页面是否提供具体资源、读取或写入操作，取决于对应 adapter 的真实状态。','连接器 · CRUD 能力','授权不会被要求重复完成','资源与读写能力分别显示','未开放的操作不会伪装成可调用'],
+      'connector-catalog':['连接器目录','这里是可扩展的服务入口，不把 GitHub 或飞书写死成唯一选择。连接器需要声明账号、资源、能力和撤销方式，MCP 只是可能的实现方式。','连接器目录 · 可扩展','GitHub：推荐团队上下文','飞书服务：CRUD 连接器','Linear / Notion / Google Drive / Slack 等可继续接入'],
+      model:['共享模型连接','ChatGPT 连接由宿主共用，但模型策略属于当前 Bot。更换连接需要全部 Bot 空闲，不能影响永久 Session。','模型连接 · 通用 + Bot 策略','当前策略：ChatGPT / 默认','凭据不进入 renderer、Session 或日志','账号变化后逐个复验 Bot Session'],
+      activity:['这次任务的完整活动','把消息入口、连接器来源、模型判断与外部回读放在同一条可追溯路径里。这里是查看，不是新的事项面板。','任务详情 · 只读','飞书群话题：Riley · 2 条消息','GitHub 连接器：Issue #2012 · PR #2014','当前没有产生外部写入'],
+      'grok-github':['连接器挂载到当前任务','这是 Grok 式的显式任务范围。Mochi 的实现会显示能力详情，但不要求普通参与者学习 @ 语法。','当前任务 · GitHub','读取项目目录','查 Issue 与关联 PR','写入仍由模型判断 + 代码门禁'],
+      reauth:['需要重新认证','连接器仍在账号中，但供应商登录已经过期。重新认证只恢复该连接器，不改变 Bot、Session 或其他连接。','恢复动作 · 连接器','不会扩大项目范围','不会自动重放失败任务','认证失败会保留清晰错误'],
+      'grok-approval':['Grok 式审批卡片','连接器解决“能不能用”，审批解决“这一刻是否放行”。一次性允许与长期规则必须分开。','待确认 · 外部写入','目标与输入需要可识别','Allow once / Always allow / Deny','密码和 2FA 进入接管流程'],
+      'muse-gmail':['Gmail 权限范围','Muse 允许连接后持续调节读写边界。Mochi 借鉴“范围可见”，不复制通用个人代理。','Gmail · read + draft','读取邮件：允许','发送邮件：每次询问','历史内容不会因断开自动删除'],
+      'muse-calendar':['Calendar 权限范围','Muse 会标记能够主动推送变化的连接器。Mochi 将同类事实显示在群与项目状态中，而不是新增后台主动提醒。','Calendar · read only','读取事件：允许','写入邀请：未开启','连接断开后停止未来交换'],
+      'muse-approval':['Muse 式权限详情','这是不可逆动作的确定性确认，不是让模型在文本中自己宣布“已确认”。','等待用户 · 创建提醒','当前动作：写入 Calendar','Allow once / This task / Always allow','See task details 可查看来源']
+    };
+    const backdrop=document.getElementById('modalBackdrop'), title=document.getElementById('modalTitle'), body=document.getElementById('modalBody'), strong=document.getElementById('modalStrong'), list=document.getElementById('modalList');
+    function openModal(key){const d=data[key]||data.activity;title.textContent=d[0];body.textContent=d[1];strong.textContent=d[2];list.innerHTML=d.slice(3).map(x=>`<li>${x}</li>`).join('');backdrop.classList.add('open');document.getElementById('closeModal').focus()}
+    document.querySelectorAll('[data-modal]').forEach(b=>b.addEventListener('click',()=>openModal(b.dataset.modal)));
+    function closeModal(){backdrop.classList.remove('open')};document.getElementById('closeModal').addEventListener('click',closeModal);document.getElementById('cancelModal').addEventListener('click',closeModal);document.getElementById('confirmModal').addEventListener('click',closeModal);backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+  </script>
+</body>
+</html>

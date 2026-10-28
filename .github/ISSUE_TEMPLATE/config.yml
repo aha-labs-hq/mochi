@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Governance contract
+    url: https://github.com/aha-labs-hq/mochi/blob/main/docs/github-governance.md
+    about: Use an Issue only when durable tracking makes the work easier.

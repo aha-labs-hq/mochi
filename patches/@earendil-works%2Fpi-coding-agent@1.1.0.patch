@@ -1,0 +1,68 @@
+diff --git a/dist/core/agent-session.js b/dist/core/agent-session.js
+index c5ad71905832cac59341cff04729260936dfba77..8edc7050ffb69cd9c146c99409f9eea165ee6eae 100644
+--- a/dist/core/agent-session.js
++++ b/dist/core/agent-session.js
+@@ -2483,7 +2483,7 @@ export class AgentSession {
+                     type: "session_before_compact",
+                     preparation,
+                     branchEntries: pathEntries,
+-                    customInstructions: undefined,
++                    customInstructions: settings.customInstructions,
+                     reason,
+                     willRetry,
+                     signal: abortController.signal,
+@@ -2513,7 +2513,7 @@ export class AgentSession {
+             }
+             else {
+                 // Shared default summary generator, also used by manual compaction.
+-                const compactResult = await this._runDefaultCompaction(preparation, model, undefined, abortController.signal, reason);
++                const compactResult = await this._runDefaultCompaction(preparation, model, settings.customInstructions, abortController.signal, reason);
+                 summary = compactResult.summary;
+                 firstKeptEntryId = compactResult.firstKeptEntryId;
+                 tokensBefore = compactResult.tokensBefore;
+diff --git a/dist/core/settings-manager.d.ts b/dist/core/settings-manager.d.ts
+index 6f182c251713d7048d8349b998d2fad66755f8ac..a613d0583e3a652cee23e9ce949687f52ff75e3a 100644
+--- a/dist/core/settings-manager.d.ts
++++ b/dist/core/settings-manager.d.ts
+@@ -7,6 +7,8 @@ export interface CompactionModelOverride {
+ }
+ export interface CompactionSettings {
+     enabled?: boolean;
++    /** Summary focus for automatic compaction, as `compact(customInstructions)` gives manual compaction. */
++    customInstructions?: string;
+     reserveTokens?: number;
+     keepRecentTokens?: number;
+     modelOverrides?: Record<string, CompactionModelOverride>;
+@@ -270,6 +272,7 @@ export declare class SettingsManager {
+     /** Resolve each token setting through model override, ordinary setting, then built-in default. */
+     getCompactionSettings(model?: Pick<Model<string>, "provider" | "id">): {
+         enabled: boolean;
++        customInstructions?: string;
+         reserveTokens: number;
+         keepRecentTokens: number;
+     };
+diff --git a/dist/core/settings-manager.js b/dist/core/settings-manager.js
+index 89bc08c03e4fb3b14fd0ce0934d3af4db121f601..e80167e8bf33fff1b1654686d0d01e3e0711d7cc 100644
+--- a/dist/core/settings-manager.js
++++ b/dist/core/settings-manager.js
+@@ -656,6 +656,7 @@ export class SettingsManager {
+     getCompactionSettings(model) {
+         return {
+             enabled: this.getCompactionEnabled(),
++            customInstructions: this.settings.compaction?.customInstructions,
+             reserveTokens: this.getCompactionReserveTokens(model),
+             keepRecentTokens: this.getCompactionKeepRecentTokens(model),
+         };
+diff --git a/package.json b/package.json
+index cdb88d0c992693856512ce4520a7eb797382fb1c..d906789c2c92edbafc33b132f8af79a9c7eed815 100644
+--- a/package.json
++++ b/package.json
+@@ -67,7 +67,7 @@
+ 		"proper-lockfile": "4.1.2",
+ 		"quickjs-wasi": "3.6.2",
+ 		"semver": "7.8.5",
+-		"typebox": "1.3.27",
++		"typebox": "1.3.34",
+ 		"undici": "8.10.2",
+ 		"yaml": "2.9.0"
+ 	},

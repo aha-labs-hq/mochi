@@ -1,0 +1,9 @@
+Use case: precise-object-edit.
+Asset type: Mochi welcome illustration, a small original tactile project folio.
+Image 1 is the EDIT TARGET. Preserve the same open folio, camera angle, silhouette, proportions, page curl, indigo blue felt cover, ivory pages, lighting, contact shadow, background and framing. Keep the exact stylized, restrained fine-felt illustration language. This is an editorial illustration, not a realistic photograph.
+
+Change only the graphic marks ON the two open pages. Remove the entire thin loose blue thread, the loop crossing the central fold, and the three irregular blue line segments it connects. Reconstruct clean ivory paper wherever those marks were. Leave the central fold completely clear: no crossing lines, no strings, no hairs, no cables, no stitches.
+
+Keep the existing blue speech-bubble cutout at the top of the left page. Below it, replace the small yellow button-shaped dot with a small flat ochre round seal containing a simple ivory checkmark, and place two short, neatly parallel indigo felt bars below the seal, contained entirely within the left page, like lines of a project note. On the right page, use one simple, generous indigo code mark made from two broad opposing chevrons: < >, with clear empty space between them and no slash. Make the chevrons clean flat inlaid felt shapes sitting flush to the page, aligned to the page perspective. Keep the existing five small blue-and-ivory progress dots near the bottom of the right page. Preserve open space around every mark. The symbols must read clearly at a book width of 250 pixels.
+
+No other writing, letters, numbers, logo, UI, people, hands, faces, stars or new objects. No thin decorative lines anywhere. Do not change the cover or book shape. Keep one complete folio centered within the original canvas, with the same unobtrusive warm off-white background. Output the edited image only.

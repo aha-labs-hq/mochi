@@ -1,0 +1,4 @@
+interface:
+  display_name: "Produce Mochi Motion"
+  short_description: "Create and audit character motion and state bindings"
+  default_prompt: "Use $produce-mochi-motion to create or audit character animation and state bindings in Mochi, preserving each character's root identity and playback continuity."

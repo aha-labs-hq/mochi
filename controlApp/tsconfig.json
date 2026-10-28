@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "paths": {
+      "electrobun": ["./.build/sdk/config/ElectrobunConfig.d.ts"],
+      "electrobun/main/*": ["./.build/sdk/sdks/main/entries/*.d.ts"],
+      "electrobun/view": ["./.build/sdk/browser/index.d.ts"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "playwright.config.ts",
+    "../electrobun.config.ts"
+  ]
+}

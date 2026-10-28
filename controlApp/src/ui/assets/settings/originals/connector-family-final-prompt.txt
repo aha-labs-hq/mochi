@@ -1,0 +1,13 @@
+Final connector identity prompt, 2026-10-01
+
+Create a matched family of three 192px Settings identities in the existing Mochi pressed-wool language. Keep each mark centered, stout, front-facing and legible at 24px. Use a pure white studio background only for generation; production extraction removes that background and keeps the material contour.
+
+Feishu / Lark: preserve the official Feishu three-wing folded-ribbon geometry exactly. The cyan upper wing, deep-blue lower-left wing and green right wing must remain three distinct interlocking broad forms. It must read as the Feishu/Lark mark, not a generic bird. No face, eyes, mouth, mascot anatomy, chat bubble, text or Chinese characters.
+
+GitHub: use a compact solid black felt GitHub/Octocat-style silhouette as a tool identity. No eyes, mouth, nose, facial patches or other face details. Keep the ears, compact head, body and tail as one clean silhouette so it cannot compete with Mochi's character.
+
+Both identities use crisp contours, shallow low relief and restrained felt nap. No tile, border, cast shadow, floor, watermark, extra object or glossy plastic.
+
+Brand geometry references:
+- Feishu favicon: https://www.feishu.cn/favicon.ico (captured as a geometry reference; the production asset is a felt treatment).
+- GitHub Mark: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png (used only as a silhouette reference; facial negative space is not carried into the production asset).

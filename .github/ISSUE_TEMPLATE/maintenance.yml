@@ -1,0 +1,20 @@
+name: Maintenance
+description: Preserve bounded upkeep that benefits from durable tracking.
+title: ""
+labels:
+  - kind:maintenance
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Maintenance need
+      description: What drift, burden, dependency, or obsolete path needs attention.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or completion note
+      description: Optional proof or boundary that will make the work easy to resume or close.
+    validations:
+      required: false

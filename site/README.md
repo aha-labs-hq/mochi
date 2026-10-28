@@ -29,6 +29,7 @@ bun run site:deploy                          # 以真实发行信息部署内测
 | 下载版本、设备、最低系统、使用边界、文件大小与校验值 | 已验收的 `Mochi-Release.json`，经 `validateReleasePublication` 复核 |
 | 飞书权限 | `src/lark/permissions.ts` |
 | GitHub App 权限 | `.github/governance.json` |
+| 导航、手机菜单与页脚的 GitHub 仓库入口 | `.github/governance.json` 的 `repository.slug` |
 
 网站自写的对话在 `src/threads.ts`（首屏之外只有“一周”这一条，按滚动分三段追加），只能引用 App 引导已有的示例资料。`src/media/` 的视频由 `site:motion` 从 App 已批准的动效生成，`motion.json` 记录来源与产物摘要；App 动效变更而未重新生成时，测试失败。
 

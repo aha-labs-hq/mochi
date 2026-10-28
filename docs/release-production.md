@@ -1,6 +1,6 @@
 # Release production
 
-**Unreleased ToC candidate path.** Customer-free assembly and connected development deployment are implemented. New-organization approval, installed-release and clean-Mac acceptance remain distinct evidence. This procedure keeps the candidate private until acceptance; it does not restrict the accepted product to private recipients. The source repository remains private. See [public release preparation](public-release.md) and [implementation boundaries](onboarding.md#implementation-boundary).
+**Release candidate path.** Customer-free assembly and connected development deployment are implemented. New-organization approval, installed-release and clean-Mac acceptance remain distinct evidence. This procedure keeps the candidate private until acceptance; it does not restrict the accepted product to private recipients. The source repository is public. See [public release preparation](public-release.md) and [implementation boundaries](onboarding.md#implementation-boundary).
 
 `script/build_product_package.ts` is the only release producer. A successful run publishes one coherent candidate set; it does not install Mochi, create customer grants, run clean-Mac acceptance, or create a GitHub Release. Where a candidate sits on the way to the first public release is the [critical path](public-release.md#critical-path-to-the-first-public-release).
 

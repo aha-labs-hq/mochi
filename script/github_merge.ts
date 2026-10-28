@@ -42,7 +42,7 @@ const defaultCommand: Command = (executable, args) =>
     maxBuffer: 16 * 1024 * 1024,
   }).trim();
 
-/** The maintainer's only merge path. It is a local gate: GitHub Free enforces none of it. */
+/** The maintainer's merge path; exact verification receipts are enforced locally. */
 export async function mergePullRequest(input: {
   root: string;
   number: number;

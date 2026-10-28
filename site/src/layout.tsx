@@ -47,7 +47,7 @@ function Header() {
     >
       <div className="site-container flex h-16 items-center justify-between gap-4">
         <Wordmark priority />
-        <nav aria-label="主导航" className="flex items-center gap-1">
+        <nav aria-label="主导航" className="relative flex items-center gap-1">
           {navigation.map(([label, href]) => (
             <a
               key={href}
@@ -57,7 +57,7 @@ function Header() {
               {label}
             </a>
           ))}
-          <details data-menu className="group relative md:hidden">
+          <details data-menu className="group md:hidden">
             <summary
               data-menu-toggle
               className="flex size-10 cursor-pointer list-none items-center justify-center rounded-lg text-ink transition-colors group-open:bg-note [&::-webkit-details-marker]:hidden"

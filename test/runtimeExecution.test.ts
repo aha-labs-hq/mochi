@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { SandboxManager } from "@anthropic-ai/sandbox-runtime";
 import { executionSandboxConfig, TurnExecution } from "../src/runtime/execution.ts";
 import { PublicNetworkUnavailableError, type Resolve } from "../src/runtime/executionNetwork.ts";
+import { supervisedExecution } from "../src/runtime/executionSupervisor.ts";
 import { webResearchTools } from "../src/runtime/webResearch.ts";
 
 describe.skipIf(process.platform !== "darwin")("Pi tools in the macOS execution sandbox", () => {
@@ -77,6 +78,81 @@ describe.skipIf(process.platform !== "darwin")("Pi tools in the macOS execution 
     expect(existsSync(marker)).toBeFalse();
   }, 30_000);
 
+  test("refuses detached spawn while ordinary shell pipelines remain usable", async () => {
+    const tool = await start();
+    const result = await tool.execute("bash", { command: "bun -e \"try { Bun.spawn(['/bin/sleep','1'],{detached:true}); console.log('escaped') } catch(e) { console.log(e.code) }\"" });
+    expect(text(result).trim()).toBe("EPERM");
+    expect(text(await tool.execute("bash", { command: "printf pipeline | wc -c" })).trim()).toBe("8");
+  }, 30_000);
+
+  async function gone(pid: number) {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      try { process.kill(pid, 0); } catch (e) { if ((e as NodeJS.ErrnoException).code === "ESRCH") return; throw e; }
+      await Bun.sleep(20);
+    }
+    throw new Error(`Owned fixture process ${pid} survived cleanup`);
+  }
+
+  test("reaps background children before returning a successful tool result", async () => {
+    const tool = await start();
+    const result = await tool.execute("bash", { command: "sleep 15 >/dev/null 2>&1 & echo $!" });
+    const pid = Number(text(result).trim());
+    expect(Number.isSafeInteger(pid) && pid > 0).toBeTrue();
+    try { await gone(pid); }
+    finally { try { process.kill(pid, "SIGKILL"); } catch {} }
+  }, 30_000);
+
+  test("a tool timeout reaps its whole command group and permits the next command", async () => {
+    const tool = await start();
+    const pidFile = join(tool.cwd, "background.pid");
+    await expect(tool.execute("bash", { command: "sleep 15 >/dev/null 2>&1 & echo $! > background.pid; wait", timeout: 1 })).rejects.toThrow("timed out");
+    const pid = Number(readFileSync(pidFile, "utf8").trim());
+    try { await gone(pid); }
+    finally { try { process.kill(pid, "SIGKILL"); } catch {} }
+    expect(text(await tool.execute("bash", { command: "printf recovered" }))).toBe("recovered");
+  }, 30_000);
+
+  async function fixturePid(path: string): Promise<number> {
+    for (let attempt = 0; attempt < 200; attempt++) {
+      if (existsSync(path)) {
+        const pid = Number(readFileSync(path, "utf8").trim());
+        if (Number.isSafeInteger(pid) && pid > 0) return pid;
+      }
+      await Bun.sleep(20);
+    }
+    throw new Error("Fixture did not start");
+  }
+
+  test("a killed supervisor cannot leave its acknowledged command group running", async () => {
+    const pidFile = join(root, "supervisor.pid"), childFile = join(root, "child.pid");
+    const task = supervisedExecution(executable, root, { PATH: "/usr/bin:/bin" }, {
+      command: ["/bin/bash", "-c", `echo $PPID > '${pidFile}'; sleep 20 & echo $! > '${childFile}'; wait`],
+      timeoutMilliseconds: 25_000,
+    }, new AbortController().signal);
+    void task.catch(() => undefined);
+    const supervisor = await fixturePid(pidFile), child = await fixturePid(childFile);
+    try {
+      process.kill(supervisor, "SIGKILL");
+      await expect(task).rejects.toThrow("before cleanup completed");
+      await gone(child);
+    } finally { for (const pid of [supervisor, child]) { try { process.kill(pid, "SIGKILL"); } catch {} } }
+  }, 30_000);
+
+  test("owner death closes the lease and reaps the command without a surviving worker", async () => {
+    const childFile = join(root, "orphan.pid"), ownerFile = join(root, "owner.ts");
+    writeFileSync(ownerFile, `import { supervisedExecution } from ${JSON.stringify(join(process.cwd(), "src/runtime/executionSupervisor.ts"))};
+await supervisedExecution(${JSON.stringify(executable)}, ${JSON.stringify(root)}, {PATH:"/usr/bin:/bin"}, {
+command: ["/bin/bash", "-c", ${JSON.stringify(`sleep 20 & echo $! > '${childFile}'; wait`)}], timeoutMilliseconds:25000
+},new AbortController().signal);`);
+    const owner = Bun.spawn([process.execPath, ownerFile], { stdout: "ignore", stderr: "ignore" });
+    let child: number | undefined;
+    try {
+      child = await fixturePid(childFile);
+      owner.kill("SIGKILL"); await owner.exited;
+      await gone(child);
+    } finally { owner.kill("SIGKILL"); if (child) { try { process.kill(child, "SIGKILL"); } catch {} } }
+  }, 30_000);
+
   test("keeps truncated output readable inside the turn and removes it at close", async () => {
     const tool = await start();
     const result = await tool.execute("bash", { command: "awk 'BEGIN {for (i=0;i<4000;i++) print i}'" }) as { details: { fullOutputPath: string } };
@@ -84,6 +160,14 @@ describe.skipIf(process.platform !== "darwin")("Pi tools in the macOS execution 
     expect(text(await tool.execute("read", { path: result.details.fullOutputPath, limit: 2 }))).toContain("0\n1");
     await tool.close();
     expect(() => readFileSync(result.details.fullOutputPath)).toThrow();
+  }, 30_000);
+
+  test("output formatting cannot follow a model-planted temporary-directory symlink outside scratch", async () => {
+    const tool = await start();
+    const before = readdirSync(root).sort();
+    await expect(tool.execute("bash", { command: `rmdir tmp && ln -s '${root}' tmp; awk 'BEGIN {for (i=0;i<4000;i++) print i}'` })).rejects.toThrow();
+    expect(readdirSync(root).sort()).toEqual(before);
+    expect(readFileSync(join(root, "credential.txt"), "utf8")).toBe("PRIVATE_SENTINEL");
   }, 30_000);
 
   test("denies direct and proxied loopback requests", async () => {
@@ -119,7 +203,7 @@ describe.skipIf(process.platform !== "darwin")("Pi tools in the macOS execution 
 
   test("fails closed when the sandboxed runner cannot start", async () => {
     chmodSync(executable, 0o600);
-    try { await expect(start()).rejects.toThrow("Sandboxed tool process exited"); }
+    try { await expect(start()).rejects.toThrow("permission denied"); }
     finally { chmodSync(executable, 0o700); }
   }, 30_000);
 

@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
 import { executionToolDefinitions } from "./executionRunner.ts";
 import { NON_PUBLIC_ADDRESS_RANGES, PublicNetworkUnavailableError, publicDestinationFilter, systemResolve } from "./executionNetwork.ts";
-import { executionProcess } from "./executionProcess.ts";
+import { supervisedExecution } from "./executionSupervisor.ts";
 import { webResearchTools } from "./webResearch.ts";
 
 const SYSTEM_READ_PATHS = [
@@ -117,21 +117,37 @@ export class TurnExecution {
     if (sandboxOwner !== this.#owner || SandboxManager.getConfig() !== this.#config || SandboxManager.getProxyPort() === undefined) {
       throw new Error("The execution sandbox no longer holds this turn's policy");
     }
-    const command = [
-      `PATH=${shellQuote(`${join(this.cwd, "bin")}:${SYSTEM_PATH}`)}`,
-      `TMPDIR=${shellQuote(this.#environment.TMPDIR!)}`,
-      ...this.#runner.map(shellQuote),
-    ].join(" ");
-    const wrapped = await SandboxManager.wrapWithSandbox(command, "/bin/bash", undefined, signal, { commandId: crypto.randomUUID() });
-    const output = await executionProcess({
-      command: ["/bin/bash", "--noprofile", "--norc", "-c", wrapped],
-      cwd: this.cwd, env: this.#environment, input: JSON.stringify({ name, args }),
-      signal, timeoutMilliseconds: 125_000, detached: true,
-    });
+    let bashResult: { exitCode: number | null; output: string } | undefined;
+    if (name === "bash") {
+      const input = args as { command?: unknown; timeout?: unknown };
+      if (!input || typeof input.command !== "string") throw new Error("Shell command must be a string");
+      if (input.timeout !== undefined && (typeof input.timeout !== "number" || !Number.isFinite(input.timeout) || input.timeout <= 0)) {
+        throw new Error("Command timeout must be positive");
+      }
+      const result = await this.#run(["/bin/bash", "--noprofile", "--norc", "-c", input.command],
+        undefined, Math.min((input.timeout as number | undefined) ?? 120, 120) * 1_000, true, signal);
+      bashResult = { exitCode: result.exitCode, output: result.stdout.toString("base64") };
+    }
+    // Pi's output formatting stays sandboxed: even temporary output paths may
+    // have been replaced by a symlink by the preceding model command.
+    const output = await this.#run(this.#runner, JSON.stringify({ name, args, bashResult }), 125_000, false, signal);
     if (output.exitCode !== 0) throw new Error(`Sandboxed tool process exited ${output.exitCode}: ${output.stderr.toString().slice(0, 2_000)}`);
     const reply = JSON.parse(output.stdout.toString()) as { ok: boolean; result?: unknown; error?: string };
     if (!reply.ok) throw new Error(reply.error ?? "Sandboxed tool failed");
     return reply.result;
+  }
+
+  async #run(argv: readonly string[], input: string | undefined, timeoutMilliseconds: number, combineOutput: boolean, signal: AbortSignal) {
+    const command = [
+      `PATH=${shellQuote(`${join(this.cwd, "bin")}:${SYSTEM_PATH}`)}`,
+      `TMPDIR=${shellQuote(this.#environment.TMPDIR!)}`,
+      ...argv.map(shellQuote),
+    ].join(" ");
+    const wrapped = await SandboxManager.wrapWithSandbox(command, "/bin/bash", undefined, signal, { commandId: crypto.randomUUID() });
+    return supervisedExecution(this.#runner[0]!, this.cwd, this.#environment, {
+      command: ["/bin/bash", "--noprofile", "--norc", "-c", wrapped],
+      ...(input === undefined ? {} : { input }), timeoutMilliseconds, combineOutput,
+    }, signal);
   }
 
   /**
@@ -162,6 +178,21 @@ export class TurnExecution {
       const holds = !result.isError && outcome !== null && outcome[1] !== "0" && outcome[2] !== "0"
         && outcome[3] === "7" && outcome[4] === "403" && connections === 0 && !existsSync(probe);
       if (!holds) throw new Error(`Execution sandbox self-check failed: ${output.slice(0, 500)}; direct connections: ${connections}`);
+      // Run as a nonleader so setsid would succeed without the syscall filter.
+      // posix_spawn has its own internal setpgid/setsid path and must also fail.
+      const processProbe = `import {dlopen} from 'bun:ffi';
+const {symbols:s}=dlopen('/usr/lib/libSystem.B.dylib',{
+getpgrp:{args:[],returns:'i32'},setsid:{args:[],returns:'i32'},setpgid:{args:['i32','i32'],returns:'i32'}});
+const nonleader=process.pid!==s.getpgrp();
+const sid=s.setsid(),pgid=s.setpgid(0,0);
+let spawnDenied=false;
+try{const p=Bun.spawn(['/usr/bin/true'],{detached:true,stdin:'ignore',stdout:'ignore',stderr:'ignore'});await p.exited;}
+catch(e){spawnDenied=e.code==='EPERM';}
+console.log(nonleader&&sid===-1&&pgid===-1&&spawnDenied?'confined':'unconfined');`;
+      const processResult = await this.execute("bash", { command: `bun -e ${shellQuote(processProbe)} & wait` }) as { content?: Array<{ text?: string }>; isError?: boolean };
+      if (processResult.isError || processResult.content?.map((item) => item.text ?? "").join("").trim() !== "confined") {
+        throw new Error("Execution sandbox cannot confine process groups");
+      }
     } finally {
       listener.close();
       await rm(probe, { force: true });
@@ -194,7 +225,7 @@ export class TurnExecution {
 export function executionTools(current: () => TurnExecution, policy: () => "interactive" | "scheduled" = () => "interactive"): ToolDefinition[] {
   const nativeTools: ToolDefinition[] = executionToolDefinitions("/").map((tool) => ({
     name: tool.name, label: tool.label, parameters: tool.parameters,
-    description: `${tool.description}\nRuns in the current turn's private workspace. Tools include bash, curl, system utilities and Bun (JavaScript/TypeScript). Public HTTP/HTTPS uses the provided proxy. Commands are limited to 120 seconds. Input materials are read-only. Files are removed when the turn ends.`,
+    description: `${tool.description}\nRuns in the current turn's private workspace. Tools include bash, curl, system utilities and Bun (JavaScript/TypeScript). Public HTTP/HTTPS uses the provided proxy. Commands are limited to 120 seconds; background jobs end with each command. Process detachment and posix_spawn-based child APIs (including Bun.spawn and Node child_process) are unavailable; launch system commands directly from bash. Input materials are read-only. Files are removed when the turn ends.`,
     executionMode: "sequential" as const,
     execute: async (_id: string, args: unknown, signal: AbortSignal | undefined) => {
       assertExecutionToolAllowed(tool.name, policy());

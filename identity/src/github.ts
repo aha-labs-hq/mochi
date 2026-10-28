@@ -393,24 +393,25 @@ export class GitHubAppAuthority {
     options: GitHubRequestOptions,
     credential: "user" | "issuer",
   ): Promise<Record<string, unknown>> {
-    const response = await this.#request(path, options);
-    if (!response.ok) {
-      await response.body?.cancel();
-      if (credential === "user") {
-        if (response.status === 401) throw new AuthorityError("unauthorized");
+    return this.#request(path, options, async (response) => {
+      if (!response.ok) {
+        void response.body?.cancel().catch(() => undefined);
+        if (credential === "user") {
+          if (response.status === 401) throw new AuthorityError("unauthorized");
+          if (response.status === 403 || response.status === 404)
+            throw new AuthorityError("grant_unavailable");
+          throw new AuthorityError("provider_unavailable");
+        }
+        if (response.status === 401)
+          throw new AuthorityError("issuer_unavailable");
         if (response.status === 403 || response.status === 404)
           throw new AuthorityError("grant_unavailable");
         throw new AuthorityError("provider_unavailable");
       }
-      if (response.status === 401)
-        throw new AuthorityError("issuer_unavailable");
-      if (response.status === 403 || response.status === 404)
-        throw new AuthorityError("grant_unavailable");
-      throw new AuthorityError("provider_unavailable");
-    }
-    const value = await boundedJson(response, MAX_PROVIDER_BYTES);
-    if (!record(value)) throw new AuthorityError("provider_response_invalid");
-    return value;
+      const value = await boundedJson(response, MAX_PROVIDER_BYTES);
+      if (!record(value)) throw new AuthorityError("provider_response_invalid");
+      return value;
+    });
   }
 
   /** GitHub's answer to a request made with a (possibly cached) installation token. */
@@ -419,37 +420,40 @@ export class GitHubAppAuthority {
     options: GitHubRequestOptions,
     tokenKey: string,
   ): Promise<ProviderResult> {
-    const response = await this.#request(path, options);
-    if (response.status === 401) {
-      // Only a revoked token is refused for the repository it was minted
-      // for. That is the authority's failure, never the person's sign-in.
-      await response.body?.cancel();
-      this.#tokens.evict(tokenKey);
-      throw new AuthorityError("issuer_unavailable");
-    }
-    const requestId = safeRequestId(
-      response.headers.get("x-github-request-id"),
-    );
-    if (response.status === 204) {
-      await response.body?.cancel();
-      return { status: 204, body: null, ...(requestId ? { requestId } : {}) };
-    }
-    const body = await boundedJson(response, MAX_PROVIDER_BYTES);
-    return {
-      status: response.status,
-      body,
-      ...(requestId ? { requestId } : {}),
-    };
+    return this.#request(path, options, async (response) => {
+      if (response.status === 401) {
+        // Only a revoked token is refused for the repository it was minted
+        // for. That is the authority's failure, never the person's sign-in.
+        void response.body?.cancel().catch(() => undefined);
+        this.#tokens.evict(tokenKey);
+        throw new AuthorityError("issuer_unavailable");
+      }
+      const requestId = safeRequestId(
+        response.headers.get("x-github-request-id"),
+      );
+      if (response.status === 204) {
+        void response.body?.cancel().catch(() => undefined);
+        return { status: 204, body: null, ...(requestId ? { requestId } : {}) };
+      }
+      const body = await boundedJson(response, MAX_PROVIDER_BYTES);
+      return {
+        status: response.status,
+        body,
+        ...(requestId ? { requestId } : {}),
+      };
+    });
   }
 
-  async #request(
+  async #request<T>(
     path: string,
     options: GitHubRequestOptions,
-  ): Promise<Response> {
-    let response: Response;
+    consume: (response: Response) => Promise<T>,
+  ): Promise<T> {
+    const controller = new AbortController();
     try {
-      response = await deadline(
+      return await deadline(
         this.#fetch(`https://api.github.com${path}`, {
+          signal: controller.signal,
           method: options.method ?? "GET",
           redirect: "manual",
           headers: {
@@ -464,17 +468,20 @@ export class GitHubAppAuthority {
           ...(options.body === undefined
             ? {}
             : { body: JSON.stringify(options.body) }),
+        }).then(async (response) => {
+          if (response.status >= 300 && response.status < 400) {
+            void response.body?.cancel().catch(() => undefined);
+            throw new AuthorityError("provider_response_invalid");
+          }
+          return consume(response);
         }),
         PROVIDER_TIMEOUT_MS,
+        () => controller.abort(),
       );
-    } catch {
+    } catch (error) {
+      if (error instanceof AuthorityError) throw error;
       throw new AuthorityError("provider_unavailable");
     }
-    if (response.status >= 300 && response.status < 400) {
-      await response.body?.cancel();
-      throw new AuthorityError("provider_response_invalid");
-    }
-    return response;
   }
 }
 
@@ -492,16 +499,17 @@ function tokenKey(
 async function deadline<T>(
   operation: Promise<T>,
   milliseconds: number,
+  cancel: () => void,
 ): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([
       operation,
       new Promise<T>((_resolve, reject) => {
-        timer = setTimeout(
-          () => reject(new Error("provider deadline exceeded")),
-          milliseconds,
-        );
+        timer = setTimeout(() => {
+          reject(new Error("deadline exceeded"));
+          cancel();
+        }, milliseconds);
       }),
     ]);
   } finally {
@@ -512,20 +520,29 @@ async function deadline<T>(
 export async function boundedJson(
   response: Response,
   maximumBytes: number,
+  timeoutMilliseconds = PROVIDER_TIMEOUT_MS,
 ): Promise<unknown> {
   if (!response.body) throw new AuthorityError("provider_response_invalid");
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
   let length = 0;
   try {
-    for (;;) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      length += value.byteLength;
-      if (length > maximumBytes)
-        throw new AuthorityError("provider_response_invalid");
-      chunks.push(value);
-    }
+    await deadline(
+      (async () => {
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          length += value.byteLength;
+          if (length > maximumBytes)
+            throw new AuthorityError("provider_response_invalid");
+          chunks.push(value);
+        }
+      })(),
+      timeoutMilliseconds,
+      () => {
+        void reader.cancel().catch(() => undefined);
+      },
+    );
     const bytes = new Uint8Array(length);
     let offset = 0;
     for (const chunk of chunks) {
@@ -537,7 +554,7 @@ export async function boundedJson(
     if (error instanceof AuthorityError) throw error;
     throw new AuthorityError("provider_response_invalid");
   } finally {
-    await reader.cancel().catch(() => undefined);
+    void reader.cancel().catch(() => undefined);
     reader.releaseLock();
   }
 }

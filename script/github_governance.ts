@@ -57,6 +57,8 @@ const requiredContractFiles = [
   "script/github_identity.ts",
   "script/github_merge.ts",
   "identity/wrangler.jsonc",
+  "identity/maintainer.wrangler.jsonc",
+  "identity/src/maintainer.ts",
   "identity/src/index.ts",
   "identity/src/github.ts",
   "identity/src/protocol.ts",
@@ -113,17 +115,13 @@ export function validateGovernanceManifest(
   const requiredPermissions = manifest.identity.requiredRepositoryPermissions;
   if (
     Object.keys(requiredPermissions).sort().join(",") !==
-      "actions,checks,contents,issues,metadata,pull_requests,statuses" ||
+      "contents,metadata,pull_requests" ||
     requiredPermissions.contents !== "write" ||
-    requiredPermissions.issues !== "write" ||
     requiredPermissions.pull_requests !== "write" ||
     Object.entries(requiredPermissions).some(
       ([key, value]) =>
         !["read", "write"].includes(value) ||
-        (key !== "contents" &&
-          key !== "issues" &&
-          key !== "pull_requests" &&
-          value !== "read"),
+        (key !== "contents" && key !== "pull_requests" && value !== "read"),
     )
   ) {
     errors.push("GitHub App repository permissions are invalid");
@@ -260,6 +258,10 @@ export function liveIdentityDrift(
     drift.push("GitHub App permissions are unavailable");
   } else {
     const permissions = app.permissions as Record<string, unknown>;
+    for (const permission of Object.keys(permissions)) {
+      if (!(permission in manifest.identity.requiredRepositoryPermissions))
+        drift.push(`GitHub App permission ${permission}: unexpected grant`);
+    }
     for (const [permission, expected] of Object.entries(
       manifest.identity.requiredRepositoryPermissions,
     )) {

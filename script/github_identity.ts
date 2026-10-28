@@ -1,18 +1,15 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  GITHUB_API_VERSION,
-  GITHUB_INTEGRATION,
-} from "../src/github/integration.ts";
+import { GITHUB_API_VERSION } from "../src/github/integration.ts";
 import { loadGovernanceManifest } from "./github_governance.ts";
 
 const governance = loadGovernanceManifest();
 const BOT_LOGIN = governance.identity.botLogin;
-const BOT_NAME = "Mochi Companion[bot]";
+const BOT_NAME = BOT_LOGIN;
 const BOT_EMAIL = governance.identity.botCommitEmail;
 const REPOSITORY = governance.repository.slug;
-const KEYCHAIN_SERVICE = "app.mochi.github-authority";
+const KEYCHAIN_SERVICE = "app.mochi.maintainer-authority";
 const KEYCHAIN_ACCOUNT = "maintainer";
 
 const [command, ...args] = process.argv.slice(2);
@@ -82,7 +79,7 @@ async function propose(args: string[]): Promise<void> {
   if (!/^[A-Za-z0-9_-]{32,256}$/.test(maintainerSecret))
     fail("Maintainer authority is unavailable");
   const authority = await json(
-    `${GITHUB_INTEGRATION.authorityUrl}/v1/maintainer/token`,
+    `${governance.identity.authorityUrl}/v1/maintainer/token`,
     {
       method: "POST",
       headers: {

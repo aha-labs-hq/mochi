@@ -1,0 +1,43 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "mochi-maintainer-authority",
+  "account_id": "fd173abce13d9bacf4be26c4c475462b",
+  "main": "src/maintainer.ts",
+  "compatibility_date": "2026-09-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "maintainer-auth.mochi.host", "custom_domain": true }
+  ],
+  "preview_urls": false,
+  "ratelimits": [
+    {
+      "name": "REQUEST_LIMIT",
+      "namespace_id": "4204",
+      "simple": { "limit": 120, "period": 60 }
+    },
+    {
+      "name": "ACCOUNT_LIMIT",
+      "namespace_id": "4205",
+      "simple": { "limit": 30, "period": 60 }
+    }
+  ],
+  "secrets": {
+    "required": ["GITHUB_APP_PRIVATE_KEY", "MAINTAINER_AUTH_TOKEN"]
+  },
+  "vars": {
+    "GITHUB_APP_ID": "5509147",
+    "GITHUB_APP_SLUG": "mochi-maintainer",
+    "GITHUB_APP_BOT_LOGIN": "mochi-maintainer[bot]",
+    "GITHUB_API_VERSION": "2026-03-10",
+    "MAINTAINER_ACCOUNT_ID": "48590169",
+    "MAINTAINER_REPOSITORY_ID": "1436737307",
+    "MAINTAINER_REPOSITORY_OWNER_ID": "330909798",
+    "MAINTAINER_REPOSITORY_FULL_NAME": "aha-labs-hq/mochi"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1, "invocation_logs": false },
+    "traces": { "enabled": false }
+  }
+}

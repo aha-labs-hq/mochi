@@ -1,24 +1,20 @@
 {
   "schemaVersion": 4,
   "identity": {
-    "appId": 4850106,
+    "appId": 5509147,
     "appOwnerId": 330909798,
-    "appSlug": "mochi-companion",
-    "botLogin": "mochi-companion[bot]",
-    "botUserId": 325632710,
-    "botCommitEmail": "325632710+mochi-companion[bot]@users.noreply.github.com",
-    "authorityUrl": "https://github-auth.mochi.host",
+    "appSlug": "mochi-maintainer",
+    "botLogin": "mochi-maintainer[bot]",
+    "botUserId": 349279775,
+    "botCommitEmail": "349279775+mochi-maintainer[bot]@users.noreply.github.com",
+    "authorityUrl": "https://maintainer-auth.mochi.host",
     "maintainerRepositoryId": 1436737307,
     "writeActor": "app",
     "mergeActor": "human",
     "requiredRepositoryPermissions": {
-      "actions": "read",
-      "checks": "read",
       "contents": "write",
-      "issues": "write",
       "metadata": "read",
-      "pull_requests": "write",
-      "statuses": "read"
+      "pull_requests": "write"
     }
   },
   "repository": {

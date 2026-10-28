@@ -47,6 +47,7 @@
     },
   },
   "patchedDependencies": {
+    "@anthropic-ai/sandbox-runtime@0.0.77": "patches/@anthropic-ai%2Fsandbox-runtime@0.0.77.patch",
     "@earendil-works/pi-ai@1.1.0": "patches/@earendil-works%2Fpi-ai@1.1.0.patch",
     "node-forge@github:digitalbazaar/forge#7232404": "patches/node-forge@github%3Adigitalbazaar%2Fforge#7232404.patch",
     "@earendil-works/pi-coding-agent@1.1.0": "patches/@earendil-works%2Fpi-coding-agent@1.1.0.patch",

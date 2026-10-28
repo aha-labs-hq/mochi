@@ -1,9 +1,12 @@
 import type { ReactNode } from "react";
+import governance from "../../.github/governance.json";
 import ring from "./brand/aha-labs-ring.svg";
 import { PENDING, supportText, useSite } from "./context.ts";
 import { maker, tagline } from "./facts.ts";
 import { art } from "./media.ts";
 import { cn, Picture } from "./ui.tsx";
+
+const repositoryUrl = `https://github.com/${governance.repository.slug}`;
 
 function Wordmark({ priority = false }: { priority?: boolean }) {
   return (
@@ -32,6 +35,7 @@ const navigation = [
   ["安全", "/#trust"],
   ["上手指南", "/start/"],
   ["管理员说明", "/admin/"],
+  ["GitHub", repositoryUrl],
 ] as const;
 
 function Header() {
@@ -43,7 +47,7 @@ function Header() {
     >
       <div className="site-container flex h-16 items-center justify-between gap-4">
         <Wordmark priority />
-        <nav aria-label="主导航" className="flex items-center gap-1">
+        <nav aria-label="主导航" className="relative flex items-center gap-1">
           {navigation.map(([label, href]) => (
             <a
               key={href}
@@ -53,7 +57,7 @@ function Header() {
               {label}
             </a>
           ))}
-          <details data-menu className="group relative md:hidden">
+          <details data-menu className="group md:hidden">
             <summary
               data-menu-toggle
               className="flex size-10 cursor-pointer list-none items-center justify-center rounded-lg text-ink transition-colors group-open:bg-note [&::-webkit-details-marker]:hidden"
@@ -127,7 +131,7 @@ function Footer() {
         publication
           ? [supportText(publication.supportUrl), publication.supportUrl]
           : ["支持入口", null],
-        ["GitHub 源代码", "https://github.com/aha-labs-hq/mochi"],
+        ["GitHub", repositoryUrl],
       ],
     ],
   ];

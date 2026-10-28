@@ -1,3 +1,4 @@
+import { BrandMark } from "./BrandMark.tsx";
 import type { SiteRelease } from "./context.ts";
 import { macName } from "./facts.ts";
 import { Action } from "./ui.tsx";
@@ -12,6 +13,7 @@ export function ReleaseDownload({ release }: { release: SiteRelease }) {
   return (
     <div className="mt-10">
       <Action href={diskImage.url} glyph="arrowDown">
+        <BrandMark name="apple" className="size-[18px] shrink-0 invert" />
         {release.architecture === "arm64"
           ? "下载 Apple 芯片版"
           : "下载 Intel 版"}

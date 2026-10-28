@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import governance from "../../.github/governance.json";
+import { BrandMark } from "./BrandMark.tsx";
 import ring from "./brand/aha-labs-ring.svg";
 import { PENDING, supportText, useSite } from "./context.ts";
 import { maker, tagline } from "./facts.ts";
 import { art } from "./media.ts";
-import { cn, Picture } from "./ui.tsx";
+import { cn, DownloadAction, Picture } from "./ui.tsx";
 
 const repositoryUrl = `https://github.com/${governance.repository.slug}`;
 
@@ -12,55 +13,75 @@ function Wordmark({ priority = false }: { priority?: boolean }) {
   return (
     <a
       href="/"
-      className="flex items-center gap-2.5 rounded-lg"
+      className="flex shrink-0 items-center gap-2 rounded-lg sm:gap-2.5"
       aria-label="Mochi 首页"
     >
       <Picture
         picture={art.appIcon}
         alt=""
-        sizes="28px"
-        className="size-7 rounded-[7px]"
+        sizes="(min-width: 640px) 28px, 24px"
+        className="size-6 rounded-[7px] sm:size-7"
         priority={priority}
       />
-      <span className="font-brand text-[19px] leading-none font-semibold tracking-[-0.01em]">
+      <span className="font-brand text-[18px] leading-none font-semibold tracking-[-0.01em] sm:text-[19px]">
         Mochi
       </span>
     </a>
   );
 }
 
-/** The places every page leads to; phones reach them through one menu. */
+/** Product discovery and help; specialist resources remain in the footer. */
 const navigation = [
-  ["能做什么", "/#roles"],
-  ["安全", "/#trust"],
-  ["上手指南", "/start/"],
-  ["管理员说明", "/admin/"],
-  ["GitHub", repositoryUrl],
+  ["功能", "/#roles"],
+  ["使用指南", "/start/"],
+  ["常见问题", "/faq/"],
 ] as const;
 
+function SourceLink({ inMenu = false }: { inMenu?: boolean }) {
+  return (
+    <a
+      href={repositoryUrl}
+      className={cn(
+        "items-center gap-2 rounded-lg bg-ink/[0.055] px-3 text-small font-medium text-ink transition-colors hover:bg-ink/[0.1]",
+        inMenu ? "flex min-h-11" : "hidden min-h-10 md:inline-flex",
+      )}
+    >
+      <BrandMark name="github" className="size-[18px] shrink-0" />
+      GitHub
+      <span className="text-caption font-normal text-muted">开源</span>
+    </a>
+  );
+}
+
 function Header() {
-  const { release } = useSite();
   return (
     <header
       data-header
-      className="sticky top-0 z-30 bg-surface/92 backdrop-blur-xl backdrop-saturate-150 transition-[background-color,border-color] duration-300"
+      className="sticky top-0 z-30 bg-surface/92 backdrop-blur-xl backdrop-saturate-150"
     >
-      <div className="site-container flex h-16 items-center justify-between gap-4">
+      <div className="site-container flex min-h-16 items-center justify-between gap-2 max-sm:px-4 sm:gap-6">
         <Wordmark priority />
-        <nav aria-label="主导航" className="relative flex items-center gap-1">
-          {navigation.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              className="hidden h-9 items-center rounded-lg px-3 text-small text-muted transition-colors hover:text-ink md:inline-flex"
-            >
-              {label}
-            </a>
-          ))}
+        <nav
+          aria-label="主导航"
+          className="relative flex items-center gap-1 sm:gap-2"
+        >
+          <div className="mr-3 hidden items-center gap-1 md:flex lg:mr-6 lg:gap-2">
+            {navigation.map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                className="inline-flex min-h-10 items-center rounded-lg px-2 text-small text-muted transition-colors hover:text-ink lg:px-3"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+          <SourceLink />
+          <DownloadAction compact />
           <details data-menu className="group md:hidden">
             <summary
               data-menu-toggle
-              className="flex size-10 cursor-pointer list-none items-center justify-center rounded-lg text-ink transition-colors group-open:bg-note [&::-webkit-details-marker]:hidden"
+              className="flex size-9 cursor-pointer list-none items-center justify-center rounded-lg text-ink transition-colors group-open:bg-note sm:size-10 [&::-webkit-details-marker]:hidden"
             >
               <span className="sr-only">菜单</span>
               <svg
@@ -80,7 +101,7 @@ function Header() {
                 />
               </svg>
             </summary>
-            <ul className="absolute top-12 right-0 w-52 rounded-xl border border-hairline bg-card p-1.5 shadow-card">
+            <ul className="absolute top-12 right-0 w-56 rounded-xl bg-card p-2 shadow-card">
               {navigation.map(([label, href]) => (
                 <li key={href}>
                   <a
@@ -91,14 +112,11 @@ function Header() {
                   </a>
                 </li>
               ))}
+              <li className="mt-1">
+                <SourceLink inMenu />
+              </li>
             </ul>
           </details>
-          <a
-            href="/download/"
-            className="ml-2 inline-flex h-9 items-center rounded-lg bg-primary px-3.5 text-small font-medium text-on-primary transition-[filter] hover:brightness-110"
-          >
-            {release ? "下载 Mochi" : "申请内测"}
-          </a>
         </nav>
       </div>
     </header>

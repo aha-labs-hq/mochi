@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { Glyph, type GlyphName } from "../../controlApp/src/ui/Glyph.tsx";
 import { cn } from "../../controlApp/src/ui/styles.ts";
 import type { Picture as PictureData } from "../build/pictures.ts";
+import { BrandMark } from "./BrandMark.tsx";
 import { useSite } from "./context.ts";
 import { betaApplicationUrl } from "./facts.ts";
 
@@ -42,7 +43,7 @@ export function Picture({
   );
 }
 
-/** The one primary action: solid, with an arrow that says where it leads. */
+/** The primary action, shared by product entry and direct download links. */
 export function Action({
   href,
   children,
@@ -51,7 +52,7 @@ export function Action({
 }: {
   href: string;
   children: ReactNode;
-  glyph?: GlyphName;
+  glyph?: GlyphName | null;
   className?: string;
 }) {
   return (
@@ -66,20 +67,33 @@ export function Action({
       )}
     >
       {children}
-      <Glyph
-        name={glyph}
-        size={18}
-        className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none"
-      />
+      {glyph && (
+        <Glyph
+          name={glyph}
+          size={18}
+          className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none"
+        />
+      )}
     </a>
   );
 }
 
 /** All product entry points use the download page's actual release phase. */
-export function DownloadAction() {
+export function DownloadAction({ compact = false }: { compact?: boolean }) {
   const { release } = useSite();
   return (
-    <Action href="/download/">{release ? "下载 Mochi" : "申请内测"}</Action>
+    <Action
+      href="/download/"
+      glyph={null}
+      className={cn(
+        "gap-2.5 px-5 whitespace-nowrap",
+        compact &&
+          "h-10 gap-2 rounded-lg px-3 text-[13px] sm:px-3.5 sm:text-small",
+      )}
+    >
+      <BrandMark name="apple" className="size-[18px] shrink-0 invert" />
+      {release ? "下载 Mochi" : "申请内测"}
+    </Action>
   );
 }
 

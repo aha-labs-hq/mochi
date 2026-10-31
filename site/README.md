@@ -69,7 +69,7 @@ bun run site:build -- \
 
 ## Google 搜索
 
-观点文章位于 `/insights/deepseek-superagent-team-context/`，正文与公开元数据由 `src/superagent.ts` 维护，`src/pages/Insight.tsx` 复用现有阅读版式。页脚和实际用法目录提供入口；页面显示 Koho Zheng 的个人署名、真实发布日期与来源链接，作者同步到 Article 的 Person，Aha Labs 保留为 publisher，日期同步到 Article 与 Open Graph。第一人称正文回顾八月底的团队共享上下文选择和九月初的团队表达要求；这些时间点已核对早期本地开发历史，不公开私有历史或内部项目材料。新增文章路由经同一 `pages` 清单生成静态 HTML、canonical 和站点地图，不把研究原型描述为已发布的完整产品，也不暗示 Mochi 与 DeepSeek 存在隶属关系。
+观点文章位于 `/insights/deepseek-superagent-team-context/`，正文与公开元数据由 `src/superagent.ts` 维护，`src/pages/Insight.tsx` 复用现有阅读版式。页脚和实际用法目录提供入口；页面显示 Koho Zheng 的个人署名、真实发布日期与来源链接，作者同步到 Article 的 Person，Aha Labs 保留为 publisher，日期同步到 Article 与 Open Graph。第一人称正文说明这是继 Galta 之后、利用闲暇时间断续推进的第二个独立实验，并按作者提供的经历提到它对 Agent.Space Ray 的启发；回顾八月底的团队共享上下文选择和九月初的团队表达要求；这些时间点已核对早期本地开发历史，不公开私有历史或内部项目材料。新增文章路由经同一 `pages` 清单生成静态 HTML、canonical 和站点地图，不把研究原型描述为已发布的完整产品，也不暗示 Mochi 与 DeepSeek 存在隶属关系。
 
 所有构建生成完整 HTML、每页唯一标题和描述、分享卡片与图标。分享卡 `og.png` 由 `build/site.ts` 画出：麻薯趴在写着产品名和一句话介绍的卡片上，字体用 macOS 自带的苹方，所以要在 Mac 上构建。正式域名是 mochi.host，2026-10-14 起开放收录：`site:deploy` 以 `--indexable` 构建。不带该参数的构建（预览与本地检查）保持 noindex、不生成站点地图；robots 始终允许抓取，以便搜索引擎读到页面的 noindex。
 
@@ -171,3 +171,5 @@ bun site/build/growth-overlay.ts <已批准产物> site/dist <新产物目录>
 首屏对话随 HTML 直接可读，不等待角色动画或客户端加载。角色仍使用原 motion manifest 的几何与动作；减少动态效果时直接显示静态形象。职能页保留 App 同源的五个故事，方向键和 Home/End 可切换，来源用原生模态框查看。所有页面都要检查 320 px 窄屏、桌面、文字放大、键盘、减少动态效果与禁用 JavaScript；不把源码检查当成视觉验收。
 
 管理员页描述客户 Mochi Companion 的七项仓库权限，不能引用私有 Mochi Maintainer 的治理清单。客户代码与 PR 只读，Issue 读写；两种 App 的身份与权限拆分见 `docs/github-governance.md`。
+
+文章的两张原创毛毡插图保存在 `src/assets/editorial/`，通过现有 Picture 流水线输出响应式 AVIF/WebP；首图优先加载，文中图延迟加载，显式尺寸预留空间。`public/images/mochi-shared-context.jpg` 是同一首图的 1200 × 630 分享版本，Article、Open Graph 与 X 卡片使用同一图片和替代文本；产品其他页面继续使用原分享图。素材来源与生成提示见插图目录的 README。

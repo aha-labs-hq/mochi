@@ -14,6 +14,8 @@ export interface PageMetadata {
   datePublished?: string;
   /** Named personal author shown in the article byline; publisher stays separate. */
   author?: { name: string; url: string };
+  /** A page-specific illustration also shown in the article. */
+  image?: { path: string; alt: string; width: number; height: number };
   collectionItems?: readonly { name: string; url: string }[];
 }
 
@@ -64,7 +66,7 @@ export function pageHead(
     : "";
   const indexable = site.indexable && Boolean(site.publication) && page.indexed;
   const url = `${origin}${page.path}`;
-  const image = `${origin}${shareImage}`;
+  const image = `${origin}${page.image?.path ?? shareImage}`;
   const meta = (key: "name" | "property", name: string, content: string) =>
     `<meta ${key}="${name}" content="${escapeHtml(content)}" />`;
   const tags = [
@@ -88,18 +90,22 @@ export function pageHead(
     meta("property", "og:title", page.title),
     meta("property", "og:description", page.description),
     meta("property", "og:image", image),
-    meta("property", "og:image:width", "1200"),
-    meta("property", "og:image:height", "630"),
+    meta("property", "og:image:width", String(page.image?.width ?? 1200)),
+    meta("property", "og:image:height", String(page.image?.height ?? 630)),
     meta(
       "property",
       "og:image:alt",
-      `麻薯趴在卡片边沿，卡片上写着 Mochi 麻薯：${tagline}`,
+      page.image?.alt ?? `麻薯趴在卡片边沿，卡片上写着 Mochi 麻薯：${tagline}`,
     ),
     meta("name", "twitter:card", "summary_large_image"),
     meta("name", "twitter:title", page.title),
     meta("name", "twitter:description", page.description),
     meta("name", "twitter:image", image),
-    meta("name", "twitter:image:alt", `Mochi 麻薯：${tagline}`),
+    meta(
+      "name",
+      "twitter:image:alt",
+      page.image?.alt ?? `Mochi 麻薯：${tagline}`,
+    ),
   ];
   if (page.articleSection && page.datePublished)
     tags.push(meta("property", "article:published_time", page.datePublished));
@@ -172,7 +178,7 @@ function structuredData(
         ? `${origin}${page.path}#article`
         : application["@id"],
     },
-    primaryImageOfPage: `${origin}${shareImage}`,
+    primaryImageOfPage: `${origin}${page.image?.path ?? shareImage}`,
     ...(page.path === "/"
       ? {}
       : { breadcrumb: { "@id": `${origin}${page.path}#breadcrumb` } }),
@@ -192,7 +198,7 @@ function structuredData(
       inLanguage: "zh-CN",
       articleSection: page.articleSection,
       ...(page.datePublished ? { datePublished: page.datePublished } : {}),
-      image: `${origin}${shareImage}`,
+      image: `${origin}${page.image?.path ?? shareImage}`,
       url: `${origin}${page.path}`,
       author: page.author
         ? { "@type": "Person", name: page.author.name, url: page.author.url }

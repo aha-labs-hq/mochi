@@ -4,9 +4,11 @@ import { Guide, Privacy } from "./pages/Documents.tsx";
 import { Download } from "./pages/Download.tsx";
 import { Faq } from "./pages/Faq.tsx";
 import { Home } from "./pages/Home.tsx";
+import { Insight } from "./pages/Insight.tsx";
 import { NotFound } from "./pages/NotFound.tsx";
 import { Workflow, Workflows, workflows } from "./pages/Workflows.tsx";
 import type { PageMetadata } from "./seo.ts";
+import { superagentArticle } from "./superagent.ts";
 
 export interface Page extends PageMetadata {
   /** Output file inside the built site. */
@@ -17,6 +19,12 @@ export interface Page extends PageMetadata {
 const brand = "Mochi 麻薯";
 
 export const pages: Page[] = [
+  {
+    ...superagentArticle,
+    file: `${superagentArticle.path.slice(1)}index.html`,
+    indexed: true,
+    Page: Insight,
+  },
   {
     path: "/workflows/",
     file: "workflows/index.html",

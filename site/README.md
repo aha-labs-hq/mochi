@@ -69,6 +69,8 @@ bun run site:build -- \
 
 ## Google 搜索
 
+观点文章位于 `/insights/deepseek-superagent-team-context/`，正文与公开元数据由 `src/superagent.ts` 维护，`src/pages/Insight.tsx` 复用现有阅读版式。页脚和实际用法目录提供入口；页面显示 Aha Labs 署名、真实发布日期与来源链接，日期同步到 Article 与 Open Graph。新增文章路由经同一 `pages` 清单生成静态 HTML、canonical 和站点地图，不把研究原型描述为已发布的完整产品，也不暗示 Mochi 与 DeepSeek 存在隶属关系。
+
 所有构建生成完整 HTML、每页唯一标题和描述、分享卡片与图标。分享卡 `og.png` 由 `build/site.ts` 画出：麻薯趴在写着产品名和一句话介绍的卡片上，字体用 macOS 自带的苹方，所以要在 Mac 上构建。正式域名是 mochi.host，2026-10-14 起开放收录：`site:deploy` 以 `--indexable` 构建。不带该参数的构建（预览与本地检查）保持 noindex、不生成站点地图；robots 始终允许抓取，以便搜索引擎读到页面的 noindex。
 
 `--indexable` 生成绝对 canonical、WebSite / Organization / SoftwareApplication / BreadcrumbList 结构化数据和站点地图。每个可索引页面都带完整的出品方、站点与 Mochi 实体图，Organization 指向出品方自己的网站 ahalabs.site，Mochi 使用稳定的产品 ID 并连接官网与案例；工作流页标为 Article，目录页标为 CollectionPage / ItemList。`robots.txt` 明确允许 `OAI-SearchBot`，声明搜索与实时回答可用但不授权训练，robots 与 sitemap 都要求重新验证，404 始终保持 noindex；不添加 `llms.txt` 或 AI 专用页面。

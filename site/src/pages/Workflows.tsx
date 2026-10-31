@@ -1,5 +1,6 @@
 import { Shell } from "../layout.tsx";
 import { Prose } from "../prose.tsx";
+import { superagentArticle } from "../superagent.ts";
 import { DownloadAction } from "../ui.tsx";
 
 /** Examples explain a decision and its handoff; none is a measured customer result. */
@@ -286,6 +287,18 @@ export function Workflows() {
           <p className="text-muted">{workflow.description}</p>
         </section>
       ))}
+      <section className="mt-14 pt-8">
+        <p className="mb-3 text-caption text-muted">Mochi 观点</p>
+        <h2 className="mb-4 text-title font-semibold">
+          <a
+            className="text-primary underline underline-offset-4"
+            href={superagentArticle.path}
+          >
+            {superagentArticle.name}
+          </a>
+        </h2>
+        <p className="text-muted">{superagentArticle.description}</p>
+      </section>
     </Reading>
   );
 }

@@ -46,6 +46,15 @@ Use the Bun version pinned in `package.json`:
 bun install --frozen-lockfile
 ```
 
+`package.json#overrides` pins Pi's transitive `minimatch` to 11.0.1 for
+[GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249).
+Pi uses the retained `minimatch()` API for model/resource globs, not the
+removed regular-expression APIs. `test/minimatchSecurity.test.ts` checks the
+actual Pi-resolved dependency, bounded preprocessing and representative
+matching behavior. Remove the override when Pi itself requires a fixed version;
+keep the regression test. This source change does not update an installed App
+or the existing public-beta download.
+
 Run focused checks while developing. Before integration, commit the intended
 diff and run `bun run verify` on the clean candidate. It verifies the exact
 commit in a separate temporary checkout without replacing the installed app.

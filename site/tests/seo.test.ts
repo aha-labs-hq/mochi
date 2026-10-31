@@ -5,6 +5,7 @@ import { parsePublicationDetails } from "../../script/stage_release_publication.
 import { type SiteContext, supportText } from "../src/context.ts";
 import { maker } from "../src/facts.ts";
 import { type PageMetadata, pageHead } from "../src/seo.ts";
+import { superagentArticle } from "../src/superagent.ts";
 
 const page: PageMetadata = {
   path: "/",
@@ -39,6 +40,23 @@ const graph = (head: string) => {
 };
 
 describe("website search publication", () => {
+  test("personal editorial authorship is distinct from its publisher", () => {
+    const head = pageHead(
+      { ...superagentArticle, indexed: true },
+      site,
+      assets,
+    );
+    const article = graph(head).find(
+      (node: Record<string, unknown>) => node["@type"] === "Article",
+    );
+    expect(article.author).toEqual({
+      "@type": "Person",
+      ...superagentArticle.author,
+    });
+    expect(article.publisher).toEqual({ "@id": "https://ahalabs.site/#org" });
+    expect(article.headline).toBe(superagentArticle.name);
+  });
+
   test("dated articles agree across sharing and structured metadata without inventing dates", () => {
     const article: PageMetadata = {
       ...page,

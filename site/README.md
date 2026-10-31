@@ -69,7 +69,7 @@ bun run site:build -- \
 
 ## Google 搜索
 
-观点文章位于 `/insights/deepseek-superagent-team-context/`，正文与公开元数据由 `src/superagent.ts` 维护，`src/pages/Insight.tsx` 复用现有阅读版式。页脚和实际用法目录提供入口；页面显示 Aha Labs 署名、真实发布日期与来源链接，日期同步到 Article 与 Open Graph。新增文章路由经同一 `pages` 清单生成静态 HTML、canonical 和站点地图，不把研究原型描述为已发布的完整产品，也不暗示 Mochi 与 DeepSeek 存在隶属关系。
+观点文章位于 `/insights/deepseek-superagent-team-context/`，正文与公开元数据由 `src/superagent.ts` 维护，`src/pages/Insight.tsx` 复用现有阅读版式。页脚和实际用法目录提供入口；页面显示 Koho Zheng 的个人署名、真实发布日期与来源链接，作者同步到 Article 的 Person，Aha Labs 保留为 publisher，日期同步到 Article 与 Open Graph。第一人称正文回顾八月底的团队共享上下文选择和九月初的团队表达要求；这些时间点已核对早期本地开发历史，不公开私有历史或内部项目材料。新增文章路由经同一 `pages` 清单生成静态 HTML、canonical 和站点地图，不把研究原型描述为已发布的完整产品，也不暗示 Mochi 与 DeepSeek 存在隶属关系。
 
 所有构建生成完整 HTML、每页唯一标题和描述、分享卡片与图标。分享卡 `og.png` 由 `build/site.ts` 画出：麻薯趴在写着产品名和一句话介绍的卡片上，字体用 macOS 自带的苹方，所以要在 Mac 上构建。正式域名是 mochi.host，2026-10-14 起开放收录：`site:deploy` 以 `--indexable` 构建。不带该参数的构建（预览与本地检查）保持 noindex、不生成站点地图；robots 始终允许抓取，以便搜索引擎读到页面的 noindex。
 

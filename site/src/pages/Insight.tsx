@@ -15,7 +15,13 @@ export function Insight() {
             <p className="mb-5 text-caption text-muted">
               {article.articleSection}
             </p>
-            <h1 className="phrase section-title">{article.name}</h1>
+            <h1 className="section-title">
+              {article.headingPhrases.map((phrase) => (
+                <span key={phrase} className="inline-block max-w-full">
+                  {phrase}
+                </span>
+              ))}
+            </h1>
             <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-small text-muted">
               <a
                 href={article.author.url}

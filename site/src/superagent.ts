@@ -1,8 +1,10 @@
 /** Reviewed editorial facts, shared by the page, discovery links and metadata. */
+const headline = "从 Mochi 的|独立实验，|再看 |DeepSeek SuperAgent";
 export const superagentArticle = {
   path: "/insights/deepseek-superagent-team-context/",
-  name: "从 Mochi 的独立实验，再看 DeepSeek SuperAgent",
-  title: "从 Mochi 的独立实验，再看 DeepSeek SuperAgent｜Koho",
+  name: headline.replaceAll("|", ""),
+  title: `${headline.replaceAll("|", "")}｜Koho`,
+  headingPhrases: headline.split("|"),
   description:
     "Mochi 是继 Galta 之后，我利用闲暇时间断续开发的第二个独立实验。读 DeepSeek SuperAgent，再谈团队共享上下文，以及这些积累如何反哺 Agent.Space 的 Ray。",
   author: { name: "Koho Zheng", url: "https://kohozheng.com/" },

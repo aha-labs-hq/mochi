@@ -55,6 +55,15 @@ describe("website search publication", () => {
     });
     expect(article.publisher).toEqual({ "@id": "https://ahalabs.site/#org" });
     expect(article.headline).toBe(superagentArticle.name);
+    expect(article.image).toBe(
+      `https://mochi-ahalabs.pages.dev${superagentArticle.image.path}`,
+    );
+    expect(head).toContain(
+      `property="og:image" content="https://mochi-ahalabs.pages.dev${superagentArticle.image.path}"`,
+    );
+    expect(head).toContain(
+      `name="twitter:image:alt" content="${superagentArticle.image.alt}"`,
+    );
   });
 
   test("dated articles agree across sharing and structured metadata without inventing dates", () => {

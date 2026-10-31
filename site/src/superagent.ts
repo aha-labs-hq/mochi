@@ -1,16 +1,25 @@
 /** Reviewed editorial facts, shared by the page, discovery links and metadata. */
 export const superagentArticle = {
   path: "/insights/deepseek-superagent-team-context/",
-  name: "做了两个月 Mochi，再看 DeepSeek SuperAgent",
-  title: "做了两个月 Mochi，再看 DeepSeek SuperAgent｜Koho",
+  name: "从 Mochi 的独立实验，再看 DeepSeek SuperAgent",
+  title: "从 Mochi 的独立实验，再看 DeepSeek SuperAgent｜Koho",
   description:
-    "八月底做 Mochi 时，我就选择让团队讨论进入同一段持续上下文。再看 DeepSeek SuperAgent，我关心的是：AI 帮一个人省下的时间，会不会又变成其他人的理解成本。",
+    "Mochi 是继 Galta 之后，我利用闲暇时间断续开发的第二个独立实验。读 DeepSeek SuperAgent，再谈团队共享上下文，以及这些积累如何反哺 Agent.Space 的 Ray。",
   author: { name: "Koho Zheng", url: "https://kohozheng.com/" },
+  image: {
+    path: "/images/mochi-shared-context.jpg",
+    alt: "麻薯和同事围着同一本项目册，蓝色线串起讨论、决定与事项",
+    width: 1200,
+    height: 630,
+  },
   datePublished: "2026-11-01",
   articleSection: "Mochi 观点",
 } as const;
 
-export const superagentMarkdown = `读 DeepSeek SuperAgent 的设计文档，有一句话我很认同：尽可能少占用人的注意力，尽可能多地提供价值。他们甚至专门提醒，不要让 Agent 制造大量 PR、广播消息和无效工作。[设计原文](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/main/docs/000-philosophy.md)
+export const superagentSections = [
+  `Mochi 是我继 [Galta](https://galta.art/) 之后的第二个独立实验性项目。八月底开始，我利用闲暇时间断断续续地做，试一些自己在意的想法。
+
+读 DeepSeek SuperAgent 的设计文档，有一句话我很认同：尽可能少占用人的注意力，尽可能多地提供价值。他们甚至专门提醒，不要让 Agent 制造大量 PR、广播消息和无效工作。[设计原文](https://github.com/deepseek-ai/dsh-superagent-prototype/blob/main/docs/000-philosophy.md)
 
 这句话很适合拿来检查一个 AI 产品到底有没有用。
 
@@ -68,9 +77,9 @@ Mochi 想接过去的，就是其中一部分工作：在团队已经选定的�
 
 如果 AI 又生成一份新方案、再建一个新任务，群里看起来很热闹，大家反而要多花时间确认哪个才算数。
 
-我做 Mochi 时，愿意花时间在这些细节上。能沿用的事项就沿用，没有确定的负责人就留着待定，查不到的进展就说查不到。让同事能接着做事，比把一次回复写得漂亮更有用。
+我做 Mochi 时，愿意花时间在这些细节上。能沿用的事项就沿用，没有确定的负责人就留着待定，查不到的进展就说查不到。让同事能接着做事，比把一次回复写得漂亮更有用。`,
 
-再看 DeepSeek SuperAgent，这也是我最关心的部分：更自主的系统，能不能少让人操心。
+  `再看 DeepSeek SuperAgent，这也是我最关心的部分：更自主的系统，能不能少让人操心。
 
 它公开的是一套设计探索和研究原型，不能当成已经完整交付的产品。但把人的注意力放进设计标准里，我认同。[官方原型](https://github.com/deepseek-ai/dsh-superagent-prototype)
 
@@ -82,6 +91,8 @@ Mochi 现在做的范围很具体。它是一个运行在 Mac 上、连接飞书
 
 这些范围之外，还有很多事要做。
 
+这个独立实验也给了我不少实际的收获。Mochi 里积累的一些经验、灵感和判断，后来反哺了我对 [Agent.Space](https://agent.space/) 的 Ray 的设计与构建。闲暇时试出来的东西，会带回日常的产品工作里继续生长。
+
 但从八月底到现在，我想解决的问题一直很明确：让团队少依赖那个“什么都得经过他解释一下”的人。
 
 他可以懂得最多，但不应该因此承担所有转述。
@@ -90,4 +101,5 @@ Mochi 现在做的范围很具体。它是一个运行在 Mac 上、连接飞书
 
 如果还是得把原来那个人叫回来，从头讲一遍，那就还有工作没做好。
 
-[Mochi：在飞书里查项目依据，接着推进同一件事。](/workflows/)`;
+[Mochi：在飞书里查项目依据，接着推进同一件事。](/workflows/)`,
+] as const;

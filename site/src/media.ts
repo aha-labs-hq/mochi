@@ -17,7 +17,7 @@ import issue from "../../controlApp/src/ui/assets/settings/issue.png?w=96,192&pi
 import model from "../../controlApp/src/ui/assets/settings/model.png?w=96,192&picture";
 import projects from "../../controlApp/src/ui/assets/settings/projects.png?w=96,192&picture";
 
-/** Every raster on the website comes from the companion's reviewed artwork. */
+/** Product artwork comes from the companion; editorial art stays with its article. */
 export const art = {
   mochi,
   sleeping,

@@ -39,6 +39,43 @@ const graph = (head: string) => {
 };
 
 describe("website search publication", () => {
+  test("dated articles agree across sharing and structured metadata without inventing dates", () => {
+    const article: PageMetadata = {
+      ...page,
+      path: "/insights/example/",
+      name: "A sourced editorial",
+      articleSection: "Mochi 观点",
+      datePublished: "2026-11-01",
+    };
+    const head = pageHead(article, site, assets);
+    expect(head).toContain('property="og:type" content="article"');
+    expect(head).toContain(
+      'property="article:published_time" content="2026-11-01"',
+    );
+    const entity = graph(head).find(
+      (node: Record<string, unknown>) => node["@type"] === "Article",
+    );
+    expect(entity.datePublished).toBe(article.datePublished);
+    expect(entity.headline).toBe(article.name);
+    expect(entity.url).toBe(
+      "https://mochi-ahalabs.pages.dev/insights/example/",
+    );
+    expect(entity.author["@id"]).toBe("https://ahalabs.site/#org");
+    expect(entity).not.toHaveProperty("dateModified");
+
+    const { datePublished: _, ...undated } = article;
+    const undatedHead = pageHead(undated, site, assets);
+    expect(undatedHead).not.toContain("article:published_time");
+    expect(
+      graph(undatedHead).find(
+        (node: Record<string, unknown>) => node["@type"] === "Article",
+      ),
+    ).not.toHaveProperty("datePublished");
+    expect(pageHead(page, site, assets)).toContain(
+      'property="og:type" content="website"',
+    );
+  });
+
   test("previews cannot claim a public canonical URL or invite indexing", () => {
     const head = pageHead(page, { ...site, publication: null }, assets);
     expect(head).toContain('name="robots" content="noindex"');

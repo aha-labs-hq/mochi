@@ -5,6 +5,7 @@ import ring from "./brand/aha-labs-ring.svg";
 import { PENDING, supportText, useSite } from "./context.ts";
 import { maker, tagline } from "./facts.ts";
 import { art } from "./media.ts";
+import { superagentArticle } from "./superagent.ts";
 import { cn, DownloadAction, Picture } from "./ui.tsx";
 
 const repositoryUrl = `https://github.com/${governance.repository.slug}`;
@@ -130,6 +131,7 @@ function Footer() {
       [
         ["能做什么", "/#roles"],
         ["实际用法", "/workflows/"],
+        ["团队 AI 观点", superagentArticle.path],
         [release ? "下载 Mochi" : "申请内测", "/download/"],
         ["上手指南", "/start/"],
         ["常见问题", "/faq/"],

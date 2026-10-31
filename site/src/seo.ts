@@ -8,8 +8,10 @@ export interface PageMetadata {
   title: string;
   description: string;
   indexed: boolean;
-  /** A workflow page is an article; the hub can expose its visible list. */
+  /** Workflow and editorial pages are articles; a hub exposes its visible list. */
   articleSection?: string;
+  /** Only supplied when the publication date is also visible on the page. */
+  datePublished?: string;
   collectionItems?: readonly { name: string; url: string }[];
 }
 
@@ -78,7 +80,7 @@ export function pageHead(
     `<link rel="apple-touch-icon" href="${touchIcon}" />`,
     `<link rel="manifest" href="/site.webmanifest" />`,
     '<script defer src="/analytics.js?v=4"></script>',
-    meta("property", "og:type", "website"),
+    meta("property", "og:type", page.articleSection ? "article" : "website"),
     meta("property", "og:site_name", "Mochi 麻薯"),
     meta("property", "og:locale", "zh_CN"),
     meta("property", "og:title", page.title),
@@ -97,6 +99,8 @@ export function pageHead(
     meta("name", "twitter:image", image),
     meta("name", "twitter:image:alt", `Mochi 麻薯：${tagline}`),
   ];
+  if (page.articleSection && page.datePublished)
+    tags.push(meta("property", "article:published_time", page.datePublished));
   if (indexable)
     tags.push(
       `<link rel="canonical" href="${url}" />`,
@@ -185,6 +189,9 @@ function structuredData(
       description: page.description,
       inLanguage: "zh-CN",
       articleSection: page.articleSection,
+      ...(page.datePublished ? { datePublished: page.datePublished } : {}),
+      image: `${origin}${shareImage}`,
+      url: `${origin}${page.path}`,
       author: { "@id": organization["@id"] },
       publisher: { "@id": organization["@id"] },
       mainEntityOfPage: { "@id": webpage["@id"] },

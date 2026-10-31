@@ -52,6 +52,7 @@ export function pagesHeaders(documents: string[]): string {
       "/privacy/*",
       "/admin/*",
       "/workflows/*",
+      "/insights/*",
     ].flatMap((path) => [
       path,
       "  Cache-Control: public, max-age=0, must-revalidate",

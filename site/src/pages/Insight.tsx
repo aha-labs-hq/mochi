@@ -1,4 +1,3 @@
-import { maker } from "../facts.ts";
 import { Shell } from "../layout.tsx";
 import { Prose } from "../prose.tsx";
 import { superagentArticle, superagentMarkdown } from "../superagent.ts";
@@ -15,8 +14,12 @@ export function Insight() {
             </p>
             <h1 className="phrase section-title">{article.name}</h1>
             <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-small text-muted">
-              <a href={maker.url} rel="author" className="hover:text-primary">
-                {maker.name}
+              <a
+                href={article.author.url}
+                rel="author"
+                className="hover:text-primary"
+              >
+                {article.author.name}
               </a>
               <time dateTime={article.datePublished}>
                 {article.datePublished.replaceAll("-", ".")}

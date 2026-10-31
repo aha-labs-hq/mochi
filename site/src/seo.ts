@@ -12,6 +12,8 @@ export interface PageMetadata {
   articleSection?: string;
   /** Only supplied when the publication date is also visible on the page. */
   datePublished?: string;
+  /** Named personal author shown in the article byline; publisher stays separate. */
+  author?: { name: string; url: string };
   collectionItems?: readonly { name: string; url: string }[];
 }
 
@@ -192,7 +194,9 @@ function structuredData(
       ...(page.datePublished ? { datePublished: page.datePublished } : {}),
       image: `${origin}${shareImage}`,
       url: `${origin}${page.path}`,
-      author: { "@id": organization["@id"] },
+      author: page.author
+        ? { "@type": "Person", name: page.author.name, url: page.author.url }
+        : { "@id": organization["@id"] },
       publisher: { "@id": organization["@id"] },
       mainEntityOfPage: { "@id": webpage["@id"] },
     });

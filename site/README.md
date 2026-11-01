@@ -11,6 +11,8 @@ bun run site:motion                          # App 动效变更后，重新生�
 bun run site:deploy                          # 以真实发行信息部署内测申请站，开放收录
 ```
 
+首页的“用一个真实问题试试”直接进入 `/workflows/project-answers/`。该页由 `src/pages/Workflows.tsx` 维护首次任务的准备条件、真实提及方式、可选用的问题、来源核对与再次查询；不把页面访问或下载点击记为已完成任务。任务全文预渲染，不依赖 JavaScript，也不收集用户的问题或项目内容。
+
 ## 内容出处
 
 网站不另存这些事实，改动请改出处：

@@ -51,9 +51,7 @@ function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2">
             <DownloadAction />
-            <Route href="#roles" glyph="arrowDown">
-              看看它怎么工作
-            </Route>
+            <Route href="/workflows/project-answers/">用一个真实问题试试</Route>
           </div>
           <p className="mt-5 text-caption text-muted">
             {release ? releaseName(release) : "内测中"}，在你的 Mac 上运行

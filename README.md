@@ -1,52 +1,109 @@
 # Mochi
 
-A Mac companion that brings your team's GitHub context into Feishu.
-Ask a question, get an answer with sources, turn an agreed decision into an
-Issue with an owner, and return to the same work to check its progress.
+**Your team's project context, in the group chat.**
 
-[Website](https://mochi.host/) · [Product and onboarding](docs/onboarding.md) ·
-[Architecture](docs/product-architecture.md) · [Release preparation](docs/public-release.md)
+Mochi is a Mac companion for teams that discuss work in Feishu or Lark and
+keep their project knowledge in GitHub. Ask what changed, why a decision was
+made, or what's still blocked. Mochi looks in the projects you select and
+brings the evidence back to the conversation.
 
-## What Mochi does
+[Download for Mac](https://mochi.host/download/?utm_source=github&utm_medium=readme&utm_campaign=public-launch) ·
+[Explore the examples](https://mochi.host/?utm_source=github&utm_medium=readme&utm_campaign=public-launch#roles) ·
+[中文](README.zh-CN.md)
 
-- Reads the GitHub projects you explicitly select and brings useful evidence
-  into the conversation.
-- Creates and updates Issues when authorized, with the request and result
-  recorded for review.
-- Keeps each Bot's instructions, memory, project access, and connections
-  separate. Groups within one Bot share context with its provenance intact.
-- Runs on your Mac with your own ChatGPT subscription or a compatible
-  Responses API service. Mochi handles the setup through its native interface.
+[![Mochi's website example: a teammate asks whether a feature is ready; Mochi answers with links to the release and the original decision](docs/assets/github/mochi-workflow.jpg)](https://mochi.host/?utm_source=github&utm_medium=readme&utm_campaign=public-launch#roles)
 
-Mochi is in public beta. Download the signed build from
-[mochi.host/download](https://mochi.host/download/); the
-[release acceptance contract](docs/release-acceptance.md) records what each
-build has proven.
+*An illustrative conversation from the website, not a customer transcript.
+The current app interface and website are in Simplified Chinese.*
 
-## Open source
+## Keep a piece of work moving
 
-Mochi's source code is licensed under the [Apache License 2.0](LICENSE); see
-[NOTICE](NOTICE). The Mochi and 麻薯 names, the characters and other artwork
-are not covered by that license; see [TRADEMARKS.md](TRADEMARKS.md).
-Contributions are welcome: read [CONTRIBUTING.md](CONTRIBUTING.md), and report
-vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+- **Get an answer you can check.** Ask about the code, Issues and PRs in the
+  projects you selected. Follow the sources back to the original work.
+- **Give a decision somewhere to live.** Ask Mochi to create or update an
+  Issue, add an owner and keep a link to the discussion. Code and PRs remain
+  read-only.
+- **Pick up the same work later.** Ask what changed and what still needs
+  attention, with the earlier discussion as context.
 
-## Working on Mochi
+For example, before a customer invitation goes out:
 
-The desktop app uses Electrobun and React; the Bridge embeds the Pi SDK and
-connects through the official Lark CLI. Read [AGENTS.md](AGENTS.md) and the
-[GitHub workflow](docs/github-governance.md) before changing the repository.
-They own the architecture, authorization, verification, and integration rules.
+> “Can we say people can open a shared link without signing in? Check the
+> implementation and the related Issue; show me the sources.”
 
-GitHub project-access setup preserves the existing login and selections. Its browser return only requests a fresh provider proof; account changes use the separate state- and PKCE-bound login flow. See [onboarding](docs/onboarding.md).
+After the team decides what to do:
 
-Use the Bun version pinned in `package.json`:
+> “Update the existing Issue with this scope and assign it to Evan.”
 
-```sh
-bun install --frozen-lockfile
-```
+Use a real teammate and an Issue from your selected project. These are example
+requests, not a promise that any particular feature is ready.
 
-`package.json#overrides` pins Pi's transitive `minimatch` to 11.0.1 for
+## Try it with one project
+
+1. [Download the public beta](https://mochi.host/download/?utm_source=github&utm_medium=readme&utm_campaign=public-launch)
+   and drag Mochi into Applications. Initial setup needs Mac administrator
+   authorization.
+2. Connect your ChatGPT subscription or a compatible Responses API service,
+   connect Feishu or Lark, and choose the GitHub projects Mochi may access.
+3. Add your bot to a group, start it in Mochi, and @mention it with one real
+   question about the project. Open the sources in its answer.
+
+You'll need an **Apple silicon Mac running macOS 14 or later**, a Feishu or
+Lark organization and a GitHub account with access to the project. Your
+organization may require administrator approval. Setup happens in Mochi and
+the services' authorization pages; no terminal is needed to use the app.
+
+[Setup guide](https://mochi.host/start/) ·
+[For organization admins](https://mochi.host/admin/) ·
+[FAQ](https://mochi.host/faq/)
+
+## Your accounts, your boundaries
+
+- Mochi runs on your Mac with your own model account. Relevant context goes
+  to the model service you choose; that service owns its usage and billing.
+- GitHub access is limited to projects you explicitly select. Issue writes
+  need an authorized request; Mochi does not edit code or merge PRs.
+- Groups served by the **same bot share memory**. Separate bots keep their
+  memory and project access separate. You can turn off a group's replies.
+- Your Mac and the bot need to stay running and connected. This is not an
+  always-on hosted service.
+
+Read the [privacy information](https://mochi.host/privacy/) before connecting
+work resources. The [download page](https://mochi.host/download/) owns the
+current beta version, installation requirements and known limitations.
+
+## Help shape Mochi
+
+Try one real question, then tell us where the answer or setup fell short.
+[Open an issue](https://github.com/aha-labs-hq/mochi/issues) with the version,
+what you expected and what happened. Keep private conversations, credentials
+and project content out of public reports. A star helps others find the project.
+
+Code contributions are welcome; start with [CONTRIBUTING.md](CONTRIBUTING.md).
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+The source is under [Apache-2.0](LICENSE), with [NOTICE](NOTICE). The Mochi and
+麻薯 names, characters and artwork have separate [trademark and artwork terms](TRADEMARKS.md).
+
+## For developers
+
+The desktop app uses Electrobun and React. The bridge embeds the Pi SDK and
+connects through the official Lark CLI. Use the Bun version pinned in
+`package.json`, then run `bun install --frozen-lockfile`.
+
+[Product and onboarding](docs/onboarding.md) ·
+[Architecture](docs/product-architecture.md) ·
+[Development and verification](docs/github-governance.md#verification) ·
+[Release preparation](docs/public-release.md)
+
+Read [AGENTS.md](AGENTS.md) before changing the repository. The source branch
+can include changes newer than the downloadable beta.
+
+<details>
+<summary>Engineering and operations reference (Chinese)</summary>
+
+**Dependency override.** `package.json#overrides` pins Pi's transitive
+`minimatch` to 11.0.1 for
 [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249).
 Pi uses the retained `minimatch()` API for model/resource globs, not the
 removed regular-expression APIs. `test/minimatchSecurity.test.ts` checks the
@@ -54,15 +111,6 @@ actual Pi-resolved dependency, bounded preprocessing and representative
 matching behavior. Remove the override when Pi itself requires a fixed version;
 keep the regression test. This source change does not update an installed App
 or the existing public-beta download.
-
-Run focused checks while developing. Before integration, commit the intended
-diff and run `bun run verify` on the clean candidate. It verifies the exact
-commit in a separate temporary checkout without replacing the installed app.
-The repository's GitHub helper commands own commit, proposal, and merge identity;
-hosted CI is manual-only.
-
-<details>
-<summary>Engineering and operations reference (Chinese)</summary>
 
 问件事，得先找对人；群里聊出了结果，还得有人接着做。麻薯把团队项目里的资料带到群里：查找有依据的答案，经授权把讨论整理成有负责人的 Issue，之后还能接着问进展。运营、设计、支持和开发都能共享这些上下文，减少反复找人和解释。
 
@@ -72,7 +120,7 @@ Mochi 是面向非技术用户的 ToC macOS companion，以及它所管理的飞
 
 **角色方向：** 麻薯是第一个角色，专攻以 GitHub 为团队产品信息中心的场景；未来角色将服务创作等不同工作，不只是替换外观。上面的接入与运行合同描述当前麻薯，不定义所有未来角色。角色叙事、首次有用结果与产品/能力边界见 [`docs/onboarding.md`](docs/onboarding.md#characters-have-different-work-not-just-different-appearances)；形象通过每个 Bot 的 characterId 选择。当前提供麻薯、Awawa 岩蹄兔与 Kiwi 鸟的独立根图；Awawa 的六组动效已接入本地，待命、工作和整理已改进注意力表演并通过原生窗口检查；Kiwi 保持静态形象。动效状态与证据见 [Awawa 验收记录](docs/motion-awawa-audit-2026-10-10.md)，形象选择不改变能力或授权。
 
-**实现状态：ToC 迁移已部署至本机开发环境，尚非正式发行。** 飞书扫码/候选验证与切换、GitHub 用户授权/明确项目选择、统一 Settings，以及不携带客户凭据的安装合同已接通。SQLite schema 9 是唯一支持的 schema；0.2.0 之前的开发数据迁移已完成并移除。真实状态已确认飞书事件在线、ChatGPT 已登录、GitHub 原项目选择保留。用户随后在 test mochi 发起消息，当前部署实际完成接收、推理与回帖，未调用工具；该链路验收通过后，用户明确授权集成 main。旧私人 enrollment 与 RSA 工具路径已删除，旧开发凭据配置移入私有维护归档。用户已接受官方 CLI 的本地文件凭据保管方式；它依赖当前用户的私有文件权限，不保证 Keychain 托管或防同用户恶意进程。GitHub App 的 `mochi-companion[bot]` 身份、远端 issuer、维护仓库安装和权限契约已完成在线核验；真实 C 端 Issue 写入、其余外部边界和 clean-Mac 安装仍待发行前验收，不能以代码集成、开发部署或构建成功宣称正式发布。证据与边界见 [`docs/onboarding.md`](docs/onboarding.md)。
+**发行与验收状态：** Mochi 已有公开测试版，当前下载、设备要求与已知限制以 [下载页](https://mochi.host/download/) 为准。源码集成、开发环境运行、公开测试版与正式发行是不同证据；不要用一项代替另一项。[发行合同](docs/public-release.md) 与 [验收合同](docs/release-acceptance.md) 拥有各自门槛，[产品与接入合同](docs/onboarding.md) 记录连接和使用边界。
 
 Mochi 产品不要求用户安装 Codex App 或 Codex CLI。Bridge 内嵌 [Pi SDK](https://pi.dev/docs/latest/sdk)。默认的 `openai-codex` provider 通过浏览器 OAuth 使用用户现有的 ChatGPT Plus/Pro 订阅；Settings 也支持通过原生安全输入接入用户选择的 OpenAI Responses API 兼容 endpoint 与 API Key。BYOK 凭据只存放在隔离 runtime 的 Pi `auth.json`，不会进入 renderer、Session、状态或日志。已退役 Codex runtime 不再是产品依赖，也没有兼容或导入路径。
 
